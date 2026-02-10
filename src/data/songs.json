@@ -1,0 +1,102 @@
+[
+  {
+    "id": "1",
+    "title": "Starboy",
+    "artist": "The Weeknd",
+    "album": "Starboy",
+    "year": 2016,
+    "youtubeId": "34Na4j8AVgA",
+    "genre": "Pop/R&B",
+    "aiTags": ["Energetic", "Space", "Modern"]
+  },
+  {
+    "id": "2",
+    "title": "Space Oddity",
+    "artist": "David Bowie",
+    "album": "Man of Words/Man of Music",
+    "year": 1969,
+    "youtubeId": "iYYRH4apXDo",
+    "genre": "Rock",
+    "aiTags": ["Classic", "Astral", "Melancholy"]
+  },
+  {
+    "id": "3",
+    "title": "Interstellar Main Theme",
+    "artist": "Hans Zimmer",
+    "album": "Interstellar OST",
+    "year": 2014,
+    "youtubeId": "IDsCtDRV2uA",
+    "genre": "Soundtrack",
+    "aiTags": ["Epic", "Atmospheric", "Deep"]
+  },
+  {
+    "id": "4",
+    "title": "Midnight City",
+    "artist": "M83",
+    "album": "Hurry Up, We're Dreaming",
+    "year": 2011,
+    "youtubeId": "dX3k_HiQ5fE",
+    "genre": "Synth-pop",
+    "aiTags": ["Nostalgic", "Vibrant", "Dreamy"]
+  },
+  {
+    "id": "5",
+    "title": "Clint Eastwood",
+    "artist": "Gorillaz",
+    "album": "Gorillaz",
+    "year": 2001,
+    "youtubeId": "1V_xRb0x9aw",
+    "genre": "Hip Hop/Rock",
+    "aiTags": ["Chill", "Alternative", "Classic"]
+  },
+  {
+    "id": "6",
+    "title": "Blinding Lights",
+    "artist": "The Weeknd",
+    "album": "After Hours",
+    "year": 2020,
+    "youtubeId": "fHI8X4OXluQ",
+    "genre": "Synth-pop",
+    "aiTags": ["Energetic", "Retro", "Catchy"]
+  },
+  {
+    "id": "7",
+    "title": "Across the Universe",
+    "artist": "The Beatles",
+    "album": "Let It Be",
+    "year": 1970,
+    "youtubeId": "90M60PzmxEE",
+    "genre": "Folk-pop",
+    "aiTags": ["Zen", "Timeless", "Peaceful"]
+  },
+  {
+    "id": "8",
+    "title": "Walking On A Dream",
+    "artist": "Empire of the Sun",
+    "album": "Walking on a Dream",
+    "year": 2008,
+    "youtubeId": "ehu3vyRAy2I",
+    "genre": "Electropop",
+    "aiTags": ["Surreal", "Uplifting", "Electronic"]
+  },
+  {
+    "id": "9",
+    "title": "Nightcall",
+    "artist": "Kavinsky",
+    "album": "OutRun",
+    "year": 2010,
+    "youtubeId": "MV_3Dpw-BRY",
+    "genre": "Electro",
+    "aiTags": ["Dark", "Cinematic", "Drive"]
+  },
+  {
+    "id": "10",
+    "title": "Level of Concern",
+    "artist": "Twenty One Pilots",
+    "album": "Single",
+    "year": 2020,
+    "youtubeId": "gx9eDo7zLqY",
+    "genre": "Alternative",
+    "aiTags": ["Groovy", "Introspective", "Modern"]
+  }
+]

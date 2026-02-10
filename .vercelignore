@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.env*
+*.local
+README.md
+dataset/Spotify_Youtube.csv/*.png
+dataset/Spotify_Youtube.csv/*.jpg

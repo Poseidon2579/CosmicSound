@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Universe Library - CosmicSound</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0a0914",
+                        "card-dark": "#16142a",
+                        "border-dark": "#2a283e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            background-color: #2513ec;
+            color: white;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a283e;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d3b54;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation -->
+<aside class="w-72 flex flex-col border-r border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark h-full">
+<div class="p-6 flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight">CosmicSound</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest">Premium Explorer</p>
+</div>
+</div>
+<nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+<div class="pb-4 border-b border-slate-100 dark:border-border-dark mb-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-card-dark transition-colors" href="#">
+<span class="material-symbols-outlined">house</span>
+<span class="text-sm font-semibold">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-card-dark transition-colors" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-sm font-semibold">Explore</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-card-dark transition-colors" href="#">
+<span class="material-symbols-outlined">podcasts</span>
+<span class="text-sm font-semibold">Radio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full active-tab shadow-lg shadow-primary/30" href="#">
+<span class="material-symbols-outlined">library_music</span>
+<span class="text-sm font-semibold">Library</span>
+</a>
+</div>
+<div class="mt-6">
+<div class="flex items-center justify-between px-4 mb-4">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">My Playlists</h2>
+<button class="p-1 hover:bg-slate-100 dark:hover:bg-card-dark rounded-full transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="space-y-2">
+<button class="w-full flex items-center gap-3 px-4 py-2 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary hover:bg-primary/20 dark:hover:bg-primary/30 transition-all border border-primary/20 mb-4 group">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="text-sm font-bold">Create New Playlist</span>
+</button>
+<div class="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-card-dark transition-colors cursor-pointer group">
+<div class="size-10 rounded-lg bg-indigo-500/20 flex items-center justify-center overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 opacity-80" data-alt="Abstract purple and indigo gradient pattern"></div>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300 truncate">Atmospheric Beats</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-card-dark transition-colors cursor-pointer">
+<div class="size-10 rounded-lg bg-orange-500/20 flex items-center justify-center overflow-hidden">
+<div class="w-full h-full bg-gradient-to-tr from-orange-400 to-red-500 opacity-80" data-alt="Warm orange and red cosmic nebula"></div>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300 truncate">Supernova Hits</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-card-dark transition-colors cursor-pointer">
+<div class="size-10 rounded-lg bg-blue-500/20 flex items-center justify-center overflow-hidden">
+<div class="w-full h-full bg-gradient-to-b from-blue-600 to-cyan-400 opacity-80" data-alt="Cool blue and cyan celestial pattern"></div>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300 truncate">Deep Space Lo-fi</span>
+</div>
+</div>
+</div>
+</nav>
+<div class="p-6">
+<div class="p-4 rounded-2xl bg-slate-100 dark:bg-card-dark flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-300" data-alt="User profile avatar portrait" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAdimiGiFq17wpUBWB7k8nA08seZwSQgRvKnp1sStaYGWMUqeCgDjXD5Dj7-5JC-6eAFgCxqqqzzbOZy2dqT0kdqCEo-1D88Gqutav6cbti254bCz8VTs34ynjtI_Eqz2taZpVGZ_o-Juo9ZKpPqSbl7siOO2F5KUATMfz34aJUIRnm4t8-LCnWfe8Bq-5-9s079SYHlCLJrfR9vRyO0wRsAOEyMVZ8R-z0mg8eoxGQpMa16GqcOkdIaUrQfNOWmQHIwqADxzhRfOw')"></div>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-bold truncate">Alex Chen</p>
+<p class="text-xs text-slate-500">Explorer LV. 42</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-hidden bg-background-light dark:bg-background-dark">
+<!-- Header & Tab Controls -->
+<header class="pt-10 px-10 pb-6 flex flex-col gap-8">
+<div class="flex items-center justify-between">
+<div>
+<h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">My Universe</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Curate your journey through the sonic cosmos.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-64 pl-12 pr-4 py-3 rounded-full bg-white dark:bg-card-dark border-none focus:ring-2 focus:ring-primary text-sm transition-all shadow-sm" placeholder="Search your library..." type="text"/>
+</div>
+<button class="size-11 rounded-full bg-white dark:bg-card-dark flex items-center justify-center shadow-sm border border-slate-100 dark:border-border-dark">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+<!-- Pills Tab Switcher -->
+<div class="flex justify-center">
+<div class="inline-flex p-1.5 bg-slate-200/50 dark:bg-card-dark rounded-full shadow-inner border border-slate-200 dark:border-border-dark">
+<button class="px-8 py-2.5 rounded-full text-sm font-bold active-tab transition-all">Saved Songs</button>
+<button class="px-8 py-2.5 rounded-full text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">Favorite Albums</button>
+<button class="px-8 py-2.5 rounded-full text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">Followed Artists</button>
+</div>
+</div>
+</header>
+<!-- Scrollable List Content -->
+<section class="flex-1 overflow-y-auto px-10 pb-32">
+<div class="rounded-3xl border border-slate-200 dark:border-border-dark bg-white/50 dark:bg-card-dark/30 backdrop-blur-xl overflow-hidden shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-slate-400 dark:text-slate-500 text-[11px] uppercase tracking-widest font-bold border-b border-slate-100 dark:border-border-dark bg-slate-50 dark:bg-card-dark/50">
+<th class="py-4 px-6 w-12 text-center">#</th>
+<th class="py-4 px-6">Title</th>
+<th class="py-4 px-6">Artist</th>
+<th class="py-4 px-6">Album</th>
+<th class="py-4 px-6 w-24 text-right">Duration</th>
+<th class="py-4 px-6 w-12"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-border-dark/50">
+<!-- Track 1 -->
+<tr class="group hover:bg-slate-100/50 dark:hover:bg-primary/5 transition-colors cursor-pointer">
+<td class="py-4 px-6 text-center text-sm font-medium text-slate-400">1</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg overflow-hidden bg-slate-200">
+<div class="w-full h-full bg-gradient-to-br from-blue-900 to-black" data-alt="Deep space orbital photography"></div>
+</div>
+<div>
+<p class="text-sm font-bold">Stellar Drift</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Mastered in Atmos</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Luna Ray</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Orbitals</td>
+<td class="py-4 px-6 text-sm text-right text-slate-500">3:45</td>
+<td class="py-4 px-6 text-center">
+<span class="material-symbols-outlined text-primary text-xl fill-1">favorite</span>
+</td>
+</tr>
+<!-- Track 2 -->
+<tr class="group hover:bg-slate-100/50 dark:hover:bg-primary/5 transition-colors cursor-pointer">
+<td class="py-4 px-6 text-center text-sm font-medium text-slate-400">2</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg overflow-hidden bg-slate-200">
+<div class="w-full h-full bg-gradient-to-tr from-purple-800 to-indigo-900" data-alt="Vibrant nebula clouds in purple and indigo"></div>
+</div>
+<div>
+<p class="text-sm font-bold">Nebula Dreams</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Deep Space Sessions</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Cygnus</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Deep Space</td>
+<td class="py-4 px-6 text-sm text-right text-slate-500">4:12</td>
+<td class="py-4 px-6 text-center">
+<span class="material-symbols-outlined text-primary text-xl fill-1">favorite</span>
+</td>
+</tr>
+<!-- Track 3 -->
+<tr class="group hover:bg-slate-100/50 dark:hover:bg-primary/5 transition-colors cursor-pointer">
+<td class="py-4 px-6 text-center text-sm font-medium text-slate-400">3</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg overflow-hidden bg-slate-200">
+<div class="w-full h-full bg-gradient-to-b from-gray-900 to-black" data-alt="Event horizon of a black hole"></div>
+</div>
+<div>
+<p class="text-sm font-bold">Event Horizon</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Singularity</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Nova</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Black Hole Sun</td>
+<td class="py-4 px-6 text-sm text-right text-slate-500">5:20</td>
+<td class="py-4 px-6 text-center">
+<span class="material-symbols-outlined text-primary text-xl fill-1">favorite</span>
+</td>
+</tr>
+<!-- Track 4 -->
+<tr class="group hover:bg-slate-100/50 dark:hover:bg-primary/5 transition-colors cursor-pointer">
+<td class="py-4 px-6 text-center text-sm font-medium text-slate-400">4</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg overflow-hidden bg-slate-200">
+<div class="w-full h-full bg-gradient-to-r from-yellow-600 to-orange-700" data-alt="Sun flares and solar activity"></div>
+</div>
+<div>
+<p class="text-sm font-bold">Solar Flare</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Radiance EP</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">The Pulsars</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Radiance</td>
+<td class="py-4 px-6 text-sm text-right text-slate-500">3:55</td>
+<td class="py-4 px-6 text-center">
+<span class="material-symbols-outlined text-primary text-xl fill-1">favorite</span>
+</td>
+</tr>
+<!-- Track 5 -->
+<tr class="group hover:bg-slate-100/50 dark:hover:bg-primary/5 transition-colors cursor-pointer">
+<td class="py-4 px-6 text-center text-sm font-medium text-slate-400">5</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg overflow-hidden bg-slate-200">
+<div class="w-full h-full bg-slate-800" data-alt="Abstract minimalist void pattern"></div>
+</div>
+<div>
+<p class="text-sm font-bold">Void Walker</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Null Set</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">Entropy</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300">The Void</td>
+<td class="py-4 px-6 text-sm text-right text-slate-500">4:02</td>
+<td class="py-4 px-6 text-center">
+<span class="material-symbols-outlined text-primary text-xl fill-1">favorite</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer spacer for player -->
+<div class="h-10"></div>
+</section>
+</main>
+</div>
+<!-- Mini Player Footer -->
+<footer class="fixed bottom-0 left-0 right-0 h-24 bg-white/80 dark:bg-background-dark/80 backdrop-blur-2xl border-t border-slate-200 dark:border-border-dark flex items-center justify-between px-8 z-50">
+<!-- Current Track -->
+<div class="flex items-center gap-4 w-1/3">
+<div class="size-14 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-border-dark">
+<div class="w-full h-full bg-gradient-to-br from-blue-900 to-black" data-alt="Stellar Drift track cover art"></div>
+</div>
+<div>
+<p class="text-sm font-bold">Stellar Drift</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Luna Ray</p>
+</div>
+<button class="ml-2 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-card-dark transition-colors">
+<span class="material-symbols-outlined text-primary text-xl fill-1">favorite</span>
+</button>
+</div>
+<!-- Controls -->
+<div class="flex flex-col items-center gap-2 w-1/3">
+<div class="flex items-center gap-6">
+<button class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">shuffle</span>
+</button>
+<button class="text-slate-900 dark:text-white hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">skip_previous</span>
+</button>
+<button class="size-12 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/40 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-3xl">play_arrow</span>
+</button>
+<button class="text-slate-900 dark:text-white hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">skip_next</span>
+</button>
+<button class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">repeat</span>
+</button>
+</div>
+<div class="w-full max-w-md flex items-center gap-3">
+<span class="text-[10px] font-bold text-slate-400 w-8 text-right">1:24</span>
+<div class="flex-1 h-1.5 bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden group cursor-pointer relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-1/3 rounded-full"></div>
+</div>
+<span class="text-[10px] font-bold text-slate-400 w-8">3:45</span>
+</div>
+</div>
+<!-- Extra Controls -->
+<div class="flex items-center justify-end gap-4 w-1/3">
+<button class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">playlist_play</span>
+</button>
+<button class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">devices</span>
+</button>
+<div class="flex items-center gap-2 w-32">
+<span class="material-symbols-outlined text-slate-400 text-lg">volume_up</span>
+<div class="flex-1 h-1 bg-slate-200 dark:bg-border-dark rounded-full">
+<div class="h-full bg-slate-400 dark:bg-slate-500 w-3/4 rounded-full"></div>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">fullscreen</span>
+</button>
+</div>
+</footer>
+</body></html>

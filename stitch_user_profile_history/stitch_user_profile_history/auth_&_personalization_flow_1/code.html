@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CosmicSound - Auth &amp; Personalization</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "cosmic-blue": "#2513ec",
+                        "background-dark": "#050510",
+                        "deep-void": "#0a0a1a",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Space Grotesk', sans-serif;
+            }
+        }
+        .cosmic-bg {
+            background: radial-gradient(circle at 50% 50%, #0a0a1a 0%, #050510 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-primary {
+            box-shadow: 0 0 30px rgba(37, 19, 236, 0.4);
+        }
+        .bubble-float {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+        }
+        .bubble-float:hover {
+            transform: translateY(-8px) scale(1.05);
+        }
+        .star-field {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 150px 150px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 280px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 400px 250px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 500px 50px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 700px 400px, rgba(255,255,255,0.7), rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 800px 800px;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white overflow-x-hidden min-h-screen">
+<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="star-field"></div>
+<div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[150px] rounded-full"></div>
+<div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-500/10 blur-[150px] rounded-full"></div>
+</div>
+<div class="relative z-10 flex flex-col min-h-screen">
+<header class="flex items-center justify-between px-8 py-8 max-w-7xl mx-auto w-full">
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h1 class="text-xl font-bold tracking-tight uppercase">CosmicSound</h1>
+</div>
+<div class="flex items-center gap-8">
+<a class="text-xs font-bold tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity" href="#">Explore</a>
+<a class="text-xs font-bold tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity" href="#">Support</a>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center p-6">
+<section class="w-full max-w-md mx-auto space-y-10 py-12" id="login-view">
+<div class="text-center space-y-3">
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight">Welcome back to the Void</h2>
+<p class="text-white/40 text-sm font-medium">Re-calibrate your auditory sensors.</p>
+</div>
+<div class="glass-card rounded-2xl p-10 shadow-2xl space-y-8">
+<form class="space-y-5">
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 ml-4">Email Address</label>
+<input class="w-full bg-white/[0.03] border border-white/10 rounded-full px-6 py-4 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/10 text-sm" placeholder="stardust@void.com" type="email"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 ml-4">Password</label>
+<input class="w-full bg-white/[0.03] border border-white/10 rounded-full px-6 py-4 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-white/10 text-sm" placeholder="••••••••" type="password"/>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-5 rounded-full transition-all glow-primary transform active:scale-[0.98] mt-4" type="submit">
+                            Enter the Void
+                        </button>
+</form>
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-white/5"></div>
+<span class="flex-shrink mx-4 text-white/20 text-[10px] font-bold uppercase tracking-widest">Or access through</span>
+<div class="flex-grow border-t border-white/5"></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 bg-white/[0.03] border border-white/10 rounded-full py-4 hover:bg-white/[0.08] transition-all group">
+<svg class="w-5 h-5 opacity-60 group-hover:opacity-100" fill="currentColor" viewBox="0 0 24 24"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.908 3.152-1.928 4.176-1.02 1.024-2.6 2.144-5.912 2.144-5.384 0-9.656-4.352-9.656-9.736s4.272-9.736 9.656-9.736c2.92 0 5.12 1.144 6.64 2.584l2.304-2.304C19.144 1.256 16.36 0 12.48 0 5.712 0 .192 5.52.192 12.288S5.712 24.576 12.48 24.576c3.672 0 6.44-1.208 8.64-3.52 2.256-2.256 2.968-5.416 2.968-7.904 0-.768-.056-1.504-.184-2.232H12.48z"></path></svg>
+<span class="text-xs font-bold tracking-widest uppercase">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 bg-white/[0.03] border border-white/10 rounded-full py-4 hover:bg-white/[0.08] transition-all group">
+<svg class="w-5 h-5 opacity-60 group-hover:opacity-100" fill="currentColor" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.67-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2.044-.147-3.238 1.09-4.21 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.702z"></path></svg>
+<span class="text-xs font-bold tracking-widest uppercase">Apple</span>
+</button>
+</div>
+</div>
+<div class="text-center pt-4">
+<p class="text-sm text-white/40">
+                        First journey? <a class="text-primary font-bold hover:text-blue-400 transition-colors underline underline-offset-8 decoration-primary/30" href="#">Signal presence</a>
+</p>
+</div>
+</section>
+<div class="w-full max-w-5xl border-t border-white/[0.03] my-32"></div>
+<section class="w-full max-w-4xl mx-auto space-y-16 py-12 pb-32" id="onboarding-view">
+<div class="flex flex-col items-center text-center space-y-6">
+<div class="flex gap-3 mb-4">
+<div class="h-1.5 w-8 rounded-full bg-primary/20"></div>
+<div class="h-1.5 w-16 rounded-full bg-primary glow-primary"></div>
+<div class="h-1.5 w-8 rounded-full bg-primary/20"></div>
+</div>
+<h2 class="text-5xl md:text-6xl font-bold tracking-tight">Map your Constellation</h2>
+<p class="text-white/50 text-lg max-w-lg leading-relaxed">Select 3 genres to calibrate your personal cosmic frequency for discovery.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 px-4">
+<button class="bubble-float group relative aspect-square rounded-full flex flex-col items-center justify-center border-2 border-primary bg-primary/20 shadow-[0_0_50px_rgba(37,19,236,0.3)]">
+<div class="absolute inset-0 rounded-full overflow-hidden opacity-30">
+<div class="w-full h-full bg-gradient-to-br from-primary via-purple-600 to-blue-500 blur-2xl"></div>
+</div>
+<span class="material-symbols-outlined text-5xl mb-3 text-white">auto_awesome</span>
+<span class="font-bold tracking-widest uppercase text-xs">Synthwave</span>
+<div class="absolute -top-1 -right-1 bg-primary rounded-full p-2 border-4 border-background-dark shadow-lg">
+<span class="material-symbols-outlined text-sm font-bold leading-none">check</span>
+</div>
+</button>
+<button class="bubble-float group aspect-square rounded-full flex flex-col items-center justify-center border border-white/10 bg-white/[0.03] hover:border-primary/50 transition-all hover:bg-primary/10">
+<span class="material-symbols-outlined text-5xl mb-3 text-white/20 group-hover:text-primary transition-colors">waves</span>
+<span class="font-bold tracking-widest uppercase text-xs text-white/40 group-hover:text-white transition-colors">Ambient</span>
+</button>
+<button class="bubble-float group relative aspect-square rounded-full flex flex-col items-center justify-center border-2 border-primary bg-primary/20 shadow-[0_0_50px_rgba(37,19,236,0.3)]">
+<div class="absolute inset-0 rounded-full overflow-hidden opacity-30">
+<div class="w-full h-full bg-gradient-to-br from-blue-400 via-primary to-indigo-900 blur-2xl"></div>
+</div>
+<span class="material-symbols-outlined text-5xl mb-3 text-white">blur_on</span>
+<span class="font-bold tracking-widest uppercase text-xs">Nebula Jazz</span>
+<div class="absolute -top-1 -right-1 bg-primary rounded-full p-2 border-4 border-background-dark shadow-lg">
+<span class="material-symbols-outlined text-sm font-bold leading-none">check</span>
+</div>
+</button>
+<button class="bubble-float group aspect-square rounded-full flex flex-col items-center justify-center border border-white/10 bg-white/[0.03] hover:border-primary/50 transition-all hover:bg-primary/10">
+<span class="material-symbols-outlined text-5xl mb-3 text-white/20 group-hover:text-primary transition-colors">dark_mode</span>
+<span class="font-bold tracking-widest uppercase text-xs text-white/40 group-hover:text-white transition-colors">Dark Techno</span>
+</button>
+<button class="bubble-float group aspect-square rounded-full flex flex-col items-center justify-center border border-white/10 bg-white/[0.03] hover:border-primary/50 transition-all hover:bg-primary/10">
+<span class="material-symbols-outlined text-5xl mb-3 text-white/20 group-hover:text-primary transition-colors">rocket_launch</span>
+<span class="font-bold tracking-widest uppercase text-xs text-white/40 group-hover:text-white transition-colors">Psybient</span>
+</button>
+<button class="bubble-float group relative aspect-square rounded-full flex flex-col items-center justify-center border-2 border-primary bg-primary/20 shadow-[0_0_50px_rgba(37,19,236,0.3)]">
+<div class="absolute inset-0 rounded-full overflow-hidden opacity-30">
+<div class="w-full h-full bg-gradient-to-br from-indigo-900 via-primary to-pink-500 blur-2xl"></div>
+</div>
+<span class="material-symbols-outlined text-5xl mb-3 text-white">lens_blur</span>
+<span class="font-bold tracking-widest uppercase text-xs">Ether Pop</span>
+<div class="absolute -top-1 -right-1 bg-primary rounded-full p-2 border-4 border-background-dark shadow-lg">
+<span class="material-symbols-outlined text-sm font-bold leading-none">check</span>
+</div>
+</button>
+<button class="bubble-float group aspect-square rounded-full flex flex-col items-center justify-center border border-white/10 bg-white/[0.03] hover:border-primary/50 transition-all hover:bg-primary/10">
+<span class="material-symbols-outlined text-5xl mb-3 text-white/20 group-hover:text-primary transition-colors">grain</span>
+<span class="font-bold tracking-widest uppercase text-xs text-white/40 group-hover:text-white transition-colors">Lo-Fi Void</span>
+</button>
+<button class="bubble-float group aspect-square rounded-full flex flex-col items-center justify-center border border-white/10 bg-white/[0.03] hover:border-primary/50 transition-all hover:bg-primary/10">
+<span class="material-symbols-outlined text-5xl mb-3 text-white/20 group-hover:text-primary transition-colors">stream</span>
+<span class="font-bold tracking-widest uppercase text-xs text-white/40 group-hover:text-white transition-colors">Glitch Hop</span>
+</button>
+</div>
+<div class="flex flex-col items-center gap-6 pt-12">
+<button class="min-w-[320px] bg-primary hover:bg-primary/90 text-white font-bold py-6 px-10 rounded-full transition-all glow-primary transform active:scale-[0.98] flex items-center justify-center gap-4">
+<span class="tracking-widest uppercase text-sm">Initialize Discovery</span>
+<span class="material-symbols-outlined">rocket_launch</span>
+</button>
+<p class="text-white/20 text-[10px] font-bold uppercase tracking-[0.4em]">3 constellations selected</p>
+</div>
+</section>
+</main>
+<footer class="p-12 text-center border-t border-white/[0.03] glass-card">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-white/10 text-[10px] font-bold uppercase tracking-[0.3em]">© 2024 CosmicSound Systems • Harmonic AI Calibration Active</p>
+<div class="flex gap-8">
+<a class="text-white/10 hover:text-white/40 text-[10px] font-bold uppercase tracking-widest transition-colors" href="#">Privacy Flux</a>
+<a class="text-white/10 hover:text-white/40 text-[10px] font-bold uppercase tracking-widest transition-colors" href="#">Terms of Void</a>
+</div>
+</div>
+</footer>
+</div>
+
+</body></html>

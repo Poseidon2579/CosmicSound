@@ -1,0 +1,39 @@
+﻿  ▲ Next.js 14.2.3
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+
+   We detected TypeScript in your project and reconfigured your tsconfig.json file for you. Strict-mode is set to false by default.
+   The following mandatory changes were made to your tsconfig.json:
+
+   	- jsx was set to preserve (next.js implements its own optimized jsx transform)
+
+   Collecting page data ...
+   Generating static pages (0/9) ...
+   Generating static pages (2/9) 
+   Generating static pages (4/9) 
+   Generating static pages (6/9) 
+ ✓ Generating static pages (9/9)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    1.95 kB         132 kB
+├ ○ /_not-found                          871 B          87.9 kB
+├ ○ /admin                               135 B          87.1 kB
+├ ○ /auth                                1.47 kB         125 kB
+├ ○ /profile                             2.74 kB         133 kB
+├ ƒ /search                              3.21 kB         133 kB
+└ ƒ /track/[id]                          2.86 kB         133 kB
++ First Load JS shared by all            87 kB
+  ├ chunks/23-a12d6039e9c77ca3.js        31.5 kB
+  ├ chunks/fd9d1056-00bb33a35b5f8051.js  53.6 kB
+  └ other shared chunks (total)          1.89 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

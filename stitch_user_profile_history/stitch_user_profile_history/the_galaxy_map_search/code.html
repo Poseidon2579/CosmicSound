@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Galaxy Map | CosmicSound</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0a0a1a",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .stardust-bg {
+            background: radial-gradient(circle at 50% 50%, #121022 0%, #0a0a1a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .stardust-bg::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 160px 120px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        .pulse-violet {
+            box-shadow: 0 0 40px 10px rgba(37, 19, 236, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col stardust-bg group/design-root">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-10 py-4">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-white">
+<div class="size-8 bg-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">auto_awesome</span>
+</div>
+<h2 class="text-white text-xl font-bold tracking-tight">CosmicSound</h2>
+</div>
+<div class="hidden md:flex flex-col min-w-80">
+<div class="flex w-full items-stretch rounded-full glass h-10 group focus-within:ring-2 ring-primary/50 transition-all">
+<div class="text-slate-400 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full border-none bg-transparent focus:ring-0 text-white placeholder:text-slate-500 text-sm font-medium pl-3 pr-4" placeholder="Search the galaxy..." value="Stardust Melodies"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-full size-10 glass text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-full size-10 glass text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<div class="h-10 w-10 rounded-full border-2 border-primary overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a stylish woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCik3tpJ1RDWvBfhqIvzhsXmlh03S1h1x1897idq0IPemPVuXCSnXgaF-wR4qZL94U44q8kZNMI1Y_zgGBwHLUsJa0vQh0aiGksn9bl0c6NQei42MXGX_wqXH64wtllmjSRXsuCYYk7Bcaqq-C6jfnxoezCqQl73Pcx7AHih7V1d2x9_EcoFrPmUXaJO3oT5hrWaBrom7-RDWEAHyNetM1QhwI460KspKG_u4QLtjSLQBnrsAjbvBumXTTu0CanXiZ7hUprwYlRzzA"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- Sidebar Navigation -->
+<aside class="w-72 border-r border-white/10 px-6 py-8 hidden lg:flex flex-col gap-8">
+<div class="flex flex-col gap-1">
+<h3 class="px-3 text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Galaxy Filters</h3>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-primary text-white font-medium" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span>Everything</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">music_note</span>
+<span>Songs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">artist</span>
+<span>Artists</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">album</span>
+<span>Albums</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">queue_music</span>
+<span>Playlists</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto glass rounded-xl p-5 border-primary/20">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+<span class="text-xs font-bold tracking-tight text-white">AI Engine</span>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed mb-4">Gemini is analyzing celestial patterns to find your sound.</p>
+<div class="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[65%] rounded-full shadow-[0_0_8px_#2513ec]"></div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col p-8 md:p-12 overflow-y-auto">
+<!-- Search Result Header -->
+<div class="mb-12">
+<p class="text-primary font-medium tracking-widest uppercase text-xs mb-2">Discovery Map</p>
+<h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                        Results for <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">Stardust Melodies</span>
+</h1>
+</div>
+<!-- Gemini Loading State -->
+<div class="flex flex-col items-center justify-center py-20 mb-12">
+<div class="relative size-32 mb-8">
+<div class="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-25"></div>
+<div class="absolute inset-0 pulse-violet rounded-full flex items-center justify-center glass border-primary/50 border-2">
+<span class="material-symbols-outlined text-5xl text-white">auto_awesome</span>
+</div>
+</div>
+<div class="text-center">
+<h3 class="text-xl font-medium text-white mb-2">Gemini exploring the cosmos...</h3>
+<p class="text-slate-400 max-w-md mx-auto">Connecting pulsars and harmonic frequencies to locate the perfect melody.</p>
+</div>
+</div>
+<!-- Results Sections -->
+<div class="space-y-16">
+<!-- Artists Section (Circles) -->
+<section>
+<div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+<h2 class="text-2xl font-bold text-white">Celestial Artists</h2>
+<button class="text-sm font-medium text-primary hover:underline">View all</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+<!-- Artist Card -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="size-40 rounded-full glass p-1 mb-4 group-hover:scale-105 transition-transform duration-500 group-hover:border-primary">
+<div class="w-full h-full rounded-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="Astra Vibe" class="w-full h-full object-cover" data-alt="Atmospheric photo of a musician in neon light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmeQz4HXEqtneWQO4zahJ5Srz4S_jwQI5Ud8_II_tbrKxDss2TeDxENVMoKnJbb6bN2UkEpCCD_AGCipHDUsbwqxk5MKR0FZvWVWS5eSD2SAZ2oF6oxJrzj0UiQLVvSxHu7I4uxwPP833QP4Dak6AlsnuErt0uAToxp6eoqcad31a6Vrs2zc3iGzjqgQB0CCxMM_dA5H3Mj_bUeQ7KoSMV45NKMU9lN-e8LeO0pUHLoI4E1i9M6J9ChyAeBypW_RgeICqYCGuGB3s"/>
+</div>
+</div>
+<h4 class="text-lg font-bold text-white">Astra Vibe</h4>
+<p class="text-sm text-slate-500">1.2M Listeners</p>
+</div>
+<!-- Artist Card -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="size-40 rounded-full glass p-1 mb-4 group-hover:scale-105 transition-transform duration-500 group-hover:border-primary">
+<div class="w-full h-full rounded-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="Nova Echo" class="w-full h-full object-cover" data-alt="Abstract portrait with colorful light streaks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLIRdDUPHE8hkZmbQl7unUk4H1o60w-qG6wQja1zOuP2XgYYpNykpuLFtuOLpENcyzDuazwa8RGSHcRV96JNJDiT9NxaAIcl0cTvlR8GWrsHgeaK_3dfVGW2r3nPrOETUcxvoqYGTbJI7xQBRlP1w7r62u8VugGNp3CxfeZT0FKoZh8FjXtAAkrHblFS2FwSdVwJsaEM-JjrQvO5VHDcmjXr-yyQqOPUWYfMfrMtlX1kPgIXwZQAZ75swtlXUHUGmk6ssbTc5ot6w"/>
+</div>
+</div>
+<h4 class="text-lg font-bold text-white">Nova Echo</h4>
+<p class="text-sm text-slate-500">854K Listeners</p>
+</div>
+<!-- Artist Card -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="size-40 rounded-full glass p-1 mb-4 group-hover:scale-105 transition-transform duration-500 group-hover:border-primary">
+<div class="w-full h-full rounded-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="Orion Beats" class="w-full h-full object-cover" data-alt="Electronic music artist with headphones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE_UK90YQliFpceOLbGvSpO3fsxH-eHIdeXwwhTXNUWTdMu271KCDlJs4IbY-C8hVzcvR_fs4qV6syKdHeGxIKqWJZLatiYlCXwAf-sTVIrH9FkaSSDIiOCxhk4JNNhlIIzz7DJPtJJHk6IiUP6t8SNDc8Z1bv2pTeP5eCpXP_d2zUJ6iMVXjpMimXQLb2x5Wna1n8ongiK_16qplp6Wb2XudIdqieAgigMrwqPrUjoQvJCZaH_bzn7B3ZNO3r2F4uj77NV2b9-V4"/>
+</div>
+</div>
+<h4 class="text-lg font-bold text-white">Orion Beats</h4>
+<p class="text-sm text-slate-500">2.1M Listeners</p>
+</div>
+</div>
+</section>
+<!-- Albums Section (Squares) -->
+<section>
+<div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+<h2 class="text-2xl font-bold text-white">Cosmic Collections</h2>
+<button class="text-sm font-medium text-primary hover:underline">View all</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+<!-- Album Card -->
+<div class="flex flex-col gap-4 group cursor-pointer">
+<div class="aspect-square rounded-xl glass p-1 group-hover:scale-[1.02] transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+<div class="w-full h-full rounded-lg overflow-hidden relative">
+<img alt="Nebula Dreams" class="w-full h-full object-cover" data-alt="Abstract vibrant nebula clouds artwork" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPo9UFoElAN-F2VnDMs2not6sPfdFyUI7B0ktaSnZmqNYLaWknkXDWXUSRdyyLeles_TlUCQriHTyXmrue2k9qqKnmbAzy9HCUTIX-oARxQCaynahPednIGnze3HMRlDgEaUb2KKcbZkQDf59k-AU4UWO7os8cpOdtx0tOcskc-ND3rRKKAYGMN3Dd8eTaCPyzMx6rZqEZxO1f-04zlIG3So2Ds1vAXzmGA-j_-BcY7zRyLKRXiTqTYy9SmNVM7ef38iPVwsCohGY"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-5xl fill-1">play_circle</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-lg font-bold text-white">Nebula Dreams</h4>
+<p class="text-sm text-slate-500">Solaris Collective • 2024</p>
+</div>
+</div>
+<!-- Album Card -->
+<div class="flex flex-col gap-4 group cursor-pointer">
+<div class="aspect-square rounded-xl glass p-1 group-hover:scale-[1.02] transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+<div class="w-full h-full rounded-lg overflow-hidden relative">
+<img alt="Quantum Rift" class="w-full h-full object-cover" data-alt="Minimalist dark geometry with blue lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqg66JvznQZsXfi6crlz03miZmlrqlx9Iw1FlcqlDDZ57srLftOmWQnfjIZ_pzpYGmrk8ThB4egtNMa8NTYiB63kPJ7L11R9qb8IzuhSQQ2ukqBxRsS1P3d0VjgLDjrr1FksnGwc2q4awjUUVII5x9P3sojku82hjPHQx-2DgogRL8KpX1Y_4ziVBoNuEg8-QxYAbijc5X0MQDkoxpIkFEYxyUO1qh2kxZVrDabC2RtoQVIEdBccSKMQWzsKDOea8c_XHv-h6QzC4"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-5xl fill-1">play_circle</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-lg font-bold text-white">Quantum Rift</h4>
+<p class="text-sm text-slate-500">The Void • 2023</p>
+</div>
+</div>
+<!-- Album Card -->
+<div class="flex flex-col gap-4 group cursor-pointer">
+<div class="aspect-square rounded-xl glass p-1 group-hover:scale-[1.02] transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+<div class="w-full h-full rounded-lg overflow-hidden relative">
+<img alt="Event Horizon" class="w-full h-full object-cover" data-alt="Breathtaking view of space and stars" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjkMIvFheNQmX5tryro5S2SilLkuNpnFyYt1z20fKPlMx0BHNSKjZYOekvgHCWIUxxvGcCCxbdDdCeWMYYoGGvPPtc9QCAjgQnBtlsdW-7W-Mf4xYTYAPKY-z9NnaOWoPgEyqHRLsndDrQt0kCg5SS6Jl9xlqSmp8K7xWdlAofcbaGUIHGkFr1En_snaGQTJSE4Cp1DadkXH4UhyQNRdOy40-Upvyb5knbP8R8OCZFAfDQpQFGMXVGygtC8VjcafIm1SmNSpJvNKM"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-5xl fill-1">play_circle</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-lg font-bold text-white">Event Horizon</h4>
+<p class="text-sm text-slate-500">Zero Gravity • 2024</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Global Player (Floating Glass) -->
+<footer class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-4rem)] max-w-5xl z-50">
+<div class="glass rounded-full px-6 py-3 flex items-center justify-between shadow-2xl border-white/20">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg overflow-hidden bg-slate-800">
+<img alt="Now Playing" class="w-full h-full object-cover" data-alt="Small album art icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv4V9zG1EN22gh23Zv_cAmb4DqKoRyKHNz3Z11hcqGZKKwX1bHcp3FvHMwIn72Vkc5fn0HyShZrGwwHR2iPciudcaeRNEPKB6jf1MZKmvKptk9hazFz5bUliJ5uF47nJ8VEtKcRsENWyEbt3hLPxdQ2zMiWe0Kle38jhEwj2Itg7isjaU0j-qDqQ8wtMNhWImiuSY7QCJ4uJa7-vR0Wm_Mg8HQqHnJ4aLkI-agEdecVHvE-A0W7zvITrht5yGhJtzqxzloUvK9bJA"/>
+</div>
+<div class="hidden sm:block">
+<h5 class="text-sm font-bold text-white leading-tight">Stardust Melodies</h5>
+<p class="text-xs text-slate-400">Astra Vibe</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">shuffle</span>
+</button>
+<button class="text-white hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]">skip_previous</span>
+</button>
+<button class="size-12 bg-white text-background-dark rounded-full flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined fill-1 text-[28px]">pause</span>
+</button>
+<button class="text-white hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]">skip_next</span>
+</button>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">repeat</span>
+</button>
+</div>
+<div class="flex items-center gap-4 w-40 hidden md:flex">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">volume_up</span>
+<div class="h-1 flex-1 bg-white/10 rounded-full">
+<div class="h-full bg-primary w-2/3 rounded-full"></div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[20px]">fullscreen</span>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

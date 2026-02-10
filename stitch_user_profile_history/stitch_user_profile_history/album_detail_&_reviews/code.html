@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Album Detail &amp; Reviews | CosmicSound</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121022",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-panel {
+            background: rgba(42, 40, 57, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(18, 16, 34, 0.2) 0%, rgba(18, 16, 34, 1) 100%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 glass-panel border-b border-white/5">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-1.5 rounded-full">
+<span class="material-symbols-outlined text-white text-xl">auto_awesome</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">CosmicSound</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Discover</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Library</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Nebula Feed</a>
+</nav>
+</div>
+<div class="flex items-center gap-4 flex-1 justify-end max-w-xl">
+<div class="relative w-full max-w-xs group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-white/5 border-white/10 rounded-full pl-10 pr-4 py-2 text-sm focus:ring-primary focus:border-primary border" placeholder="Search the galaxy..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="size-9 rounded-full bg-primary/20 border border-primary/30 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfG1x7m4V7BB2FWWFYgRT4cHkRinVnuEtW_oAb6hZZIRt8obh9815JkU7DGKf6jTssgB7-AzruaTrDgwvmrtv7DPaLJw--19dIQEmJBTZOiku8VWG8JOfCq-SOWsAtNtyNEHuWPC1CipEAtPj7jOeSHIK7UHCtfRlDqxaFjNKOsSS4qOfFecvdR4O2PJRjGswoMblYIEyGW8VlS89zyzXhnZbWsQqp0j-lJD59Snci5WOYQFGMUbLBwLOp5xxqWwUjhRg_WAK_DJ8"/>
+</div>
+</div>
+</header>
+<main class="relative">
+<!-- Hero Background Layer -->
+<div class="absolute top-0 left-0 w-full h-[500px] overflow-hidden -z-10 opacity-30">
+<div class="absolute inset-0 hero-gradient"></div>
+<img class="w-full h-full object-cover blur-3xl scale-110" data-alt="Abstract cosmic nebula background with purple and blue gradients" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbvtHG9CGgWlxa0x_vaZpJeb3Qlts70VBCSnmcXvh1kfsfQzY4qfRFWR_ttYp8NGJsWfJz8og9gSUg489VHDxU3eH15ZLl_xDhm3_VMUfdNXjv1u7MVLIcw7Qo1yuRLqG7BkXc3QR0AnP3EbW7FGQudEl8SXwzhbkYdrauJEsTfHt1w-I3QfH8Ry2YGIxWTqISd8d3W3Rvr7U5lJUxQP-a_ed4kyxqr_YT_6KAEA_rBio16HvDt__aHysBUHopG8nd28A0yAwVj6I"/>
+</div>
+<div class="max-w-7xl mx-auto px-6 pt-12">
+<div class="grid grid-cols-1 lg:grid-cols-[320px_1fr_300px] gap-12">
+<!-- Left Column: Album Art -->
+<aside class="flex flex-col gap-6">
+<div class="sticky top-28">
+<div class="aspect-square w-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20 group relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="High-resolution album cover featuring cosmic geometry" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkSRYTZYM12KEtZ0Q_YswDfDElbUhWwHV4qyfZnikGI_I0Xm5e2Lkrb2a6YXQaJmwedYVsyjcy__UfEXkphWLReSPQy0dHuhAzh-vCkN6iIypw5wElpf3mvooWVavwUHitDveoa8PATNJzM6_jODtV-mwN-2buuPprYbvyEHPoM0TCa_VNp3Qyrp5KsRtUq5J21kw5zu5j2rH9De3GC97Tvol6op2pee-hj8UzGBFZbN0yjwWNumvpALzglD5_M2ETxCdg9Tf7JrI"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="size-16 bg-primary rounded-full flex items-center justify-center shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl fill-1">play_arrow</span>
+</button>
+</div>
+</div>
+<div class="mt-8 flex flex-col gap-3">
+<button class="w-full py-3 px-6 bg-primary text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/25">
+<span class="material-symbols-outlined">star</span>
+<span>Rate This Album</span>
+</button>
+<button class="w-full py-3 px-6 glass-panel text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined">bookmark</span>
+<span>Add to Collection</span>
+</button>
+<div class="flex items-center justify-between px-2 pt-4 border-t border-white/10 mt-2">
+<div class="flex items-center gap-1 text-yellow-400">
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined">star_half</span>
+<span class="text-white font-semibold ml-1">4.2</span>
+</div>
+<span class="text-xs text-slate-400 uppercase tracking-widest font-bold">8.4k ratings</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Center Column: Tracklist & Reviews -->
+<section class="flex flex-col gap-12">
+<div>
+<h1 class="text-5xl font-extrabold tracking-tight mb-2">Interstellar Echoes</h1>
+<p class="text-xl text-primary font-medium mb-6">The Astral Voyager</p>
+<p class="text-slate-400 leading-relaxed max-w-2xl text-lg italic">
+                            A sonic journey through the quietest corners of the Andromeda nebula, blending modular synthesis with organic celestial resonance.
+                        </p>
+</div>
+<!-- Tracklist -->
+<div>
+<div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Tracklist</h3>
+<span class="text-xs font-medium text-slate-500">12 Tracks • 48m 22s</span>
+</div>
+<div class="flex flex-col gap-1">
+<!-- Track 1 -->
+<div class="group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="w-6 text-sm text-slate-500 group-hover:hidden">1</span>
+<span class="material-symbols-outlined hidden group-hover:block text-primary text-lg">play_arrow</span>
+<span class="font-medium">Binary Sunrise</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-xs py-0.5 px-2 border border-white/20 rounded text-slate-400 uppercase">Explicit</span>
+<span class="text-sm text-slate-500 font-mono">04:12</span>
+</div>
+</div>
+<!-- Track 2 -->
+<div class="group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="w-6 text-sm text-slate-500 group-hover:hidden">2</span>
+<span class="material-symbols-outlined hidden group-hover:block text-primary text-lg">play_arrow</span>
+<span class="font-medium">Void Navigation</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm text-slate-500 font-mono">03:45</span>
+</div>
+</div>
+<!-- Track 3 -->
+<div class="group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="w-6 text-sm text-slate-500 group-hover:hidden">3</span>
+<span class="material-symbols-outlined hidden group-hover:block text-primary text-lg">play_arrow</span>
+<span class="font-medium text-primary">Stellar Drift</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm text-slate-500 font-mono">05:22</span>
+</div>
+</div>
+<!-- Track 4 -->
+<div class="group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="w-6 text-sm text-slate-500 group-hover:hidden">4</span>
+<span class="material-symbols-outlined hidden group-hover:block text-primary text-lg">play_arrow</span>
+<span class="font-medium">Andromeda Waltz</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-sm text-slate-500 font-mono">04:08</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reviews Section -->
+<div class="mt-8">
+<div class="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Community Log</h3>
+<button class="text-xs font-bold text-primary hover:underline">Write a review</button>
+</div>
+<div class="flex flex-col gap-10">
+<!-- Review 1 -->
+<div class="flex gap-4">
+<div class="size-10 rounded-full overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Reviewer profile image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ-2dZxyGBV-AusOX4Erm1lFl6vRi2BUZHQ-O0vBW3QrLuetcRQutSBMKmGszaJegx1HGOT5rY_vEWoXPKnhCFWeJVOGZcxUvNCpphCajs8TBpUypgXUATtZ2JBnDDynbnbhJENm-hAGYLZJbGociVTDJiPLMeoEQnvsQjao0dBTLOXW17Iq2iOp2xVeV6jdxjuoufIPDttwDwlTbtYj4kmT74gP6dH57do-37Hot3K7g7Qb0V27GX938as5jFOfmYUuuFbd511IM"/>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="font-bold text-sm">Lukas Void</span>
+<div class="flex text-yellow-400 text-sm">
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+</div>
+</div>
+<p class="text-slate-300 leading-relaxed text-sm">
+                                        The production quality here is lightyears beyond their debut. "Stellar Drift" specifically feels like actual movement through space. A masterpiece of atmospheric electronic music.
+                                    </p>
+<div class="flex items-center gap-4 mt-1">
+<button class="flex items-center gap-1.5 text-xs text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-base">favorite</span>
+<span>42 Likes</span>
+</button>
+<span class="text-[10px] text-slate-600 uppercase font-bold tracking-wider">3 Days Ago</span>
+</div>
+</div>
+</div>
+<!-- Review 2 -->
+<div class="flex gap-4">
+<div class="size-10 rounded-full overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Reviewer profile image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPCIMxMzOmNE_AqL5XIUqLrlYRSnFkQyfIh5KWkS4YpzOzeFQ36P9qeD97bt40Som6h_mp2uE2A_zCXRahxhqCFoVord27pu53SvRE8VnJMNltY6g7UDzCQD_CPSsanu-tGuADFDVbd9a82j1Kc1DCbVbt8MyN8L4OdM-b76xneQztRLyjI_l4nUWj8QJTgdtgbPukKOF6uD-byLQQBGNi99hQcJcey0En0ooxl8Y7c7-yiw4MkZnAVPOcmeXWAyHQjeoq5HSPFuc"/>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="font-bold text-sm">Nova_Stream</span>
+<div class="flex text-yellow-400 text-sm">
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs">star</span>
+<span class="material-symbols-outlined text-xs">star</span>
+</div>
+</div>
+<p class="text-slate-300 leading-relaxed text-sm">
+                                        Great focus album. Perfect for late-night work sessions. A bit repetitive in the middle section, but the closer "Gravity Well" makes up for it entirely.
+                                    </p>
+<div class="flex items-center gap-4 mt-1">
+<button class="flex items-center gap-1.5 text-xs text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-base">favorite</span>
+<span>18 Likes</span>
+</button>
+<span class="text-[10px] text-slate-600 uppercase font-bold tracking-wider">Oct 12, 2023</span>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-12 w-full py-4 border-2 border-white/5 rounded-xl text-slate-400 font-bold hover:bg-white/5 transition-colors">
+                            Load More Transmissions
+                        </button>
+</div>
+</section>
+<!-- Right Column: Technical Data -->
+<aside class="flex flex-col gap-8">
+<div class="glass-panel p-6 rounded-2xl flex flex-col gap-6 sticky top-28">
+<div>
+<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Transmission Specs</h4>
+<div class="space-y-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-primary uppercase font-bold tracking-wider">Release Date</span>
+<span class="text-sm font-medium">October 24, 2023</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-primary uppercase font-bold tracking-wider">Label</span>
+<span class="text-sm font-medium">Orbital Records</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-primary uppercase font-bold tracking-wider">Producer</span>
+<span class="text-sm font-medium">Cassini &amp; Dr. Sol</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-primary uppercase font-bold tracking-wider">Genre</span>
+<div class="flex flex-wrap gap-2 mt-1">
+<span class="px-2 py-0.5 bg-white/5 rounded text-xs text-slate-300">Ambient</span>
+<span class="px-2 py-0.5 bg-white/5 rounded text-xs text-slate-300">Space Core</span>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-6 border-t border-white/10">
+<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Similar Anomalies</h4>
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square rounded-lg overflow-hidden bg-white/5 group relative cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Similar album cover 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7Hz3Jv_ZN7y_hWCMp2VJie0GQFxq2j94p_FHzHR1IIfHMauma1B11ZbseQB91TumKpxOrOufAECn0ZA5tTx7wtZCWYCne6oeuB4qlBWzg8i6xU63Yt9RGy8uIQqIAghvQqLRE5HaO96TjVk1_4LOdKS5z2InvMsvn6Fj9UVES_vevsmaMlXbAU9S_HxxU3jCePMl_3HFNPISi6qsbhF59eg4ZX25tNTr_2F6Sdd7qc8K5neTcNhEFjNPG9uClIfcUuA2knFmhThg"/>
+<div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden bg-white/5 group relative cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Similar album cover 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4G5o4UfaVYQWv6aQlAWnb-Leurhi1xagWrl-T_sOhpQBF8zxijFK97q_rg23jPMAfDMg3L5LMXTNcBsc0BVmdwg_mXBqOWtyLgiEshRmq0VlfikSblyQEv9A6Mv7A-86FUQA5t3DCQFYbkr8WJky7wuaPP630yccjIr380-jS-W1_mx7a-5Yu2_HykN6UKe4j8I22Mof0bpEoJkc2_-OiStehR5Vs-_PxS7EX1nhZKItN50sw9IhoxmCK0OkKUUEm0Vc9EXSZWVQ"/>
+<div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden bg-white/5 group relative cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Similar album cover 3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6MgdVDUMNMj3cpH3x86VzOC9jAWfWhUexdJj8jFXRzUsPlmr1PmVv48zsuylfYeZZUzBx62JvvcbLZbuG8TCFu6UEAMBokokJJs3vSTdPMzpSE4YR3mJ0xX2G2xkprZzoOYT7LQZg3fFNRct4v41nwwGxXkKI2x-uNrq7C98FIZsKoWAYmH2ixk_sXxO5U5dWbPJ2NFr3DKvd-RHwx3JK2d26XW8MGx-u4JTRDQLtHP7cSk13dJIoKOHHV560RXOlbsJtjxgeJ1M"/>
+<div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+</div>
+<button class="mt-4 text-xs font-bold text-primary flex items-center gap-1 hover:gap-2 transition-all">
+<span>Share this transmission</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</aside>
+</div>
+</div>
+<!-- Sticky Footer Playback Mockup (Minimal) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-6">
+<div class="glass-panel rounded-full px-6 py-3 flex items-center justify-between shadow-2xl border-white/10">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Mini album thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcPzH8UUHddZ0g8zny_xtW-2AQ3ZDIiifVzYcb61CSEb8y549SNv15vLgc888K-hwI6KjQCEo3raYVfQ-89cx7oxqZYWe7h0CtWZv73Bkj5oTjUQ_osoUJsbaxIZfGwtf52vWbgv-tUWP_C-FH4dQIrMuj6WhQLAWeRQGe0mgC4KG-9io5n0qiXnokbeWdNQCwmleEG6EUHQMgJerFpA0bzQIY7cPcr-tIVXizL68mJuqkgD_2XgmftIYS7doRTCzOLJQYQ9FFiw8"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold">Stellar Drift</span>
+<span class="text-[10px] text-slate-400">The Astral Voyager</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-400 hover:text-white">skip_previous</button>
+<button class="size-10 bg-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white fill-1">pause</span>
+</button>
+<button class="material-symbols-outlined text-slate-400 hover:text-white">skip_next</button>
+</div>
+<div class="hidden sm:flex items-center gap-4 w-32">
+<span class="text-[10px] font-mono text-slate-500">1:42</span>
+<div class="flex-1 h-1 bg-white/10 rounded-full relative">
+<div class="absolute left-0 top-0 h-full w-[40%] bg-primary rounded-full"></div>
+</div>
+<span class="text-[10px] font-mono text-slate-500">5:22</span>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-32 border-t border-white/5 py-12 px-6 bg-black/20">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 opacity-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-bold tracking-tighter">CosmicSound</span>
+</div>
+<div class="flex gap-8 text-sm">
+<a class="hover:text-primary transition-colors" href="#">Orbit Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Signal Support</a>
+<a class="hover:text-primary transition-colors" href="#">Frequency Log</a>
+</div>
+<p class="text-xs tracking-widest uppercase font-medium">© 2024 Starbound Media</p>
+</div>
+</footer>
+</body></html>

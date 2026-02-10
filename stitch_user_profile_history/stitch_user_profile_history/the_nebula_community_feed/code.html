@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Nebula Community Feed | CosmicSound</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0a0914",
+                    },
+                    fontFamily: {
+                        "display": ["Newsreader", "serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Newsreader', serif;
+        }
+        .nebula-gradient {
+            background: radial-gradient(circle at 50% -20%, #2513ec44 0%, transparent 50%),
+                        radial-gradient(circle at 0% 40%, #121022 0%, #0a0914 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 1.5rem;
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1024px) {
+            .masonry-grid { column-count: 2; }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 nebula-gradient min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-white/10 glass-card">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3">
+<div class="text-primary">
+<svg class="w-8 h-8" fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
+</svg>
+</div>
+<h1 class="text-2xl font-bold tracking-tight">CosmicSound</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide uppercase text-slate-400">
+<a class="hover:text-white transition-colors" href="#">Explore</a>
+<a class="text-white border-b-2 border-primary pb-1" href="#">Nebula</a>
+<a class="hover:text-white transition-colors" href="#">Library</a>
+<a class="hover:text-white transition-colors" href="#">Radio</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xl">search</span>
+<input class="bg-white/5 border-none rounded-full pl-10 pr-6 py-2 text-sm w-64 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-slate-500" placeholder="Search the cosmos..." type="text"/>
+</div>
+<div class="flex items-center gap-3 border-l border-white/10 pl-6">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-white leading-none">Lyra Nova</p>
+<p class="text-[10px] text-primary uppercase tracking-widest mt-1">Stellar Critic</p>
+</div>
+<div class="h-10 w-10 rounded-full bg-cover bg-center border border-white/20" data-alt="User avatar of a stylish digital artist" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDUkL4eFLEghX1WZ6A1-_bjlYoa5_lmg0MGdlj-JnP0LcqybYms3GVXK1NCOLymOVb_CwKVYfqzDE81Ga23Tjy6HdDNXN3RPlQ5QgtPhFz-aWmOJzRDFfr0g-cIngzhbC_HLCP5DmHwkYqLtPRaVdHCrubG0iqaWs4yq5j8rGsUdO7Ep62KBukkuJ_gsgiCmLIvQMZKjuYTmBaOQ2mPd8DipKJIqa8PCdiSk-GIMwLLa1GXVm5_92CqjuSpS1h3OSmRISUMhE4s2-U')"></div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-12">
+<!-- Hero Section & Tabs -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+<div>
+<h2 class="text-5xl font-extralight italic mb-2">The Nebula</h2>
+<p class="text-slate-400 text-lg max-w-xl">Curated frequencies and celestial critiques from the community's brightest minds.</p>
+</div>
+<div class="flex border-b border-white/10 gap-10">
+<a class="pb-4 text-white border-b-2 border-white font-medium" href="#">Trends</a>
+<a class="pb-4 text-slate-500 hover:text-slate-300 transition-colors" href="#">Recent</a>
+<a class="pb-4 text-slate-500 hover:text-slate-300 transition-colors" href="#">Popular</a>
+</div>
+</div>
+<!-- Popular Playlists Slider -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-2xl font-medium tracking-tight">Curation Clusters</h3>
+<div class="flex gap-2">
+<button class="p-2 rounded-full border border-white/10 hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-2 rounded-full border border-white/10 hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-6 overflow-x-auto pb-6 no-scrollbar">
+<!-- Collage Playlist Card 1 -->
+<div class="flex-none w-72 group cursor-pointer">
+<div class="grid grid-cols-2 grid-rows-2 gap-1 aspect-square rounded-xl overflow-hidden mb-4 group-hover:scale-[1.02] transition-transform duration-500">
+<div class="bg-cover bg-center" data-alt="Abstract blue cosmic swirl" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKyRkYyc83mj5UoU87GDYEj5ljrGG2IfS4R96RHgIULlMlV7vfFzHCXkX2o-4HvvKURDxETB26LMx1A6Q8FdGZGoZNoYTKkLpq0KhStObjt1zzpExq9ZCCoicrZ2BhCbseVRA8j0H2kAHc1RG40ykzxePfcEADINNfHpmDxfY86IYYfPLl3p5FM8x6Gmd3Ct7yAVHGVYAZDt-z_yFC-BMTmsK0ra4yZz2AwtQ2ZfnpDP_W8K81TNrXBzQLGLUCOuLtwAs66DxSAsE')"></div>
+<div class="bg-cover bg-center" data-alt="Golden nebulae clouds" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDxDiiuFkHe4LV0B7TMV4z4DdjE6R-K_N5Pw8wHM67v0n0dKOmt6tZtdWlUracOssYe9wLTxCtQd6XAmYafLaxvnFm0mh-anX7Js8H8p1T-qNdL8LPwvUdlc2JzjN3rU-8fpqkC5KZ-1q1oBrYghKO3efnZ7TuvcyC_R7bF_kqtyqkfmBu--QsUwXln1QG61pSIIe8WU01XHtcQZtebImU7WOaRvX9G_Vmqszq5gjmzERSp3LS_vybobEgnFxra4XoL2g795_fYMII')"></div>
+<div class="bg-cover bg-center" data-alt="Deep purple star field" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgh-7qpVStw0fYcDhQ0BaBn6EzztC-ySCNMTSuivimi4Nmmtx1--gqnAcfU95lC78dNdd3QhCLbYfa-7_n_VyMqYGmrhLgQvXt3CThjUjiyRa-L-rgY9b9_F0GazNEpUKqQGOa7VU9dovRjydjGYxk71Z6663ZmieDGrbhP6znb_Ph9uEIDuBLWRzSXU16RNY1PRuly9Y9TTDz3T3h8U3xQlUBRpuHSZwUjqtwsTsNNVgPz_dh2bz69pFqZLzCj3JkaT-9gpfa4dE')"></div>
+<div class="bg-cover bg-center" data-alt="Icy planetary rings" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBzFDEpsKGxxfmMvPJcXX7iNrja4WzCYL3XHXtZ7qFipt8ZMVtGbIeHb1KcG1pXGwJW-46Pgj9TdfqfobCrifXK6kavHPC2l_JZ1ZPezuAlMBpn-2hpQeVczO5XeTmhCIoLupoXqU3GWAZIXi243I6p5Ein99koDD5ofBq34t8yzb2o17ECARXDkF1DgCk3dbLPzRVsBOnPp2uxeJ3L2QVPrKVEHg55JSX40r6eI-35FkXcDNN3lMqCMnMHqY6UkY8vI5mrXHy9-Y4')"></div>
+</div>
+<h4 class="text-lg font-medium">Synthetic Dreams</h4>
+<p class="text-sm text-slate-500 italic">By Orion_Path • 12.4k listeners</p>
+</div>
+<!-- Collage Playlist Card 2 -->
+<div class="flex-none w-72 group cursor-pointer">
+<div class="grid grid-cols-2 grid-rows-2 gap-1 aspect-square rounded-xl overflow-hidden mb-4 group-hover:scale-[1.02] transition-transform duration-500">
+<div class="bg-cover bg-center" data-alt="Neon grid landscape" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBzBCsPUJxjzK8S2Wcm_Uud1CV9-2d0dcaUmi8n7r-TIawtTqnUUlgs-Gsu3oj-pq8TOeZdMGi5FewGAPcAZUyQTRRNmu5h_EwPlTKlCaSlH_-59Ydh5LSOAtZgxcZLD-pdNmTpzLmj9XTvbqQPfnBu8DESutig3CCUf1XdojAAKZMOnGMFIh9F5KS01nqtsPfwaIBxqqcBDh5Q8U-cI79Ej_V7I7nroXfREIpkirzhovuH2Lo8LP2HVCQW7N1h-Tej1EJJIIhndE')"></div>
+<div class="bg-cover bg-center" data-alt="Minimalist geometric moon" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0kld07vhXz8hEm5Oxypz_fUMGfP6JoHCsaQy9_Ni-iOn1oDRrop-Gy7CLvWzoZU34FLWOSCtnwT5zFsYVCt_UiqtOa5-UL5Wc6mTLPX-nuNoH6NmeCLYRhCUC6HI0tc26F4pj-m0hbq8_cq6KQBxElUjNy7VH_SDOXj8rPEwre4w5wvZwiwyab29Af8A-SImTZMfPoh00rKvkvThteHghw1vpILJyR9SJuUQC1r3SWO-t-INjt5YyTuQRcLBhFWkX6yHBjTGIdew')"></div>
+<div class="bg-cover bg-center" data-alt="Retro sci-fi poster art" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3YJKe0u8kfcxQPOH4gEcr_cTIKAziOgO_qwgAO8WAKuVjAbbz-SKDM_SJXJdjSrHv3t9ph4w785AzPZWS2VcpJAY1dvFsc4rkRfBvo6OptfgFE-VThxYRPk23LqJZUewzI9loaKyLTgGB2dOmxikpBmUUjAO7QdtcrD1lajcjrFzd3XUb66xmh-hSpLaoGgVazHJpLQCfKxjOT-BZ37MGsSKvMD7DkHg3BKw51Qwx595kFfwSmnw6okUdKTe-6t9xqZoKTP52Ryo')"></div>
+<div class="bg-cover bg-center" data-alt="Abstract sound wave pattern" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAyUV6BcDXuOkkIL6_xohEySrDjlXcZuE4al7vDl2NcYcEt4qeSd25rVJHNKgsU_T2S8Dn7OTAT3oQsioOZla3TZEissKto2Ktz32RtxOUaXrjw8KTp7TPz-owYIRjL8-BIOc7HAqUpGFZlVPrJBwpubjVIGHVJBz3ZHQn38tJaBeJoVpnJbuRFNBV1bm-VgexfCzK-tgZC2ulQ06AGH8pO5GD7UISWfiMHkZ0t489nVCD2OF24df3ej97ukbSa9ndxGO7VxV9rlrc')"></div>
+</div>
+<h4 class="text-lg font-medium">Void Echoes</h4>
+<p class="text-sm text-slate-500 italic">By Astra_C • 8.1k listeners</p>
+</div>
+<!-- Collage Playlist Card 3 -->
+<div class="flex-none w-72 group cursor-pointer">
+<div class="grid grid-cols-2 grid-rows-2 gap-1 aspect-square rounded-xl overflow-hidden mb-4 group-hover:scale-[1.02] transition-transform duration-500">
+<div class="bg-cover bg-center" data-alt="Soft pink gas cloud" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrpw6wiTIuV8jtQHB391qJ9Y_19r0AnLfkzA-vj4f3IQjPBoDm-FQgM_FzQZ97c8AlSA2Zh8pE00jw-htOaaSax0rAPGd9muJTJSiGBoRK4YTIFTUubcaYVwd00ifd10RKmGg-rNOEFziydQ7sPNFkRLyp4eeSbsXwVrSZ7XH0GT-C9xf1SfOyZRuGvcwBokpMC5M3WN_m6E2A62m3zi3pXYQLMRDvcpLXDIz7mRo9-RK1elt_XQznm8bgwilYFickh6pkxXaqX-c')"></div>
+<div class="bg-cover bg-center" data-alt="Digital glitch textures" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDygJpxn3k9Y5F6XtNIPK0NaWXzhK-UhyM5zrXMiURontuO6NLeAMl6RweuKShunbVhOTMCU5b_89eUW1uthYMs0ieO3Hipaba3JKm3wESuLwConORtPfRf-XaMaQLRTKrsGqHW6oevuX0efoxsl0mr1ZsRymuH162UMetctE0CEktug2v-s0eoH7SB7i61Q-PL4uv4Hq5mrad7UogzVsmY0t1714yRlv8sTO3n0ipaOjqCZAHV_WjuJR3iuFI4-swm1dE9UaZI09U')"></div>
+<div class="bg-cover bg-center" data-alt="Sparkling star clusters" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB8aSIxwW1v0e76kRLlJECObqss7kgmh4M-jDccUc6osqp6sgBdolztfq1bP7zMCmw4qpKAHnOsE_w5WmpHhJDNhKXTpC8BJZCEb06Azp1yuxAZ16hFrnuHBpFOnEKaI2QZ908bgnrK5A2paxjp0Cp1R-1L9RZVaIYOAbiV9eIyZNCsX-lX9PeXLsiiVNAtKBd6FCLJmmSO9DQPaMR64jQRL1A8OB_WhhYnAy9bRP9S0PuT9aA7s36S4DLMm3oUSBRbvaS8RFisQvw')"></div>
+<div class="bg-cover bg-center" data-alt="Dark matter visualization" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCb04V1QmZZ-Pa2OiXth0GL_q-DaLTfuTLPitLDB6Mh2gMJX_VWQc2yvxhvMVRA2rU3d8z782lyUyCsut7Y0sHqkNwSnO_0XT7gvhuhwa1vEGZD03CMLvu_QqNlWzYJiLlfS0PEn0s_zrVvvbN-Td9Gdhf8DW_Kp8o86aeviHpii3_yK3h-dbzED0hqwSsCCime5OcuEgBDdPhl65dOohP3ZXxMmrghAomud6j22DUXmWiHYocbOcGKfb8kLycPS0vCnY3sBiw7P3g')"></div>
+</div>
+<h4 class="text-lg font-medium">Solar Flux</h4>
+<p class="text-sm text-slate-500 italic">By Helios_Vibes • 32k listeners</p>
+</div>
+<!-- Collage Playlist Card 4 -->
+<div class="flex-none w-72 group cursor-pointer">
+<div class="grid grid-cols-2 grid-rows-2 gap-1 aspect-square rounded-xl overflow-hidden mb-4 group-hover:scale-[1.02] transition-transform duration-500">
+<div class="bg-cover bg-center" data-alt="Atmospheric thunder storm" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7kbURz5kIqcWgedRsoZSOJUE45AWnvpUPU2ifxulPczHIgXf249KXG9ZtVX5Hke3tjysfwkSDGiIDCcqFoyP0bxfK9J7Q-wCWrYXa-XbVCNY2WK8mTTDZ47oq_6Y3YhtSOyl7nlcc6-DCPhP8MJU29WIrt-P0zEGp8pWtiaQTk2RkEn5xzX8SzmJZYltua1dykhNS1_e7yLXSYf2z49mxYXihs984uyi2b8oM4gUJcvQkGz5r8512c2e9kWDXBptVIirFx7FCh90')"></div>
+<div class="bg-cover bg-center" data-alt="Liquid silver bubbles" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB6w-jcMecLhIZTEtojpYKgvD_cOUMRPySIBgiB3_oMqkx9SAnbhzUYsk0x07D4jACAPvWJLcy_OFGWYEBLbbMXW1FDGJeXq2J0Qt9u3Xgm-It6xUVcifipDI1-ocsYF9Kzd_2tyytSSa2mXZY9J5yvy2GH0_R-7hFINhRuaVMqmDVlAezERR1nDAivziJ84XHB3nU1eR8W07eBk3TgNgG8sAQZlerCwFSSvO_WeQ0GeB7RoJklJ4Ycr7wJXAoc1do4KbiQ37NTXO8')"></div>
+<div class="bg-cover bg-center" data-alt="Static noise art" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDp-3aszgGDkn7FZZfIEIbkuK99uwpXDg8BoD6hZ39LLSM3s-nQTggJPFNQOSphgyKkGOH-lztTTxjo36DmIHnUP8j9-9ezYDumaOf3jzg6A50mGmaYUFOtZlSCsaJZvsC512AYbKUUtxe9LLYGilTHH8s_5JB23XjAm1LlMh0FdsWA2qyf8tpy540sKs7dXdJkLb4n3XgKlWA4wocdSJW3LL14sugVsb3U5GPN6NOaDYde1zIxo2LsQ2YZfo3Aw5exrjG-48dNTgg')"></div>
+<div class="bg-cover bg-center" data-alt="Distant galaxy view" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDEOscpKhnlKDP3yCzzKNbpfV_0fYUHLxPDrQjfFIU6TsV520q886RimVGxJRtZghp_OYGgaFZcD9iJ3xvox7Up8PqpKayeAaxc5Jy0o6SOVg9Vswsc4w3h5ltM9IkUzRNYJlkYwdegtyKkJ-r8NxgZC7kIVVHXSEVHCd2XQ5YUqFlOSJcjGFNZv_0cSsdMaii5eikZRx7Vn_mr7XAULp3IBlPQcUV0RdYdVnN9vTnBqs7851yM4XeOT49rEsISWujIZnbZNRnaGxM')"></div>
+</div>
+<h4 class="text-lg font-medium">Deep Gravity</h4>
+<p class="text-sm text-slate-500 italic">By Event_Horizon • 5.5k listeners</p>
+</div>
+</div>
+</section>
+<!-- Featured Reviews Grid -->
+<section class="mb-20">
+<h3 class="text-2xl font-medium tracking-tight mb-8 italic">Featured Critiques</h3>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Large Review Card 1 -->
+<div class="glass-card rounded-2xl p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/10 blur-[80px] rounded-full"></div>
+<div class="shrink-0 flex flex-col items-center">
+<div class="h-28 w-28 rounded-full border-2 border-primary p-1">
+<div class="h-full w-full rounded-full bg-cover bg-center" data-alt="Portrait of a music critic" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDi0n6JBoAZ5Me9SC5Eq38QOspY5N5UJDzTTRY8iW9ISwk2LXIt4k8tjRpnYm7Sa9hk1jjTOhLPZDcbRhdWRE0A5qPHm_NaGq3AlIisGAhHJv78XP3evMewm_o7iPE5Mqw9Wlrmdnr44k3vWXwLjxT6Sx0PZuGhox4FG5lV20LpR4Pdvwbr026WgdP3T_Mk_nYqLYbxbgQRfl1ofxBiF0rS2c8Z5xE6uvpPTvY1kv99mCpirs1xFNpvIPfqzOEbk_9IbMElkTeXrXc')"></div>
+</div>
+<p class="mt-4 font-bold text-sm tracking-widest text-primary uppercase">C. Vesper</p>
+<p class="text-[10px] text-slate-500">LEVEL 84 • NOVA</p>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1 mb-3 text-primary">
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined">star_half</span>
+</div>
+<h4 class="text-3xl font-medium leading-tight mb-4">"The Weight of Light" by Stellar Drift is a monumental achievement in dark-ambient textures.</h4>
+<p class="text-slate-400 leading-relaxed mb-6 font-light">
+                            A sonic exploration that defies gravitational pull. Each track feels like a slow descent into a white dwarf, heavy but inexplicably brilliant. The layering of granular synths against cello provides a juxtaposition that few artists manage this year...
+                        </p>
+<div class="flex items-center justify-between pt-4 border-t border-white/10">
+<span class="text-xs text-slate-500 uppercase tracking-widest">Read Full Critique</span>
+<div class="flex gap-4">
+<span class="flex items-center gap-1 text-slate-400 text-sm"><span class="material-symbols-outlined text-sm">favorite</span> 2.4k</span>
+<span class="flex items-center gap-1 text-slate-400 text-sm"><span class="material-symbols-outlined text-sm">chat_bubble</span> 182</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Large Review Card 2 -->
+<div class="glass-card rounded-2xl p-8 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/10 blur-[80px] rounded-full"></div>
+<div class="shrink-0 flex flex-col items-center">
+<div class="h-28 w-28 rounded-full border-2 border-slate-500 p-1">
+<div class="h-full w-full rounded-full bg-cover bg-center" data-alt="Portrait of a modern producer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDHzpoFHpkBMGRXoZaNVbppzWJ8HGb9z0LTFUzwJMiRFHksWFRt_rKQYjBLdNaOK0hgHwPTvkAREKWiNajn5EVzoog2_qugSbozFtmmmDvHcOjpquZR7fMJ5FKw_mPZGM7VB9fBInbDitTO-g1ne-GKDKto4afv_i_d4tWaWMFMc_24Qjqbhv7x4EG4rzzPGjEotM2-DifSs1FjvRlH9m8Qp8TI4MiEnIBPqAuS-5QWh53PLIefAtQuvO3_uoFULQ5k7jgNL2MZoZw')"></div>
+</div>
+<p class="mt-4 font-bold text-sm tracking-widest text-slate-300 uppercase">M. Kaelo</p>
+<p class="text-[10px] text-slate-500">LEVEL 67 • PULSE</p>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1 mb-3 text-primary">
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+<span class="material-symbols-outlined fill-1">star</span>
+</div>
+<h4 class="text-3xl font-medium leading-tight mb-4">A chaotic masterpiece: Exploring the sub-bass frequencies of the 'Nebula Core'.</h4>
+<p class="text-slate-400 leading-relaxed mb-6 font-light">
+                            The community's latest collaboration is more than just a playlist—it's a shared hallucination. From the opening glitch rhythms to the soaring choir finales, the flow is impeccable. This is why we curate together...
+                        </p>
+<div class="flex items-center justify-between pt-4 border-t border-white/10">
+<span class="text-xs text-slate-500 uppercase tracking-widest">Read Full Critique</span>
+<div class="flex gap-4">
+<span class="flex items-center gap-1 text-slate-400 text-sm"><span class="material-symbols-outlined text-sm">favorite</span> 1.8k</span>
+<span class="flex items-center gap-1 text-slate-400 text-sm"><span class="material-symbols-outlined text-sm">chat_bubble</span> 94</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Masonry Feed Section -->
+<section>
+<h3 class="text-2xl font-medium tracking-tight mb-8 italic">Community Pulse</h3>
+<div class="masonry-grid">
+<!-- Feed Item 1 (Image Focus) -->
+<div class="masonry-item glass-card rounded-xl overflow-hidden p-0">
+<div class="aspect-[4/5] bg-cover bg-center" data-alt="Breathtaking Hubble telescope image of a nebula" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAMqvMfqv15tV0Xg1WpJEGdJ5sz-RNoe2LxEgKIPpLI1uWFkgbbY9JZ6DXW_YZ9_yYwMH3P02hwSW-4SGpYyPG3B07RRulsR-o78f2abWqQQhJrXBNlEjwetueegdeFZyKdRqQvIuS5EOKO05ayje34UZbRql-xYJAZQbm2iSd_0bmjLVeOpTfvwj5aDtig_C-T5x5q7LXLvxUwNcqN8yKy5En9myjQ3Aiw-e_Np63asq25xPvePcCqTaivq7rsCrzyKo37bzmj-pY')"></div>
+<div class="p-6">
+<div class="flex items-center gap-3 mb-4">
+<div class="h-8 w-8 rounded-full bg-cover bg-center" data-alt="Avatar of user SkyWatcher" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD6YAY0aMGDxtWCZ9oyFF4xklyXV0y9Sz8T4BppwDCtLKRdhHlrSLdJExbh-UZKOL3Pq7MKGFkrVTJIcIOtdSVHOThiVZM3rX2e4eOhR6kRU7ZXORXzgDETIbQFJpfien2Oa6BWMUw4Zv_tOV8WjB_iFw9h42qmXfXi8T7EPZc8rJ1W3m048SKWS2kRBJRHbkHKRhgcGdBcNlSsjd4YyXLLGbDwQjw9cDMCLOmwwN6Jnz8XIPaziRI2Mts40yMijt2vkp6llQ3xEpM')"></div>
+<span class="text-sm font-medium">SkyWatcher</span>
+<span class="text-[10px] text-slate-500 ml-auto">2h ago</span>
+</div>
+<p class="text-slate-300 text-sm leading-relaxed mb-4">"Listening to 'Andromeda Strains' while looking at these high-res captures. It's a vibe."</p>
+<div class="flex gap-2">
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] uppercase tracking-wider">#SpaceAmbient</span>
+<span class="px-2 py-1 rounded bg-white/5 text-[10px] uppercase tracking-wider">#Cosmos</span>
+</div>
+</div>
+</div>
+<!-- Feed Item 2 (Text Update) -->
+<div class="masonry-item glass-card rounded-xl p-6">
+<div class="flex items-center gap-3 mb-6">
+<div class="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm">broadcast_on_home</span>
+</div>
+<span class="text-sm font-bold tracking-widest uppercase">System Broadcast</span>
+</div>
+<h5 class="text-xl font-medium mb-2 italic">New Stellar List Available</h5>
+<p class="text-slate-400 text-sm mb-6">"The Solar Winds" has been updated with 12 new tracks from emerging galactic producers.</p>
+<button class="w-full py-3 bg-primary text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:brightness-110 transition-all">Listen Now</button>
+</div>
+<!-- Feed Item 3 (Small Review) -->
+<div class="masonry-item glass-card rounded-xl p-6">
+<div class="flex items-center gap-3 mb-4">
+<div class="h-8 w-8 rounded-full bg-cover bg-center" data-alt="Avatar of user J_Nova" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB9pGfNXCnK18IPX1Lp6L63pn8zszJK2QjUeNKG6g-TKTEX7tQq4Sxsn-BJHxOXaXovAqxjhR582TfpZGgdF7x4GICnW_H591OT3OynMrb7MlXPE6AQwmqz9SJ1Ehgatr83LpGeNF9iLDiST3kXTe5SNI1FvBq_Alj8htBOzLptbedlA5zseNGm3M78WFXWG3F41kuYeB1g4oZBr00awJmFOmc8FdsNPdvyOzFBO9YmfExWESh8KEqNeAhLLyhlU07Y7Mb2XwRws8A')"></div>
+<span class="text-sm font-medium">J_Nova</span>
+<div class="flex text-primary text-[10px] ml-auto">
+<span class="material-symbols-outlined text-[12px] fill-1">star</span>
+<span class="material-symbols-outlined text-[12px] fill-1">star</span>
+<span class="material-symbols-outlined text-[12px] fill-1">star</span>
+<span class="material-symbols-outlined text-[12px] fill-1">star</span>
+</div>
+</div>
+<p class="text-lg mb-4 italic">"The reverb tails on 'Titan Dawn' are actually infinite. Incredible engineering."</p>
+<div class="flex items-center gap-2 p-3 bg-white/5 rounded-lg">
+<div class="w-10 h-10 bg-slate-800 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500">music_note</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold">Titan Dawn</p>
+<p class="text-[10px] text-slate-500">Saturnine Collective</p>
+</div>
+<span class="material-symbols-outlined text-slate-400">play_circle</span>
+</div>
+</div>
+<!-- Feed Item 4 (Image Focus) -->
+<div class="masonry-item glass-card rounded-xl overflow-hidden p-0">
+<div class="aspect-video bg-cover bg-center" data-alt="Close up of a futuristic modular synthesizer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCHvhEDazWYGUexnVArOzhJPNzBehue6XtTn-ezz2fs2dJUk6BPt9UoWdI25mLUgWz1sSxpJpL3cP5WfY8c_viJYQ_FEbu9UwyjsqMoNImIc-GAeaS67XPyxHemMFQrKKRgV5RPCgjpaw-pHYR8gEbujfYPH0tAmgifSXYrqFW1dT5-xRXBk5ELs79fE_7OrlxzjuL5Xi54qOLiDe4E_yCdnrDqh9p4kAjn9muelfnLKouUxog-0eeXdHyjlfYJ547taRorBSyxOC4')"></div>
+<div class="p-6">
+<div class="flex items-center gap-3 mb-4">
+<div class="h-8 w-8 rounded-full bg-cover bg-center" data-alt="Avatar of user PatchCable" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDFeCnQ_46PR6b1yAR4HpLSey6Qa_BXhkASyxYOeEo-ijKjF-KYJnNZ5kterBlIrSzi9YV864fjxW3MlPTaUgsKJIQWBQw78r15OCxw0hBcs0qc-zUWHkv3Hgouu5MGpHJrKv1AIatyDC4pD7GgzKQAzNVt-xdD71JvFHNukHjgrtTx593uyH3dmKPMZNvIVSDCOGs9tvSt6L1RoVPADGzyE29qV1iQr57IV86xsqnEyRD4Pcc7TA1SF21z1xNPhww_SnxYqj6lBu0')"></div>
+<span class="text-sm font-medium">PatchCable</span>
+<span class="text-[10px] text-slate-500 ml-auto">5h ago</span>
+</div>
+<p class="text-slate-300 text-sm leading-relaxed mb-4">New modular patch day. Trying to recreate the sound of Voyager 1 crossing the heliopause.</p>
+<div class="flex gap-4 border-t border-white/10 pt-4">
+<span class="flex items-center gap-1 text-slate-400 text-[10px]"><span class="material-symbols-outlined text-[12px]">favorite</span> 512</span>
+<span class="flex items-center gap-1 text-slate-400 text-[10px]"><span class="material-symbols-outlined text-[12px]">chat_bubble</span> 42</span>
+<span class="flex items-center gap-1 text-slate-400 text-[10px]"><span class="material-symbols-outlined text-[12px]">share</span> 15</span>
+</div>
+</div>
+</div>
+<!-- Feed Item 5 (Simple List) -->
+<div class="masonry-item glass-card rounded-xl p-6">
+<h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Upcoming Live Sessions</h5>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-medium">Cosmic Jam #12</p>
+<p class="text-[10px] text-primary">LIVE IN 20 MINS</p>
+</div>
+<button class="px-3 py-1 bg-primary/20 text-primary text-[10px] font-bold rounded">JOIN</button>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-medium">Lunar Synth Workshop</p>
+<p class="text-[10px] text-slate-500">TOMORROW 18:00</p>
+</div>
+<button class="px-3 py-1 bg-white/5 text-slate-500 text-[10px] font-bold rounded">REMIND</button>
+</div>
+</div>
+</div>
+<!-- Feed Item 6 (Review) -->
+<div class="masonry-item glass-card rounded-xl p-6">
+<div class="flex items-center gap-3 mb-4">
+<div class="h-8 w-8 rounded-full bg-cover bg-center" data-alt="Avatar of user Lyra" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC5RLV5alwkug7b7c04BHaBi1oYrr3XSMUayqyifcfiRn4AoG608t43ACNuksudAG6F4bBYuynEBX0WrcEFrjesz8suOLDnG4N19ij8SJEa-MtC0E3DDjEyqz-2LGlI6eGdbTGszK0OP5H05dNLAozOouzxqPlv6zvJ6AQUDDlt_AfXTiOwSEzHOLzfNKmfAGN3fEcNupV3uZURG5NFv4oEntGI8wKsbGKxiaNArKQ9g537RkGVDrb1oTGpwEnEMMppV0HDBkp_KnE')"></div>
+<span class="text-sm font-medium">Lyra</span>
+<span class="text-[10px] text-slate-500 ml-auto">8h ago</span>
+</div>
+<p class="text-slate-300 text-sm leading-relaxed italic border-l-2 border-primary pl-4 py-1">"I found the missing frequency in my life. It was 432Hz all along. The new 'Zenith' pack is therapeutic."</p>
+</div>
+</div>
+</section>
+<!-- Loading More indicator -->
+<div class="flex flex-col items-center py-20">
+<div class="w-1 h-12 bg-gradient-to-b from-primary to-transparent"></div>
+<button class="mt-4 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 hover:text-white transition-colors">Descending deeper into the cosmos</button>
+</div>
+</main>
+<!-- Global Music Player (Minimalist Overlay) -->
+<div class="fixed bottom-0 left-0 right-0 h-1 bg-white/10 z-[60]">
+<div class="h-full bg-primary w-1/3 shadow-[0_0_15px_#2513ec]"></div>
+</div>
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] glass-card px-8 py-3 rounded-full flex items-center gap-8 shadow-2xl">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded bg-cover bg-center" data-alt="Currently playing album art" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAuuaTrguMmaxb-cMCo7pI79XwTxFraWGuACHv1mgfTFOsbR2P8PSfD7FqFbjqnHv_yDKfpBUIb89zSvDkoGUggTDeUW7-6mcwQ_1CYGeu1OyRmxP9QmG7dbrTxlkeFq8PtQaO2HBy5C2WNOuuszrUbu4rE0G2otACSd9fdz1Fp8N6eF7R2zB43_ZJtTRXmwnF90LDD0fL6ZiFQcpW7UTIKYmJ369zuyeBjZwloIgVOS95DIYfreL6VlzfyPqcLvOBM5YyVSZx8qE')"></div>
+<div class="hidden sm:block">
+<p class="text-[10px] font-bold text-white leading-none">Interstellar Overdrive</p>
+<p class="text-[8px] text-slate-500">Pink Floyd (Nebula Remix)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 hover:text-white cursor-pointer text-xl">skip_previous</span>
+<span class="material-symbols-outlined text-white hover:text-primary cursor-pointer text-3xl">play_circle</span>
+<span class="material-symbols-outlined text-slate-400 hover:text-white cursor-pointer text-xl">skip_next</span>
+</div>
+<div class="hidden md:flex items-center gap-3 text-slate-400">
+<span class="material-symbols-outlined text-lg">volume_up</span>
+<div class="w-20 h-1 bg-white/10 rounded-full overflow-hidden">
+<div class="w-2/3 h-full bg-white"></div>
+</div>
+</div>
+</div>
+</body></html>

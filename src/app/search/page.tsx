@@ -1,0 +1,55 @@
+import Link from "next/link";
+import { Search as SearchIcon, ArrowLeft } from "lucide-react";
+import SearchResults from "./SearchResults";
+
+export default async function SearchPage({
+    searchParams,
+}: {
+    searchParams: { q?: string };
+}) {
+    const query = searchParams.q || "";
+
+    // Fetch from our local API
+    let localResults = [];
+    if (query) {
+        try {
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+            const res = await fetch(`${baseUrl}/api/songs?q=${encodeURIComponent(query)}&limit=50`, {
+                next: { revalidate: 3600 }
+            });
+            const data = await res.json();
+            localResults = data.songs || [];
+        } catch (err) {
+            console.error("Search fetch failed", err);
+        }
+    }
+
+    return (
+        <main className="min-h-screen pt-32 pb-20 px-6 max-w-7xl mx-auto bg-background-dark">
+            <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-primary transition-colors mb-8">
+                <ArrowLeft size={18} /> Volver al Inicio
+            </Link>
+
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                <div>
+                    <h1 className="text-white text-4xl md:text-6xl font-black mb-4">Mapa de la Galaxia</h1>
+                    <p className="text-gray-400 text-lg">
+                        {query ? `Explorando resultados para "${query}"` : "Explora el cosmos musical"}
+                    </p>
+                </div>
+
+                <form action="/search" className="relative group min-w-[300px]">
+                    <input
+                        name="q"
+                        defaultValue={query}
+                        placeholder="Buscar en el cosmos..."
+                        className="w-full h-12 pl-12 pr-6 rounded-full bg-white/5 border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                    />
+                    <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
+                </form>
+            </div>
+
+            <SearchResults initialResults={localResults} query={query} />
+        </main>
+    );
+}

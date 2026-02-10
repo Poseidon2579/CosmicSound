@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Core Settings - CosmicSound</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121022",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .glass-card {
+            background: rgba(42, 40, 57, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .cosmic-glow {
+            box-shadow: 0 0 20px rgba(37, 19, 236, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(159, 157, 185, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen selection:bg-primary selection:text-white">
+<!-- Background Cosmic Accents -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-violet-600/10 blur-[100px]"></div>
+</div>
+<div class="flex h-screen overflow-hidden">
+<!-- Navigation Sidebar (Left Pane) -->
+<aside class="w-72 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/5 bg-white/50 dark:bg-black/20 backdrop-blur-md">
+<div class="p-8 flex items-center gap-3">
+<div class="size-10 bg-primary rounded-full flex items-center justify-center cosmic-glow">
+<span class="material-symbols-outlined text-white">auto_awesome</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">CosmicSound</h1>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto custom-scrollbar">
+<div class="px-4 py-2 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">General</div>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full bg-primary/10 text-primary font-semibold" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Public Profile</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 transition-all" href="#">
+<span class="material-symbols-outlined">manage_accounts</span>
+<span>Account Settings</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 transition-all" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span>Privacy &amp; Safety</span>
+</a>
+<div class="pt-6 px-4 py-2 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Experience</div>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 transition-all" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span>Notifications</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 transition-all" href="#">
+<span class="material-symbols-outlined">palette</span>
+<span>Appearance</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 transition-all" href="#">
+<span class="material-symbols-outlined">security</span>
+<span>Security Center</span>
+</a>
+</nav>
+<div class="p-6 border-t border-slate-200 dark:border-white/5">
+<button class="flex items-center gap-3 w-full px-4 py-3 rounded-full text-red-500 hover:bg-red-500/10 transition-all font-medium">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</button>
+</div>
+</aside>
+<!-- Main Settings Area (Right Pane) -->
+<main class="flex-1 overflow-y-auto custom-scrollbar bg-background-light/30 dark:bg-transparent">
+<div class="max-w-4xl mx-auto px-8 py-12 md:px-16 lg:px-24">
+<!-- Header -->
+<div class="flex items-end justify-between mb-12">
+<div>
+<h2 class="text-4xl font-bold tracking-tight mb-2">System Core</h2>
+<p class="text-slate-500 dark:text-slate-400">Manage your cosmic identity and visibility across the galaxy.</p>
+</div>
+<button class="flex items-center gap-2 px-6 py-2 rounded-full border border-slate-300 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-sm font-semibold">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                        View Public Profile
+                    </button>
+</div>
+<!-- Profile Section -->
+<section class="space-y-10">
+<!-- Avatar Upload -->
+<div class="glass-card p-8 rounded-xl flex items-center gap-8">
+<div class="relative group cursor-pointer">
+<div class="size-32 rounded-full bg-slate-200 dark:bg-white/10 overflow-hidden border-4 border-white/5 cosmic-glow">
+<img alt="Profile Avatar" class="w-full h-full object-cover" data-alt="Abstract colorful cosmic nebula pattern avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvxuCVd3G5JGKIHoaRfih8a0GZBLtDJIjygYNxjk8hIsHv6t7nu5T6w9O_pJeT7CYu2zogacSTW1hTL_pATeYrL1eW3nNrSOlHCqJQPOHokQJVGku7-p4o6bklURx9mCjDpfu83qBDOKQmFKCquSZqNrY3o-WY3z6MGF4_yMsBfS4Mlggc8sepgJdpE1HFhdRr-zvbFSzAwwYm6L3JTpppTT6OQCZer42lWbXKAbmSFgHZOXf0yiS6T1TDH-o35IEl6gnrqtsQ6SA"/>
+</div>
+<div class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+<span class="material-symbols-outlined text-white">photo_camera</span>
+</div>
+</div>
+<div class="flex-1">
+<h3 class="text-xl font-bold mb-1">Avatar Nebula</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Recommended size: 400x400px. Supports JPG, PNG, or GIF.</p>
+<div class="flex gap-3">
+<button class="px-5 py-2 bg-primary rounded-full text-white text-sm font-bold hover:opacity-90 transition-all">Upload New</button>
+<button class="px-5 py-2 rounded-full border border-slate-300 dark:border-white/10 text-sm font-bold hover:bg-slate-100 dark:hover:bg-white/5 transition-all">Remove</button>
+</div>
+</div>
+</div>
+<!-- General Info Form -->
+<div class="space-y-6">
+<h4 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">edit_note</span>
+                            Public Identity
+                        </h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Display Name</label>
+<input class="w-full h-14 bg-white dark:bg-white/5 border-none rounded-full px-6 focus:ring-2 focus:ring-primary text-white transition-all placeholder:text-slate-600" type="text" value="Commander Nova"/>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Cosmic ID (@handle)</label>
+<input class="w-full h-14 bg-white dark:bg-white/5 border-none rounded-full px-6 focus:ring-2 focus:ring-primary text-white transition-all placeholder:text-slate-600" type="text" value="nova_explorer"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Transmission Bio</label>
+<textarea class="w-full bg-white dark:bg-white/5 border-none rounded-xl p-6 focus:ring-2 focus:ring-primary text-white transition-all placeholder:text-slate-600 resize-none" placeholder="Share your cosmic frequency with the galaxy..." rows="3">Surfing through the synth-waves of the Andromeda galaxy. Explorer of experimental frequencies and cosmic jazz.</textarea>
+</div>
+</div>
+<!-- Social Links -->
+<div class="space-y-4">
+<h4 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">link</span>
+                            Space Links
+                        </h4>
+<div class="space-y-3">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-white dark:bg-white/5 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined">language</span>
+</div>
+<input class="flex-1 h-12 bg-white dark:bg-white/5 border-none rounded-full px-6 focus:ring-2 focus:ring-primary text-sm" placeholder="Personal Website" type="url"/>
+</div>
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-white dark:bg-white/5 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined">music_note</span>
+</div>
+<input class="flex-1 h-12 bg-white dark:bg-white/5 border-none rounded-full px-6 focus:ring-2 focus:ring-primary text-sm" placeholder="SoundCloud / Spotify Link" type="url"/>
+</div>
+</div>
+</div>
+<!-- Privacy Toggles -->
+<div class="space-y-6 pt-6">
+<h4 class="text-lg font-bold flex items-center gap-2 border-t border-slate-200 dark:border-white/5 pt-10">
+<span class="material-symbols-outlined text-primary">visibility</span>
+                            Privacy Settings
+                        </h4>
+<div class="space-y-2">
+<!-- Toggle 1 -->
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+<div>
+<p class="font-bold">Public Discoverability</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">Allow other explorers to find you in search results.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-slate-300 dark:bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Toggle 2 -->
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+<div>
+<p class="font-bold">Show Listening History</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">Display your current frequency to followers.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-slate-300 dark:bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Toggle 3 -->
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+<div>
+<p class="font-bold">Sync Across Multiverse</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">Keep settings consistent across all connected devices.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-slate-300 dark:bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Sticky Save Bar -->
+<div class="sticky bottom-8 py-4 z-20">
+<div class="glass-card p-4 rounded-full flex items-center justify-between shadow-2xl">
+<p class="text-sm text-slate-400 ml-6 hidden md:block">Unsaved changes detected</p>
+<div class="flex gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-8 py-3 rounded-full border border-slate-300 dark:border-white/10 font-bold text-sm hover:bg-slate-100 dark:hover:bg-white/5 transition-all">Discard</button>
+<button class="flex-1 md:flex-none px-12 py-3 rounded-full bg-primary text-white font-bold text-sm cosmic-glow hover:opacity-90 transition-all">Save Changes</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

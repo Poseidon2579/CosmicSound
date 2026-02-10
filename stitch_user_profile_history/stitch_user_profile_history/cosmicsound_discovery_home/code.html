@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CosmicSound Discovery Home</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121022",
+                        "surface-dark": "#1c1c2e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2839; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d3b54; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden transition-colors duration-300">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-hidden">
+<!-- Background Ambient Gradients -->
+<div class="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-[#2513ec]/20 via-[#121022]/50 to-transparent pointer-events-none z-0"></div>
+<div class="absolute top-[-200px] right-[-100px] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+<div class="layout-container flex h-full grow flex-col z-10">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/5 bg-background-dark/80 backdrop-blur-md px-10 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary">
+<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">CosmicSound</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Discover</a>
+<a class="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Reviews</a>
+<a class="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Community</a>
+<a class="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Profile</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em] shadow-[0_0_20px_rgba(37,19,236,0.5)]">
+<span class="truncate">Log In</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 justify-center py-5 px-4 md:px-10 lg:px-40">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<!-- Hero / Search Section -->
+<div class="@container mb-12 mt-8">
+<div class="flex flex-col gap-6 items-center justify-center py-12 relative">
+<!-- Decorative elements around search -->
+<div class="absolute inset-0 flex justify-center items-center pointer-events-none">
+<div class="w-[80%] h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+</div>
+<div class="flex flex-col gap-4 text-center z-10 max-w-2xl">
+<h1 class="text-white text-5xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
+                                    Explore the Universe of Sound
+                                </h1>
+<p class="text-gray-400 text-lg font-normal leading-normal">
+                                    Discover new dimensions of music, curated by AI and the community.
+                                </p>
+</div>
+<label class="group relative flex flex-col min-w-40 h-16 w-full max-w-[600px] mt-4 z-20">
+<div class="absolute -inset-0.5 bg-gradient-to-r from-pink-500 to-primary rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+<div class="relative flex w-full flex-1 items-stretch rounded-xl h-full bg-background-dark/80 backdrop-blur-xl border border-white/10 shadow-2xl">
+<div class="text-gray-400 flex items-center justify-center pl-5">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden bg-transparent text-white focus:outline-none placeholder:text-gray-500 px-4 text-base font-medium" placeholder="Search for a song, artist, or music video..." value=""/>
+<div class="flex items-center justify-center pr-2">
+<button class="flex items-center justify-center rounded-lg h-10 px-5 bg-white/10 hover:bg-white/20 text-white text-sm font-bold transition-all">
+                                            Search
+                                        </button>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Trends Carousel -->
+<section class="mb-16">
+<div class="flex items-center justify-between px-2 pb-5">
+<h2 class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">Trending Now</h2>
+<div class="flex gap-2">
+<button class="size-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white transition">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</button>
+<button class="size-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white transition">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="flex w-full overflow-x-auto pb-4 gap-6 scrollbar-hide">
+<!-- Trend Item 1 -->
+<div class="group flex flex-col gap-3 min-w-[160px] cursor-pointer">
+<div class="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Abstract dark nebula space background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDHm4XvqlzZopVvinOWqVLIKrJewxx4e3jtk_IyUWWKoWvMZ3-O1jGAIm2_czAQHh2tWfOHsgEwMnx1L10La6CIX2bBx6qPYtl6WWDit1Qg8GFtvgzn1ckk5muAEm3CJzfPM6LfvLY4Pt04gE_ljhyeHFvnhwVSCrl8MlocQKp8POMfVjNiKJ7zGFa0NsPtohQzQQ8n_qKE7nvsHM42jbcpZ33m3PRJ2CBeo0lrAuvJTqMWFbPvvbqXZGLEC9xBZ9OEXCCHvgg8W3M");'></div>
+</div>
+<div>
+<p class="text-white text-sm font-semibold leading-tight">Nebula Beats</p>
+<p class="text-gray-500 text-xs mt-1">Electronic • 12k plays</p>
+</div>
+</div>
+<!-- Trend Item 2 -->
+<div class="group flex flex-col gap-3 min-w-[160px] cursor-pointer">
+<div class="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Stars and milky way galaxy" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAfq6XAYFJt4uB0eyqn0S7T0ylDe1eLyq_N66eFV2UNrz10ieFkpshPHfqWSSQ-4Xeerd_Xiw95nyvKAUHwUNH-hJ6FARcvLOPv51tEkj4WuhjwrRCqntXBDudC0l13Z7PDIojzbeixlsn5B0MGknIvauDxT5n7NVksXqMiPP8bVRmcarSQ9wqdUn4jMPFFfaQkYsgnJC_dwM9Zy-gyzKsaG9qWjlHJMzTgeC25b_F7Rj7VIwDRBnQfXFx5cSjcjSs6Y1piPqD3lr0");'></div>
+</div>
+<div>
+<p class="text-white text-sm font-semibold leading-tight">Starlight Vox</p>
+<p class="text-gray-500 text-xs mt-1">Ambient • 8.5k plays</p>
+</div>
+</div>
+<!-- Trend Item 3 -->
+<div class="group flex flex-col gap-3 min-w-[160px] cursor-pointer">
+<div class="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Geometric light patterns in dark" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAWj-YJgnCQlX3dnOXXEj9QP-WcnX_CwVXNS4yJoq6YYiZBUB2ATb9NXKYmFecAAH9ie1NixPN3cmAjB-sawBz-CdNcCsHaWqBKYwFS0SbZk3MMCTjI0wHjq4Fm2EAWG3ILAHbJ7yt8ShDd3qRykGjbqZlUqRVxtLGTEbPdM8gwal4FP6B5w7Q4kcTMLTaOSFtGK7J_mnOeYs4gY1FyZjv7H88BnolgbtF9_4XxvCDqiTW-x_t779u0wkfzRS1-u5a71Cft-ukLzeA");'></div>
+</div>
+<div>
+<p class="text-white text-sm font-semibold leading-tight">Waveform</p>
+<p class="text-gray-500 text-xs mt-1">Synthwave • 22k plays</p>
+</div>
+</div>
+<!-- Trend Item 4 -->
+<div class="group flex flex-col gap-3 min-w-[160px] cursor-pointer">
+<div class="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Purple neon lights smoke" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAP5IXWJ-XUK3xVS5JQJxB8rE-A9vule99tjiv5Gx45otYLte58ThkEHa-Sg-MVPoVa8KAnOFKCeutxhIV9fQEpNFUbq60mFwLiAZcKxhvwoB3ocMFIWWp-iDhD84krLQf_ltGdi8mm-eazoW_5Aeh14EIXLXGchnIq2CI9_D2FCe_wIQBO8WQyGj0LNDe0sAQQFPK5ZCGPkuT_8pC8-DjyeRANyqCEnaKAumHYVK-K02PErbkHp5f3gdRajkyZs3PGim91mE7mi1w");'></div>
+</div>
+<div>
+<p class="text-white text-sm font-semibold leading-tight">Synth Cosmos</p>
+<p class="text-gray-500 text-xs mt-1">Lo-Fi • 5k plays</p>
+</div>
+</div>
+<!-- Trend Item 5 -->
+<div class="group flex flex-col gap-3 min-w-[160px] cursor-pointer">
+<div class="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Abstract colorful light streaks" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDofKiIiI68aKfktRw9QHGhUX2I2tfe7t2v2KqHyAF45qVQ-9rkngn14VSVMPhN7TJSfgOTmih7k0DKQy7t6kjjC7cs1ap4xLKqPkXL-ICdLcA0ASS9ZVGEhSlatf5k4gyaTAV2awQSvUmn1KoDfl1ZJ-I5sF7ABM0PsCQGNJdHD8rwOB9Re-LnQYH22tNKDnEyaax7mbUJU4tpubpSK2BxULqIMG7fbZ1e5V2gerXriSoCOz1Xta0lgmvhnpil2FOs8G9c31ifd88");'></div>
+</div>
+<div>
+<p class="text-white text-sm font-semibold leading-tight">Planet Rock</p>
+<p class="text-gray-500 text-xs mt-1">Rock • 18k plays</p>
+</div>
+</div>
+<!-- Trend Item 6 -->
+<div class="group flex flex-col gap-3 min-w-[160px] cursor-pointer">
+<div class="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Deep blue abstract water texture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDCGw3hXpgKg9vrh4lvnJE9kvofdDi_XMKwY5_QPw6WJ1hHx3iyZLsV2wbi4pv4A14afU2hW_9C7kXvJU8ekG9Nk-EHF1uL8KqQEM0YlWNSRz7VSm_j66P8xwQ-ktcBgPkK_o7maUKPuRKapCuj5j7MUGNUTqYx2wONr24UtZP3YgwUrN8kFY8WsGFkIWuEBTCYartQ1o8selsRwNdlMXlRMOC1gIPHvYKDUCM-QyD0zsHiIwfKaDEAkv8QQCB2a_Ic9vdASHJQqU8");'></div>
+</div>
+<div>
+<p class="text-white text-sm font-semibold leading-tight">Deep Dive</p>
+<p class="text-gray-500 text-xs mt-1">House • 9k plays</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content Grid: Recommendation + Activity Feed -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
+<!-- Recommendation of the Day (Left / Top) -->
+<div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-5">
+<h2 class="text-white text-2xl font-bold leading-tight tracking-[-0.015em] flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+                                Recommendation of the Day
+                            </h2>
+<div class="relative overflow-hidden rounded-xl border border-white/5 bg-surface-dark p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start md:items-center">
+<!-- Background Glow for Card -->
+<div class="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/10 blur-[80px] rounded-full pointer-events-none"></div>
+<div class="relative group shrink-0 w-full md:w-[240px]">
+<img class="w-full aspect-square object-cover rounded-lg shadow-2xl group-hover:scale-[1.02] transition-transform duration-500" data-alt="Abstract 3d rendering of sphere with neon lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNCzBbXCKCgh3Jlf9aw2VQnvMmDoZVoNyyQX-xMzgcEcyv7WwE8K3ZWX2jgOTOPOUy-V7RzidJXRpTZJc15prNjAwamXMqIHDPSGlsHigKnV_1nJk4p_2i3pQ6e7B7zVBreVemtA1oaiqjKoNLoJCC92F9jth44HAdOk_jLBCIZTdgX6MxwCS_2C6qaw_Gqz5UE1xgJTgfWcoTyMyLhG5UyP7l4q0F8gHUqbXPSY5NgAGCH7CjUNxaC06HCySYYi-OxnxZi8dO1ow"/>
+<button class="absolute inset-0 m-auto size-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110">
+<span class="material-symbols-outlined text-3xl fill-1">play_arrow</span>
+</button>
+</div>
+<div class="flex flex-col gap-4 relative z-10">
+<div class="flex items-center gap-3">
+<span class="bg-primary/20 text-primary border border-primary/20 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">AI Pick</span>
+<span class="text-gray-400 text-xs">Based on your recent listening</span>
+</div>
+<div>
+<h3 class="text-3xl font-black text-white leading-tight">Lunar Echoes</h3>
+<p class="text-lg text-gray-300 font-medium">by Solar Fields</p>
+</div>
+<div class="bg-white/5 rounded-lg p-4 border border-white/5 mt-2">
+<h4 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-yellow-400">lightbulb</span>
+                                            Why you'll like it
+                                        </h4>
+<p class="text-sm text-gray-400 leading-relaxed">
+                                            This track features the same atmospheric synth pads you loved in "Starlight Vox," combined with a downtempo beat that perfectly matches your evening chill vibes.
+                                        </p>
+</div>
+<div class="flex gap-4 mt-2">
+<button class="flex-1 bg-white text-black font-bold text-sm py-2.5 px-4 rounded hover:bg-gray-200 transition-colors">Play Now</button>
+<button class="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">playlist_add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Activity Feed (Right / Bottom) -->
+<div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-5">
+<div class="flex items-center justify-between">
+<h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em]">Activity Feed</h2>
+<a class="text-primary text-xs font-bold hover:underline" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Feed Item 1 -->
+<div class="p-4 rounded-xl bg-gradient-to-br from-surface-dark to-transparent border border-white/5 hover:border-white/10 transition-colors group">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-3">
+<img class="size-8 rounded-full object-cover ring-2 ring-primary/20" data-alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAAy7IIoJdFazbBwgA9IlWr2KGRDZrVEVN0eplDyAqMSJX2F3MHs3mO4qt-QkiChEI_mJZ6i9poOge7I6YXnmounC0-VjCng9WC38srwxXEDlKyugqYmST9VEvg2ZssWMTXAvsfCSmR4jdfgsizDDeRJE9z4eJTssJjTnKKH0A3sd5efsUlWgdlsnWQuDMpig76t9TDt40xgKshFnrgcqZY3i8-lwsu6EIfXBjLaySHLQQ1cQyzVdIQiOPhrkJTmy6TEaJIJEFWbo"/>
+<div>
+<p class="text-sm text-white font-semibold">Elara Moon</p>
+<p class="text-[10px] text-gray-500">2 mins ago</p>
+</div>
+</div>
+<div class="flex text-yellow-500">
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star_half</span>
+</div>
+</div>
+<p class="text-sm text-gray-300 leading-snug">
+<span class="font-bold text-white">Midnight Sun</span> is an absolute masterpiece. The transition at 2:30 gave me chills! 🌌
+                                    </p>
+<div class="mt-3 flex items-center gap-3">
+<img class="size-10 rounded object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Album cover thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOptISh4F7Fx-zf0ZRXgAe9V-i5E-KE_aVQSatBlpKi7nckRM78FyE-H7wpznMshXXaVsbBKfgE-hfjYHpIVyhq3-KLwpiYdnFIHTS8t5kObo4F53sGKDZJI6aADmZ1h9eFT7gCpFIyhuH5A373uFUGkHQZftlHJjSfKieeqj9NdtP2-QkpjNOgF2lO0JMvqVFAXFG1XsM7kp4p06xSpCECuJveifuMVWpDbTPCqKrcY_Xs_cbWOOJfjLLbh38ujC6fOOFrex-qoI"/>
+<div class="flex flex-col">
+<span class="text-xs text-white font-medium">Midnight Sun</span>
+<span class="text-[10px] text-gray-500">Artist: Nova</span>
+</div>
+</div>
+</div>
+<!-- Feed Item 2 -->
+<div class="p-4 rounded-xl bg-gradient-to-br from-surface-dark to-transparent border border-white/5 hover:border-white/10 transition-colors group">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-3">
+<img class="size-8 rounded-full object-cover ring-2 ring-primary/20" data-alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV9wmjDSoIG1UxvZ-uqZLBpoijiUqohypONV60G1x3uTtG43kEtkG-GknFyXD6mgSAbzGj395kq6FhPW6KJvmie3HfxRCgm6LwsACYFvervefM49fDte-6Dz80CczcOIWv2qnAr2pWEoQTWTDKTElfFwR-N9Sq9m1EEfPzY9zetlsX0GcnupbWG8-gXYihKZd14niP65NEPRBzsPewtMSq1fOJbbJCzkXLRn49yCx_2cuuloAHN-ZUGqymAeXpef1W6oc3NZnwdEY"/>
+<div>
+<p class="text-sm text-white font-semibold">Kael Thoren</p>
+<p class="text-[10px] text-gray-500">15 mins ago</p>
+</div>
+</div>
+<div class="flex text-yellow-500">
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+</div>
+<p class="text-sm text-gray-300 leading-snug">
+                                        A bit too experimental for my taste, but the production quality on <span class="font-bold text-white">Void Walker</span> is undeniable.
+                                    </p>
+<div class="mt-3 flex items-center gap-3">
+<img class="size-10 rounded object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Album cover thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm11_TX2XsuFb1eO2Rb3BiTk-hapVL0gb136Vch_xMrpASrKhKyWwTrZz0bxHukvd2q1uaP1TGeLMmiDJPv64mu5UqE3J2uuWbZKZImVkxQwIHcYpcjqO9PsYxuTsCZHbrVipnPgFcft2pGFEexRF9xTCBIKlCvQr79b87_Kn2ocGGtRuHmuqxCn62AHQJ5e927SO2-35KTqedUhNs7dJOLQlEiNlsJi1mGCgMrqYSCt5ElgSTCzSbaFVhvZRccdfQ0VuKMJXhk8Y"/>
+<div class="flex flex-col">
+<span class="text-xs text-white font-medium">Void Walker</span>
+<span class="text-[10px] text-gray-500">Artist: NullSet</span>
+</div>
+</div>
+</div>
+<!-- Feed Item 3 -->
+<div class="p-4 rounded-xl bg-gradient-to-br from-surface-dark to-transparent border border-white/5 hover:border-white/10 transition-colors group">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-3">
+<img class="size-8 rounded-full object-cover ring-2 ring-primary/20" data-alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfhWm9FtuCw-c-I-LEdjZWmvEaP162MUPMvDKNp4WVzefEE3Gn4v7wn9KRzxvDoKdmF34M3mcj-NgkcgFG8Ye8CNdV3WUZ6LPFeANlAalpYgD5IBIOams5BKqEFahp5mFHlQIGJ0fBWdlovKDS6KJrCCsZsIXcwas0qhowEXfaBYCaSQnPImZ9MeOlF7tBMg6bGtAqP40jbWtFe-RUuc205bQe1oW87XdukDUqEuHo_DjjubBtP9qoZO6JvWyCy9o9gv1JrQQTOrc"/>
+<div>
+<p class="text-sm text-white font-semibold">Lyra Star</p>
+<p class="text-[10px] text-gray-500">1 hr ago</p>
+</div>
+</div>
+<div class="flex text-yellow-500">
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+<span class="material-symbols-outlined text-[16px] fill-1">star</span>
+</div>
+</div>
+<p class="text-sm text-gray-300 leading-snug">
+                                        Just discovered <span class="font-bold text-white">Cyber Heart</span>. Where has this been all my life?!
+                                    </p>
+<div class="mt-3 flex items-center gap-3">
+<img class="size-10 rounded object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Album cover thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy1R9jgUsZSMpnp1k_PyH5n0zGHO7aSNODbnk9p6UlArecrO-AZ8pP_tShZQ6cAkxpBNzg9Zbd8k9RDDPVnf9YQh3njyXO31vYwqN6otkgdOcIW2ivbJ-hNhZ6X0F15rs9O4xIOKoWfLHKWHK3yzwJMd5S9B01AZHlhdt5VUu-0ZVo7spgMkuc0CI20UU6uf6ZX3cq5BziKO612qCs0_dCzqGTCRYgOJpqn58nKNlR5qgF6_Zt1L9ol4pt83EwMgVIP3I3efeKFAM"/>
+<div class="flex flex-col">
+<span class="text-xs text-white font-medium">Cyber Heart</span>
+<span class="text-[10px] text-gray-500">Artist: Neon Dreams</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

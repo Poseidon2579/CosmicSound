@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CosmicSound - User Profile</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121022",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2839; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d3b54; 
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 1,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col antialiased selection:bg-primary/30 selection:text-white">
+<!-- Navbar -->
+<header class="sticky top-0 z-50 w-full border-b border-white/5 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-8">
+<!-- Logo -->
+<a class="flex items-center gap-3 group" href="#">
+<div class="relative flex h-8 w-8 items-center justify-center text-primary dark:text-white transition-transform group-hover:scale-110">
+<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<span class="text-lg font-bold tracking-tight dark:text-white">CosmicSound</span>
+</a>
+<!-- Nav Links -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Discover</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Reviews</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Community</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Lists</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<!-- Search -->
+<div class="relative hidden sm:block group">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+<span class="material-symbols-outlined text-slate-400 text-[20px]" data-icon="search">search</span>
+</div>
+<input class="block w-full rounded-full border-none bg-slate-200 dark:bg-[#2a2839] py-2 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all w-64" placeholder="Search for music..." type="text"/>
+</div>
+<!-- Notifications -->
+<button class="relative rounded-full p-1 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
+</button>
+<!-- User Menu -->
+<div class="h-9 w-9 overflow-hidden rounded-full border border-white/10 bg-slate-200 dark:bg-white/10" data-alt="User profile thumbnail showing a young woman" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD8RhCH49emZj1oPp8hTT5x5_FQqWX6EFCx0fMhcgURXwsiKlIQ5GnHDjoi_okXl_Nv7o9u6qhXcDwNjUrZS-_C2-O_jdcjW_j4QiL-TWJw_vBmIqx6zrS2OCbyBxVop3NgH2l13GNPm6JDEkSOfoYuFqRvOnypvBH9FpmAeBdDV6AZqT7PQRP7PPMZoWIHsJsfEmzouPhRFCaGkvNXbZlSoTiVuGV99gXPgJpRe7wxFvs9Q9tlXA3TMWM5zP_sMY88dFFHnDy1-VQ'); background-size: cover; background-position: center;">
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+<!-- Profile Header -->
+<section class="flex flex-col items-center justify-center pt-8 pb-10">
+<div class="relative group">
+<div class="h-32 w-32 rounded-full overflow-hidden ring-4 ring-slate-200 dark:ring-white/5 shadow-2xl" data-alt="Profile picture of Alex Stardust, a man looking towards the stars" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCgmV4xAOWq0JNdG8hezfHurvefIohvP_cX-JxRIN43ViY7csRPmeXOgWvg3f5YBWoSI7GCxDGsNXzPkdIBEFag_5cPHmcJkWswyz7kEeE0lEi5-bN9IQpmHqgVmney7gJR3GMZDpNK2qo6IgnEGthBQGBY_6Cvb5hkkEtIkAYl-tn4u3tyTa7AW12RM_0-xx-fMKCGBVvyIC0oXxpU83kVQTv1Y_iLpmbRAPSz2e6JHRlyUgkZI_CJPjlS3jVRZ-1GeHNtTP_sP2w'); background-size: cover; background-position: center;">
+</div>
+<button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<h1 class="mt-6 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Alex Stardust</h1>
+<p class="mt-3 max-w-lg text-center text-base text-slate-500 dark:text-slate-400 leading-relaxed">
+                Exploring the sonic universe, one track at a time. Lover of ambient soundscapes and indie rock.
+            </p>
+</section>
+<!-- Statistics (Airy Line) -->
+<section class="border-y border-slate-200 dark:border-white/5 py-6 mb-12">
+<div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-center">
+<div class="group cursor-pointer">
+<span class="block text-2xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">48</span>
+<span class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500 font-semibold">Reviews</span>
+</div>
+<div class="h-8 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+<div class="group cursor-pointer">
+<span class="block text-2xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Rock Alt</span>
+<span class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500 font-semibold">Fav Genre</span>
+</div>
+<div class="h-8 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+<div class="group cursor-default">
+<span class="block text-2xl font-bold text-slate-900 dark:text-white">2024</span>
+<span class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500 font-semibold">Joined</span>
+</div>
+</div>
+</section>
+<!-- Recent Reviews List -->
+<section>
+<div class="flex items-center justify-between mb-6 px-2">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Recent Activity</h2>
+<a class="text-sm text-primary hover:text-primary/80 font-medium transition-colors" href="#">View all</a>
+</div>
+<div class="flex flex-col space-y-2">
+<!-- Review Item 1 -->
+<div class="group flex items-start gap-4 rounded-xl p-3 transition-colors hover:bg-slate-100 dark:hover:bg-white/5">
+<div class="flex-shrink-0">
+<div class="h-16 w-16 rounded-lg bg-slate-800 shadow-md group-hover:scale-105 transition-transform duration-300" data-alt="Abstract album cover art with dark smoke and neon lights" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuArSGQ8184pSGsZELUYkBJ7zbQP6CwohNU5jH8bIQU0W4sM6OEpcYnxgWz435mwSvL3n-DYo27KiTK33VPi7_60pg4gOYly64xnx5aCar7NlXPp9NsH_vFUfB5k2K3lk15E-sDB8iKMMnuGw3Ay02Z7lQKv9icng3CBKmaj80N6PtiAQN4ikScsCyTMyueO8PoBm4dwnmDvwEoKDc7gcCaHrkkY01WKzkM5jdKfTqX670gTt5nGb3zjRBgPSDbZdCyRnvKV9AKuVCE'); background-size: cover; background-position: center;">
+</div>
+</div>
+<div class="flex min-w-0 flex-1 flex-col justify-center h-16">
+<div class="flex items-center justify-between">
+<h3 class="truncate text-base font-semibold text-slate-900 dark:text-white">
+                                Neon Moon
+                                <span class="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">Cigarettes After Sex</span>
+</h3>
+<div class="flex text-yellow-400 dark:text-yellow-500 text-[14px]">
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+</div>
+</div>
+<p class="mt-1 line-clamp-1 text-sm text-slate-600 dark:text-slate-400 font-light italic">
+                            "A hauntingly beautiful track that feels like floating in space, detached from time."
+                        </p>
+</div>
+</div>
+<!-- Review Item 2 -->
+<div class="group flex items-start gap-4 rounded-xl p-3 transition-colors hover:bg-slate-100 dark:hover:bg-white/5">
+<div class="flex-shrink-0">
+<div class="h-16 w-16 rounded-lg bg-slate-800 shadow-md group-hover:scale-105 transition-transform duration-300" data-alt="Minimalist album cover art featuring a surfer in the sea" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCPxS6tMzah1x3GTCw1VkjEU5IdSWUgL7zraPqGUiygz_iRSfC5OXhjohYMqDDKlFLkGklocjcw0S9vP9cZs4b_TQrzlxcdXixMPM-B5pzMPI64xJDrF6CCax6ut2sE1XXoV6gyPvNTx1zaD2S0pBgNkoBnMRNGoayrcefTC9_HQvnxcampi6iPqRLKEAq5vYMwlU_IJkt1_wVc0xpCU2k0RhEzT3WUMjnjncHizsTRfTnR-VEcPdm0MAAD7acUDHNp-cZFvkUn0WY'); background-size: cover; background-position: center;">
+</div>
+</div>
+<div class="flex min-w-0 flex-1 flex-col justify-center h-16">
+<div class="flex items-center justify-between">
+<h3 class="truncate text-base font-semibold text-slate-900 dark:text-white">
+                                Midnight City
+                                <span class="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">M83</span>
+</h3>
+<div class="flex text-yellow-400 dark:text-yellow-500 text-[14px]">
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px; color: #4b5563;">star</span>
+</div>
+</div>
+<p class="mt-1 line-clamp-1 text-sm text-slate-600 dark:text-slate-400 font-light italic">
+                            "The saxophone solo at the end still gives me goosebumps after all these years."
+                        </p>
+</div>
+</div>
+<!-- Review Item 3 -->
+<div class="group flex items-start gap-4 rounded-xl p-3 transition-colors hover:bg-slate-100 dark:hover:bg-white/5">
+<div class="flex-shrink-0">
+<div class="h-16 w-16 rounded-lg bg-slate-800 shadow-md group-hover:scale-105 transition-transform duration-300" data-alt="Abstract oil painting album cover with blue and orange strokes" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZv6ArKR7wjxDQvfWou3oP1ZWnClWU7ORuYMJ9LSxfflZobkgtK1fJInAFyvuZbvSMJSZZn9DCZB6INQvrZSMttURgDtL-6ueHuYVa1Kujnb4wDQAQQqzxeFudDz62Sv2qWAj3_DztvYjZIQVpsxjEv2XnlzDEwaoG1PUQ33ylkHa0wlM8qpI3tRdzsBbMaGqQhVXlL6spcUf9SY5uMEGXpgL-PaJilL6NC8cXBlSX4ZpyeOmbx6hVINtXEPb0uFx0obYutjZHd6M'); background-size: cover; background-position: center;">
+</div>
+</div>
+<div class="flex min-w-0 flex-1 flex-col justify-center h-16">
+<div class="flex items-center justify-between">
+<h3 class="truncate text-base font-semibold text-slate-900 dark:text-white">
+                                Space Song
+                                <span class="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">Beach House</span>
+</h3>
+<div class="flex text-yellow-400 dark:text-yellow-500 text-[14px]">
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+</div>
+</div>
+<p class="mt-1 line-clamp-1 text-sm text-slate-600 dark:text-slate-400 font-light italic">
+                            "Melancholy perfection. Best listened to while driving at night."
+                        </p>
+</div>
+</div>
+<!-- Review Item 4 -->
+<div class="group flex items-start gap-4 rounded-xl p-3 transition-colors hover:bg-slate-100 dark:hover:bg-white/5">
+<div class="flex-shrink-0">
+<div class="h-16 w-16 rounded-lg bg-slate-800 shadow-md group-hover:scale-105 transition-transform duration-300" data-alt="Retro vinyl record album cover style" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0H4SOk4gBB2-1oKadxkbZcruZTCg3kYIMly4hSRTLGIxp_GdnjfX1KCLK2Uv43R9qt9nLxzNNwmIK2AfZhZusch3N0kZIIj3wpMK9vE1ZO69ywkDpVx46tnGdLZ4kqJMn7RODkiI2syYW7s_15FuSj8cjVab9ZGx2oED2BhdBtH70jZYqS9p2mbbFNWqLjtfLQYoMg4Pc04JwLWpgFh8nETvETVwyeZrLLHKN220102BmJLAkVGEc4SAV3OoATz9uGU-7oC_wAt4'); background-size: cover; background-position: center;">
+</div>
+</div>
+<div class="flex min-w-0 flex-1 flex-col justify-center h-16">
+<div class="flex items-center justify-between">
+<h3 class="truncate text-base font-semibold text-slate-900 dark:text-white">
+                                Heroes
+                                <span class="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">David Bowie</span>
+</h3>
+<div class="flex text-yellow-400 dark:text-yellow-500 text-[14px]">
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star_half</span>
+</div>
+</div>
+<p class="mt-1 line-clamp-1 text-sm text-slate-600 dark:text-slate-400 font-light italic">
+                            "An absolute classic that never ages. The Berlin trilogy era is unmatched."
+                        </p>
+</div>
+</div>
+</div>
+<div class="mt-8 flex justify-center">
+<button class="text-sm font-medium text-slate-500 hover:text-white transition-colors flex items-center gap-2 group">
+                    Load more activity
+                    <span class="material-symbols-outlined group-hover:translate-y-1 transition-transform" style="font-size: 18px;">expand_more</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Simple Footer -->
+<footer class="w-full border-t border-white/5 py-8 mt-12 bg-background-light dark:bg-background-dark">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<p class="text-sm text-slate-500 dark:text-slate-600">© 2024 CosmicSound. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

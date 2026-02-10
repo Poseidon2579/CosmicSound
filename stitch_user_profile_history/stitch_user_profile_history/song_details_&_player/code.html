@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Song Details &amp; Player - CosmicSound</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121022",
+                        "surface-dark": "#1c1a2e", // Slightly lighter for UI elements
+                        "border-dark": "#2a2839",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2839; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d3b54; 
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }.material-symbols-outlined.unfilled {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col">
+<header class="w-full border-b border-gray-200 dark:border-border-dark bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-[1280px] mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<a class="flex items-center gap-3 text-slate-900 dark:text-white group" href="#">
+<div class="size-8 text-primary group-hover:scale-110 transition-transform duration-300">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-tight">CosmicSound</h2>
+</a>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Discover</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Reviews</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Community</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Profile</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<label class="hidden lg:flex items-center relative group">
+<div class="absolute left-4 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[20px] leading-none">search</span>
+</div>
+<input class="w-64 h-10 pl-11 pr-4 rounded-full bg-slate-100 dark:bg-surface-dark border-transparent focus:border-primary focus:ring-0 text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all text-slate-900 dark:text-white" placeholder="Search artists, albums..." type="text"/>
+</label>
+<button class="h-10 px-6 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-bold transition-all shadow-lg shadow-primary/20">
+                    Log In
+                </button>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full px-6 py-8">
+<div class="max-w-[1080px] mx-auto flex flex-col gap-10">
+<section class="w-full">
+<div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-surface-dark group cursor-pointer border border-border-dark/50">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Abstract cosmic nebula background with purple and blue hues" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBHez8rHU_a1U-eiXXRseCpbedWITEDsi3fOCZNwNAkWiB0UwIHLwHZ_BXvbR7OCimDkA2-AyIsEBQbfYKBdc_mR_2dGTlWrTI7F7Fw13f0XvdOKE2JVF49jm-z3Jj5bYdQRwDNsP2Gjbh6F_vFYb9A1lfKbwE2jOqNGOtQBgyKfw7sf2gx7vhZGQSw7MMWAPPRpicXCrKagRpEofoGmTn8hfxb9kJ0T6qMs21mf7lHuClAX7HTp3Lei7hSD1T2rAeTU3DjndKyyPw");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="size-20 bg-white/10 hover:bg-primary/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 group-active:scale-95 border border-white/20">
+<span class="material-symbols-outlined text-[40px] ml-1">play_arrow</span>
+</button>
+</div>
+<div class="absolute inset-x-0 bottom-0 px-6 py-5 bg-gradient-to-t from-black/90 to-transparent">
+<div class="flex flex-col gap-3">
+<div class="group/progress relative h-1.5 w-full bg-white/20 rounded-full cursor-pointer overflow-hidden hover:h-2 transition-all">
+<div class="absolute top-0 left-0 h-full w-[35%] bg-primary rounded-full"></div>
+<div class="absolute top-0 left-[35%] h-full w-2.5 -ml-1 bg-white rounded-full opacity-0 group-hover/progress:opacity-100 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+</div>
+<div class="flex items-center justify-between text-xs font-medium tracking-wide text-slate-300">
+<div class="flex gap-4">
+<span>1:42</span>
+<span class="text-slate-500">/</span>
+<span>4:15</span>
+</div>
+<div class="flex gap-4">
+<button class="hover:text-white transition-colors"><span class="material-symbols-outlined text-[20px]">closed_caption</span></button>
+<button class="hover:text-white transition-colors"><span class="material-symbols-outlined text-[20px]">settings</span></button>
+<button class="hover:text-white transition-colors"><span class="material-symbols-outlined text-[20px]">fullscreen</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+<div class="lg:col-span-7 flex flex-col gap-8">
+<div class="flex flex-col gap-2">
+<h1 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+                            Stardust Memories
+                        </h1>
+<p class="text-lg text-slate-500 dark:text-slate-400 font-medium">
+                            A journey through space and time.
+                        </p>
+</div>
+<div class="flex flex-col border-t border-gray-200 dark:border-border-dark">
+<div class="grid grid-cols-[100px_1fr] md:grid-cols-[140px_1fr] py-5 border-b border-gray-200 dark:border-border-dark items-center">
+<span class="text-sm text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Artist</span>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-surface-dark overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of artist Luna Horizon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA17Q3R-aGPgBigUDtRAPsqNnXjKn9eabCRkH9VXNvGpgu0Z_Sw_5WkarkmTulcgTDDEMo3f0MS_b3q2jB353u1yWyJp6t1Kn7PKyTsD10uxRSv-A7PMXe9VwtSxl42dSe1xVx7f33iiQ7NAnuMls_UbIzBwuiHpsbY0MDva_0sLsJOFO1hwFuvv3bcs7kuUinKlID88TdvuHFncYafnzyy2oO3H7C958dpb_AlIJJan0t96hCAg7dzb7_OVkovSggziQPJsdpH9aM"/>
+</div>
+<a class="text-base md:text-lg font-medium text-slate-900 dark:text-white hover:text-primary transition-colors" href="#">Luna Horizon</a>
+</div>
+</div>
+<div class="grid grid-cols-[100px_1fr] md:grid-cols-[140px_1fr] py-5 border-b border-gray-200 dark:border-border-dark items-center">
+<span class="text-sm text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Album</span>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-slate-200 dark:bg-surface-dark overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Album art for Galaxy Dreams" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAVL79lfzM1dKLjyMJRmK8LKHAC65512np4WIcKVFA6L3Nh9AB9MwgSRIr0EwhDjCZD26WaXDVYHyCMEsH6GPJDb4keHJTym9wOsakIOy7CBLi5-FND-mYT0RdlKv29oRRMBsqYn1G6uIwi47Rn_fjVm5tEbeLAzF2JmrrBfYp6HgqVJt2vcV0jhGV8JUacB-7pU1Nc1Tpf5YOdF9V_9hLZ_DqdpY9jApUq0qfoVVMBCBXO6Ujo-jSiEb6D2LY4pNXP1-GjdoB4nc"/>
+</div>
+<span class="text-base md:text-lg font-medium text-slate-900 dark:text-white">Galaxy Dreams</span>
+</div>
+</div>
+<div class="grid grid-cols-[100px_1fr] md:grid-cols-[140px_1fr] py-5 border-b border-gray-200 dark:border-border-dark items-center">
+<span class="text-sm text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Year</span>
+<span class="text-base md:text-lg font-medium text-slate-900 dark:text-white">2023</span>
+</div>
+<div class="grid grid-cols-[100px_1fr] md:grid-cols-[140px_1fr] py-5 border-b border-gray-200 dark:border-border-dark items-center">
+<span class="text-sm text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Genre</span>
+<div class="flex gap-2 flex-wrap">
+<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-surface-dark text-xs font-semibold text-slate-600 dark:text-slate-300">Synthwave</span>
+<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-surface-dark text-xs font-semibold text-slate-600 dark:text-slate-300">Electronic</span>
+<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-surface-dark text-xs font-semibold text-slate-600 dark:text-slate-300">Ambient</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 bg-slate-50 dark:bg-surface-dark/50 rounded-2xl p-6 md:p-8 border border-gray-200 dark:border-border-dark">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Community Rating</h3>
+<button class="text-sm font-medium text-primary hover:underline">Write a review</button>
+</div>
+<div class="flex items-end gap-4 mb-8">
+<span class="text-6xl font-black text-slate-900 dark:text-white leading-none tracking-tight">4.8</span>
+<div class="flex flex-col gap-1 pb-1">
+<div class="flex text-yellow-400 gap-0.5">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="material-symbols-outlined text-[20px]">star_half</span>
+</div>
+<span class="text-sm font-medium text-slate-500 dark:text-slate-400">1,240 reviews</span>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-4 text-sm">
+<span class="w-3 text-right font-bold text-slate-700 dark:text-slate-300">5</span>
+<div class="flex-1 h-2 bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[80%] rounded-full"></div>
+</div>
+<span class="w-9 text-right text-slate-500 dark:text-slate-400">80%</span>
+</div>
+<div class="flex items-center gap-4 text-sm">
+<span class="w-3 text-right font-bold text-slate-700 dark:text-slate-300">4</span>
+<div class="flex-1 h-2 bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary/80 w-[12%] rounded-full"></div>
+</div>
+<span class="w-9 text-right text-slate-500 dark:text-slate-400">12%</span>
+</div>
+<div class="flex items-center gap-4 text-sm">
+<span class="w-3 text-right font-bold text-slate-700 dark:text-slate-300">3</span>
+<div class="flex-1 h-2 bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary/60 w-[5%] rounded-full"></div>
+</div>
+<span class="w-9 text-right text-slate-500 dark:text-slate-400">5%</span>
+</div>
+<div class="flex items-center gap-4 text-sm">
+<span class="w-3 text-right font-bold text-slate-700 dark:text-slate-300">2</span>
+<div class="flex-1 h-2 bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 w-[2%] rounded-full"></div>
+</div>
+<span class="w-9 text-right text-slate-500 dark:text-slate-400">2%</span>
+</div>
+<div class="flex items-center gap-4 text-sm">
+<span class="w-3 text-right font-bold text-slate-700 dark:text-slate-300">1</span>
+<div class="flex-1 h-2 bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary/20 w-[1%] rounded-full"></div>
+</div>
+<span class="w-9 text-right text-slate-500 dark:text-slate-400">1%</span>
+</div>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start pt-8 border-t border-gray-200 dark:border-border-dark" id="reviews-section">
+<div class="lg:col-span-7 flex flex-col gap-10">
+<div class="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-indigo-50 to-white dark:from-surface-dark dark:to-background-dark border border-indigo-100 dark:border-indigo-900/30 shadow-sm">
+<div class="absolute top-0 right-0 p-6 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+<span class="material-symbols-outlined text-9xl">psychology</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="flex items-center justify-center size-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+</div>
+<h3 class="text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">AI Opinion Summary</h3>
+</div>
+<p class="text-slate-700 dark:text-slate-300 leading-relaxed text-base md:text-lg">
+                    Fans overwhelmingly appreciate the <span class="font-bold text-slate-900 dark:text-white">atmospheric production</span> and nostalgic synth textures, often comparing it to early 80s classics. While the vocal performance is highly praised, a minority of listeners felt the <span class="font-bold text-slate-900 dark:text-white">bridge pacing</span> dragged slightly. Overall, it is considered a standout track on the album.
+                </p>
+<div class="mt-4 flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        Positive: Production
+                    </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        Positive: Vocals
+                    </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                        Mixed: Pacing
+                    </span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<h3 class="text-2xl font-bold text-slate-900 dark:text-white">1,240 Reviews</h3>
+<div class="relative">
+<select class="appearance-none bg-slate-50 dark:bg-surface-dark border-none py-2 pl-4 pr-10 rounded-full text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary focus:ring-2 focus:ring-primary/20 cursor-pointer transition-colors">
+<option>Most Helpful</option>
+<option>Newest First</option>
+<option>Highest Rated</option>
+<option>Lowest Rated</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-8">
+<div class="flex flex-col gap-4 pb-8 border-b border-gray-100 dark:border-border-dark/50">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-purple-500/20">
+                            AN
+                        </div>
+<div>
+<h4 class="text-base font-bold text-slate-900 dark:text-white">Alex Nova</h4>
+<span class="text-xs text-slate-500 font-medium">Verified Listener • 2 hours ago</span>
+</div>
+</div>
+<div class="flex text-yellow-400 gap-0.5">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                    Absolutely mesmerizing. The way the bass kicks in at 0:45 is pure magic. This is exactly what I needed for my late night drives. The production quality is top notch compared to the previous EP.
+                </p>
+<div class="flex items-center gap-6 text-xs font-bold text-slate-500 dark:text-slate-400">
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">thumb_up</span>
+<span>Helpful (24)</span>
+</button>
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">chat_bubble</span>
+<span>Reply</span>
+</button>
+<button class="ml-auto hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-4 pb-8 border-b border-gray-100 dark:border-border-dark/50">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-pink-500/20">
+                            MK
+                        </div>
+<div>
+<h4 class="text-base font-bold text-slate-900 dark:text-white">Marcus K.</h4>
+<span class="text-xs text-slate-500 font-medium">5 hours ago</span>
+</div>
+</div>
+<div class="flex text-yellow-400 gap-0.5">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px] unfilled text-slate-300 dark:text-slate-600">star</span>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                    Great track, but I wish the outro was a bit longer. It cuts off abruptly just as the vibe settles in. Still, a solid addition to the playlist.
+                </p>
+<div class="flex items-center gap-6 text-xs font-bold text-slate-500 dark:text-slate-400">
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">thumb_up</span>
+<span>Helpful (8)</span>
+</button>
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">chat_bubble</span>
+<span>Reply</span>
+</button>
+<button class="ml-auto hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-4 pb-8 border-b border-gray-100 dark:border-border-dark/50">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-emerald-500/20">
+                            SJ
+                        </div>
+<div>
+<h4 class="text-base font-bold text-slate-900 dark:text-white">Sarah Jenkins</h4>
+<span class="text-xs text-slate-500 font-medium">1 day ago</span>
+</div>
+</div>
+<div class="flex text-yellow-400 gap-0.5">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                    CosmicSound never disappoints with their recommendations. This song is a masterpiece of sound engineering. 
+                </p>
+<div class="flex items-center gap-6 text-xs font-bold text-slate-500 dark:text-slate-400">
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">thumb_up</span>
+<span>Helpful (42)</span>
+</button>
+<button class="flex items-center gap-1.5 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">chat_bubble</span>
+<span>Reply</span>
+</button>
+<button class="ml-auto hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full py-4 rounded-xl border border-gray-200 dark:border-border-dark text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-surface-dark transition-colors flex items-center justify-center gap-2">
+            Load More Reviews
+            <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+<div class="lg:col-span-5 flex flex-col gap-6 sticky top-24">
+<div class="bg-white dark:bg-surface-dark rounded-2xl p-6 md:p-8 shadow-2xl shadow-black/5 border border-gray-200 dark:border-border-dark relative overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500"></div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Add your voice</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Rate this song and share your experience with the community.</p>
+<form class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Your Rating</label>
+<div class="flex gap-1 group">
+<button class="text-slate-300 dark:text-slate-600 hover:text-yellow-400 hover:scale-110 transition-all focus:outline-none" type="button"><span class="material-symbols-outlined text-[36px] fill-current">star</span></button>
+<button class="text-slate-300 dark:text-slate-600 hover:text-yellow-400 hover:scale-110 transition-all focus:outline-none" type="button"><span class="material-symbols-outlined text-[36px] fill-current">star</span></button>
+<button class="text-slate-300 dark:text-slate-600 hover:text-yellow-400 hover:scale-110 transition-all focus:outline-none" type="button"><span class="material-symbols-outlined text-[36px] fill-current">star</span></button>
+<button class="text-slate-300 dark:text-slate-600 hover:text-yellow-400 hover:scale-110 transition-all focus:outline-none" type="button"><span class="material-symbols-outlined text-[36px] fill-current">star</span></button>
+<button class="text-slate-300 dark:text-slate-600 hover:text-yellow-400 hover:scale-110 transition-all focus:outline-none" type="button"><span class="material-symbols-outlined text-[36px] fill-current">star</span></button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Review</label>
+<textarea class="w-full bg-slate-50 dark:bg-background-dark border border-gray-200 dark:border-border-dark rounded-xl p-4 text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[140px] text-slate-900 dark:text-white placeholder:text-slate-400 resize-none transition-shadow" placeholder="What did you like or dislike about the production, lyrics, or vibe?"></textarea>
+</div>
+<button class="w-full py-3.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group/btn" type="button">
+<span>Post Review</span>
+<span class="material-symbols-outlined text-[18px] group-hover/btn:translate-x-1 transition-transform">send</span>
+</button>
+</form>
+<p class="text-center text-xs text-slate-400 dark:text-slate-500 mt-4">
+                Reviews are public and editable. <a class="hover:text-primary underline" href="#">Guidelines</a>
+</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>
