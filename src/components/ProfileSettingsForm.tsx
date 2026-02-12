@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { User } from "@/types";
-import { updateUserProfile, uploadAvatar, generateMemberPreferences } from "@/lib/user-service";
+import { uploadAvatar } from "@/lib/user-service";
+import { updateUserProfileAction, generateMemberPreferencesAction } from "@/lib/user-actions";
 import { useRouter } from "next/navigation";
 
 export default function ProfileSettingsForm({ user }: { user: User }) {
@@ -22,8 +23,8 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
             const publicUrl = await uploadAvatar(file);
             if (publicUrl) {
                 setAvatar(publicUrl);
-                // Immediately update DB for avatar
-                await updateUserProfile({ avatar: publicUrl });
+                // Immediately update DB for avatar using Action
+                await updateUserProfileAction({ avatar: publicUrl });
             }
         } catch (error) {
             console.error("Error uploading avatar:", error);
@@ -39,21 +40,21 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
             // 1. Generate AI preferences if bio changed
             let preferences = user.preferences;
             if (bio !== user.bio) {
-                preferences = await generateMemberPreferences(bio);
+                preferences = await generateMemberPreferencesAction(bio);
             }
 
-            // 2. Update DB
-            const success = await updateUserProfile({
+            // 2. Update DB using Action
+            const result = await updateUserProfileAction({
                 username,
                 bio,
                 preferences
             });
 
-            if (success) {
+            if (result.success) {
                 router.refresh();
                 alert("¡Perfil actualizado con éxito!");
             } else {
-                alert("Error al actualizar el perfil.");
+                alert("Error al actualizar el perfil: " + result.error);
             }
         } catch (error) {
             console.error("Error saving profile:", error);

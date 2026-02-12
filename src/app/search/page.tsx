@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search as SearchIcon, ArrowLeft } from "lucide-react";
 import SearchResults from "./SearchResults";
+import IntelligentSearchInput from "@/components/IntelligentSearchInput";
 
 export default async function SearchPage({
     searchParams,
@@ -38,15 +39,7 @@ export default async function SearchPage({
                     </p>
                 </div>
 
-                <form action="/search" className="relative group min-w-[300px]">
-                    <input
-                        name="q"
-                        defaultValue={query}
-                        placeholder="Buscar en el cosmos..."
-                        className="w-full h-12 pl-12 pr-6 rounded-full bg-white/5 border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                    />
-                    <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
-                </form>
+                <IntelligentSearchInput initialValue={query} />
             </div>
 
             <SearchResults initialResults={localResults} query={query} />

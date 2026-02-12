@@ -1,11 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Hero({ onSearch }: { onSearch?: (query: string) => void }) {
     const [query, setQuery] = useState("");
     const router = useRouter();
+
+    // Intelligent Search: Trigger search after 3 characters with debounce
+    useEffect(() => {
+        if (query.length >= 3) {
+            const timeoutId = setTimeout(() => {
+                if (onSearch) onSearch(query);
+                // Optionally redirect or show live results here
+                // For now, we'll let the user decide if they want to click, 
+                // but we trigger the AI learning onSearch immediately.
+                console.log("Intelligent Search Triggered:", query);
+            }, 500);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [query, onSearch]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();

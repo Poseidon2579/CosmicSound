@@ -208,6 +208,41 @@ export async function generateMemberPreferences(bio: string): Promise<any> {
     }
 }
 
+export async function updatePreferencesFromSearch(query: string): Promise<void> {
+    try {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) return;
+
+        // Use minor AI to extract keywords from search
+        const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const prompt = `Extrae géneros, artistas o moods de esta búsqueda musical: "${query}". 
+        Responde solo un JSON con esta estructura: { "genres": [], "artists": [], "interests": [] }`;
+
+        const result = await model.generateContent(prompt);
+        const text = (await result.response).text();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+        if (jsonMatch) {
+            const newPrefs = JSON.parse(jsonMatch[0]);
+            const currentPrefs = currentUser.preferences || { genres: [], artists: [], interests: [], moods: [] };
+
+            // Merge and dedup
+            const merged = {
+                genres: Array.from(new Set([...(currentPrefs.genres || []), ...(newPrefs.genres || [])])).slice(-10),
+                artists: Array.from(new Set([...(currentPrefs.artists || []), ...(newPrefs.artists || [])])).slice(-10),
+                interests: Array.from(new Set([...(currentPrefs.interests || []), ...(newPrefs.interests || [])])).slice(-10),
+                moods: currentPrefs.moods || []
+            };
+
+            await updateUserProfile({ preferences: merged });
+        }
+    } catch (error) {
+        console.error("Error updating search preferences:", error);
+    }
+}
+
 // Helper: map Supabase 'usuarios' row to app 'User' type
 function mapUsuarioToUser(row: any): User {
     return {
