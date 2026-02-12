@@ -7,7 +7,8 @@ export async function getAllSongs(): Promise<Song[]> {
     const { data, error } = await supabase
         .from('canciones')
         .select('*')
-        .order('vistas', { ascending: false });
+        .order('vistas', { ascending: false })
+        .limit(100); // Limit default fetch
 
     if (error || !data) {
         console.error('Error fetching songs:', error);
@@ -15,6 +16,34 @@ export async function getAllSongs(): Promise<Song[]> {
     }
 
     return data.map(mapCancionToSong);
+}
+
+export async function searchSongs(query: string, page: number = 1, limit: number = 20): Promise<{ songs: Song[], total: number }> {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let searchBuilder = supabase
+        .from('canciones')
+        .select('*', { count: 'exact' });
+
+    if (query) {
+        // Simple search across artist and title
+        searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
+    }
+
+    const { data, error, count } = await searchBuilder
+        .order('vistas', { ascending: false })
+        .range(from, to);
+
+    if (error || !data) {
+        console.error('Error searching songs:', error);
+        return { songs: [], total: 0 };
+    }
+
+    return {
+        songs: data.map(mapCancionToSong),
+        total: count || 0
+    };
 }
 
 // ==================== RESEÑAS (Reviews) ====================
@@ -159,4 +188,37 @@ function mapResenaToReview(row: any): Review {
         rating: row.calificacion || 0,
         verified: row.verificado || false,
     };
+}
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+export async function getRecommendedSongs(userPreferences: any): Promise<Song[]> {
+    try {
+        if (!userPreferences || (!userPreferences.genres?.length && !userPreferences.artists?.length)) {
+            // Fallback to trends if no preferences
+            return getAllSongs().then(songs => songs.slice(0, 6));
+        }
+
+        const allSongs = await getAllSongs();
+        const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const prompt = `Basado en estas preferencias de usuario: ${JSON.stringify(userPreferences)}
+        Selecciona las 6 mejores canciones de esta lista que más encajen.
+        Lista de canciones: ${JSON.stringify(allSongs.map(s => ({ id: s.id, title: s.track, artist: s.artist, genre: s.genre })))}
+        Responde SOLO con un array de IDs de las canciones en JSON: ["id1", "id2", ...]`;
+
+        const result = await model.generateContent(prompt);
+        const text = (await result.response).text();
+        const jsonMatch = text.match(/\[[\s\S]*\]/);
+
+        if (jsonMatch) {
+            const recommendedIds = JSON.parse(jsonMatch[0]);
+            return allSongs.filter(s => recommendedIds.includes(s.id));
+        }
+
+        return allSongs.slice(0, 6);
+    } catch (error) {
+        console.error("Error getting AI recommendations:", error);
+        return getAllSongs().then(songs => songs.slice(0, 6));
+    }
 }
