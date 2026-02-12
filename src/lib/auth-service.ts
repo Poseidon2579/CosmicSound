@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from './supabase-browser';
 
 export const signInWithGoogle = async () => {
     // Hardcoded production URL to ensure Vercel deployment works.
