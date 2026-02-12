@@ -16,10 +16,10 @@ export default function Navbar({ user }: { user: User | null }) {
             await signOut();
             // Optional: also call the API if you want to clear other custom cookies
             await fetch('/api/auth/logout', { method: 'POST' });
-            window.location.href = '/signin';
+            window.location.href = '/';
         } catch (error) {
             console.error("Error signing out:", error);
-            window.location.href = '/signin';
+            window.location.href = '/';
         }
     };
 
