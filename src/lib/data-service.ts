@@ -267,13 +267,21 @@ export async function getRecommendedSongs(userPreferences: any): Promise<Song[]>
         // Ensure uniqueness by content
         const uniqueMap = new Map();
         recommendedSongs.forEach(song => {
-            const key = `${song.track.toLowerCase()}-${song.artist.toLowerCase()}`;
-            if (!uniqueMap.has(key)) {
+            const key = `${song.track.trim().toLowerCase()}-${song.artist.trim().toLowerCase()}`;
+            const ytKey = song.youtubeId || "no-yt";
+
+            if (!uniqueMap.has(key) && !uniqueMap.has(ytKey)) {
                 uniqueMap.set(key, song);
+                if (song.youtubeId) uniqueMap.set(ytKey, song);
             }
         });
 
-        return Array.from(uniqueMap.values());
+        // Clean up map values
+        const finalUnique = Array.from(new Set(uniqueMap.values()));
+        const reallyUnique = new Map();
+        finalUnique.forEach(s => reallyUnique.set(s.id, s));
+
+        return Array.from(reallyUnique.values());
 
     } catch (error) {
         console.error("Error getting AI recommendations:", error);
@@ -311,15 +319,25 @@ export async function getTrendingSongs(): Promise<Song[]> {
         }
 
         // Remove duplicates just in case (checking Title + Artist to be sure)
+        // Remove duplicates just in case (checking Title + Artist + YoutubeID to be sure)
         const uniqueMap = new Map();
         matchedSongs.forEach(song => {
-            const key = `${song.track.toLowerCase()}-${song.artist.toLowerCase()}`;
-            if (!uniqueMap.has(key)) {
+            const key = `${song.track.trim().toLowerCase()}-${song.artist.trim().toLowerCase()}`;
+            // Also check youtubeId if available to be extra safe
+            const ytKey = song.youtubeId || "no-yt";
+
+            if (!uniqueMap.has(key) && !uniqueMap.has(ytKey)) {
                 uniqueMap.set(key, song);
+                if (song.youtubeId) uniqueMap.set(ytKey, song);
             }
         });
 
-        return Array.from(uniqueMap.values()).slice(0, 10);
+        let finalUnique = Array.from(new Set(uniqueMap.values()));
+        // Filter out any potential leftovers from the double-key map approach
+        const reallyUnique = new Map();
+        finalUnique.forEach(s => reallyUnique.set(s.id, s));
+
+        return Array.from(reallyUnique.values()).slice(0, 10);
     } catch (error) {
         console.error("Error fetching trending songs:", error);
         return getAllSongs().then(songs => songs.slice(0, 10));

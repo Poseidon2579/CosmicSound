@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface Review {
     user: string;
@@ -97,7 +98,13 @@ export default function ActivityFeed() {
                             <StarRating rating={item.rating} />
                         </div>
                         <p className="text-xs text-primary font-medium mb-1 truncate">
-                            {songs[item.songId] ? `En "${songs[item.songId].track}"` : `Cargando canción...`}
+                            {songs[item.songId] ? (
+                                <>
+                                    En <Link href={`/track/${item.songId}`} className="hover:underline">"{songs[item.songId].track}"</Link>
+                                </>
+                            ) : (
+                                `Cargando canción...`
+                            )}
                         </p>
                         <p className="text-sm text-gray-300 leading-snug">
                             {item.comment}
