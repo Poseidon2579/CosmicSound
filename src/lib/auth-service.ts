@@ -1,10 +1,18 @@
 import { supabase } from './supabase';
 
 export const signInWithGoogle = async () => {
+    // Hardcoded production URL to ensure Vercel deployment works.
+    // This value MUST be added to Supabase Dashboard > Authentication > URL Configuration > Redirect URIs
+    const productionRedirectUrl = 'https://cosmicsound-wheat.vercel.app/auth/callback';
+
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
+            redirectTo: productionRedirectUrl,
+            queryParams: {
+                access_type: 'offline',
+                prompt: 'consent',
+            },
         },
     });
 
