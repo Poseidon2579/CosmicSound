@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReviewForm from "@/components/ReviewForm";
 import { getAllSongs, getReviewsForSong } from "@/lib/data-service";
-import { getCurrentUser } from "@/lib/user-service";
+import { getCurrentUserServer as getCurrentUser } from "@/lib/user-service-server";
 
 export default async function TrackPage({ params }: { params: { id: string } }) {
     const songs = await getAllSongs();

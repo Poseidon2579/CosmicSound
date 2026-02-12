@@ -1,7 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import SongCard from "@/components/SongCard";
 import { getLikedSongs } from "@/lib/data-service";
-import { getCurrentUser } from "@/lib/user-service";
+import { getCurrentUserServer as getCurrentUser } from "@/lib/user-service-server";
 
 export default async function LibraryPage() {
     const user = await getCurrentUser();

@@ -1,5 +1,5 @@
 import Sidebar from "@/components/Sidebar";
-import { getCurrentUser } from "@/lib/user-service";
+import { getCurrentUserServer as getCurrentUser } from "@/lib/user-service-server";
 import Link from "next/link";
 import ProfileSettingsForm from "@/components/ProfileSettingsForm";
 

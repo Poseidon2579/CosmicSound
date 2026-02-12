@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { cookies } from 'next/headers';
+import { supabase as supabaseBrowser } from './supabase-browser';
 import { User } from '@/types';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -79,36 +79,20 @@ export async function loginUser(email: string, password: string): Promise<User |
     }
 }
 
-import { createServerClient } from '@supabase/auth-helpers-nextjs';
-
+// Client-side version of getCurrentUser using browser client
 export async function getCurrentUser(): Promise<User | null> {
     try {
-        const cookieStore = cookies();
-
-        const supabaseServer = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    get(name) {
-                        return cookieStore.get(name)?.value;
-                    },
-                },
-            }
-        );
-
-        const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+        const { data: { user }, error: authError } = await supabaseBrowser.auth.getUser();
 
         if (authError || !user) return null;
 
-        const { data, error } = await supabaseServer
+        const { data, error } = await supabaseBrowser
             .from('usuarios')
             .select('*')
             .eq('id', user.id)
             .single();
 
         if (error || !data) {
-            // Return a partial user so the UI knows we have a session but no profile
             return {
                 id: user.id,
                 username: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Nuevo Usuario',
@@ -126,7 +110,7 @@ export async function getCurrentUser(): Promise<User | null> {
 
         return mapUsuarioToUser(data);
     } catch (error) {
-        console.error("Error in getCurrentUser:", error);
+        console.error("Error in getCurrentUser (Browser):", error);
         return null;
     }
 }
@@ -145,7 +129,7 @@ export async function updateUserProfile(updatedUser: Partial<User>): Promise<boo
     if (updatedUser.sync !== undefined) updateData.sincronizacion = updatedUser.sync;
     if (updatedUser.preferences !== undefined) updateData.preferencias = updatedUser.preferences;
 
-    const { error } = await supabase
+    const { error } = await supabaseBrowser
         .from('usuarios')
         .update(updateData)
         .eq('id', currentUser.id);
@@ -162,7 +146,7 @@ export async function uploadAvatar(file: File): Promise<string | null> {
         const fileName = `${currentUser.id}-${Math.random()}.${fileExt}`;
         const filePath = `${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabaseBrowser.storage
             .from('avatars')
             .upload(filePath, file);
 
@@ -171,7 +155,7 @@ export async function uploadAvatar(file: File): Promise<string | null> {
             return null;
         }
 
-        const { data } = supabase.storage
+        const { data } = supabaseBrowser.storage
             .from('avatars')
             .getPublicUrl(filePath);
 
@@ -213,7 +197,6 @@ export async function updatePreferencesFromSearch(query: string): Promise<void> 
         const currentUser = await getCurrentUser();
         if (!currentUser) return;
 
-        // Use minor AI to extract keywords from search
         const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -244,7 +227,7 @@ export async function updatePreferencesFromSearch(query: string): Promise<void> 
 }
 
 // Helper: map Supabase 'usuarios' row to app 'User' type
-function mapUsuarioToUser(row: any): User {
+export function mapUsuarioToUser(row: any): User {
     return {
         id: row.id,
         username: row.nombre_usuario,

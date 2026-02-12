@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic';
-import { getCurrentUser } from "@/lib/user-service";
+import { getCurrentUserServer as getCurrentUser } from "@/lib/user-service-server";
 import { getReviewsByUser } from "@/lib/data-service";
 import Link from "next/link";
 import ReviewList from "@/components/ReviewList";

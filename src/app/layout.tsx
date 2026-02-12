@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import { getCurrentUser } from "@/lib/user-service";
+import { getCurrentUserServer as getCurrentUser } from "@/lib/user-service-server";
 
 const inter = Inter({ subsets: ["latin"] });
 
