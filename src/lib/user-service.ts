@@ -83,6 +83,9 @@ import { createServerClient } from '@supabase/auth-helpers-nextjs';
 export async function getCurrentUser(): Promise<User | null> {
     try {
         const cookieStore = cookies();
+        const allCookies = cookieStore.getAll();
+        console.log("[getCurrentUser] Available Cookies:", allCookies.map(c => c.name));
+
         const supabaseServer = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

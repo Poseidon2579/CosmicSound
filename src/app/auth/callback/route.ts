@@ -19,17 +19,21 @@ export async function GET(request: NextRequest) {
                         return cookieStore.get(name)?.value;
                     },
                     set(name, value, options) {
+                        console.log(`[Auth Callback] Setting cookie: ${name}`);
                         cookieStore.set({ name, value, ...options });
                     },
                     remove(name, options) {
+                        console.log(`[Auth Callback] Removing cookie: ${name}`);
                         cookieStore.set({ name, value: '', ...options });
                     },
                 },
             }
         );
-        await supabase.auth.exchangeCodeForSession(code);
+        console.log(`[Auth Callback] Exchanging code: ${code.substring(0, 5)}...`);
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) console.error("[Auth Callback] Exchange error:", error);
     }
 
-    // URL to redirect to after sign in process completes
+    console.log(`[Auth Callback] Redirecting to: ${requestUrl.origin}${next}`);
     return NextResponse.redirect(`${requestUrl.origin}${next}`);
 }
