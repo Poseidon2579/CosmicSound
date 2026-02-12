@@ -1,5 +1,6 @@
 import Link from "next/link";
 import YouTubePlayer from "./YouTubePlayer";
+import FavoriteButton from "./FavoriteButton";
 
 interface Song {
     id: string;
@@ -55,15 +56,17 @@ export default function RecommendationCard({ song, onNext }: { song: Song, onNex
                         >
                             Reproducir Ahora
                         </Link>
-                        <button className="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors">
-                            <span className="material-symbols-outlined !text-[20px]">favorite</span>
-                        </button>
+                        <FavoriteButton
+                            songId={song.id}
+                            className="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors"
+                            iconSize={20}
+                        />
                         <button className="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors">
                             <span className="material-symbols-outlined !text-[20px]">playlist_add</span>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
