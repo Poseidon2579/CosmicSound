@@ -1,6 +1,0 @@
-Gemini API Key: AIzaSyC9hyXup7jtaBRZPMskEzay7mz2iwdKKe4
-LastFM API Key: 2fcaf6339482d454b952b42cbf088184
-LastFM Shared Secret: 007e4af48760caaed7da1ac906b2309f
-LastFM Registered to: Lunal2579
-Application: CosmicSound
-Project ID: 353713943079

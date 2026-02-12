@@ -1,0 +1,11 @@
+Setup: Inicializar proyecto (Node/Python) y configurar acceso a Gemini CLI.
+
+Data Ingestion: Usar la CLI para procesar el dataset inicial de canciones.
+
+Backend Logic: Crear los endpoints que conectan la Web con la CLI.
+
+Frontend Build: Construir las vistas (Home, Perfil, Player).
+
+Seeding: Ejecutar script de generación de reseñas falsas para pruebas.
+
+Deploy: Lanzamiento.

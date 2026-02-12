@@ -1,58 +1,59 @@
-import fs from 'fs';
-import path from 'path';
-import Papa from 'papaparse';
+import { supabase } from './supabase';
 import { cookies } from 'next/headers';
 import { User } from '@/types';
 
-const USERS_PATH = path.join(process.cwd(), 'src', 'data', 'users.csv');
-
-// Simple Base64 "hash" for demonstration purposes as per plan
+// Simple Base64 "hash" for demonstration purposes
 const hashPassword = (password: string) => Buffer.from(password).toString('base64');
 
 export async function getUsers(): Promise<User[]> {
-    if (!fs.existsSync(USERS_PATH)) {
-        // Create folder if not exists
-        const dir = path.dirname(USERS_PATH);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        return [];
-    }
-    const fileContent = fs.readFileSync(USERS_PATH, 'utf8');
-    return new Promise((resolve) => {
-        Papa.parse(fileContent, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => resolve(results.data as User[]),
-            error: () => resolve([])
-        });
-    });
+    const { data, error } = await supabase
+        .from('usuarios')
+        .select('*');
+
+    if (error || !data) return [];
+
+    return data.map(mapUsuarioToUser);
 }
 
 export async function registerUser(userData: Partial<User>): Promise<User | null> {
     try {
-        const users = await getUsers();
+        // Check if email already exists
+        const { data: existing } = await supabase
+            .from('usuarios')
+            .select('id')
+            .eq('email', userData.email)
+            .single();
 
-        if (users.find(u => u.email === userData.email)) {
+        if (existing) {
             throw new Error("Email already registered");
         }
 
-        const newUser: User = {
+        const newUsuario = {
             id: `user_${Date.now()}`,
-            username: userData.username || 'Anonymous',
+            nombre_usuario: userData.username || 'Anonymous',
             handle: userData.handle || userData.username?.toLowerCase().replace(/\s/g, '_') || 'user',
             email: userData.email || '',
-            password: userData.password ? hashPassword(userData.password) : '',
-            bio: userData.bio || 'Explorer of the sound void.',
+            contrasena: userData.password ? hashPassword(userData.password) : '',
+            bio: userData.bio || 'Explorador del vacío sonoro.',
             avatar: userData.avatar || `https://api.dicebear.com/9.x/avataaars/svg?seed=${userData.username || Date.now()}`,
-            joined: new Date().toISOString().split('T')[0],
-            visibility: true,
-            history: true,
-            sync: true
+            fecha_registro: new Date().toISOString().split('T')[0],
+            visibilidad: true,
+            historial: true,
+            sincronizacion: true
         };
 
-        const csvData = Papa.unparse([...users, newUser], { header: true });
-        fs.writeFileSync(USERS_PATH, csvData);
+        const { data, error } = await supabase
+            .from('usuarios')
+            .insert(newUsuario)
+            .select()
+            .single();
 
-        return newUser;
+        if (error || !data) {
+            console.error("Error registering user:", error);
+            return null;
+        }
+
+        return mapUsuarioToUser(data);
     } catch (error) {
         console.error("Error registering user:", error);
         return null;
@@ -61,9 +62,16 @@ export async function registerUser(userData: Partial<User>): Promise<User | null
 
 export async function loginUser(email: string, password: string): Promise<User | null> {
     try {
-        const users = await getUsers();
-        const user = users.find(u => u.email === email && u.password === hashPassword(password));
-        return user || null;
+        const { data, error } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('email', email)
+            .eq('contrasena', hashPassword(password))
+            .single();
+
+        if (error || !data) return null;
+
+        return mapUsuarioToUser(data);
     } catch (error) {
         console.error("Error logging in user:", error);
         return null;
@@ -72,23 +80,19 @@ export async function loginUser(email: string, password: string): Promise<User |
 
 export async function getCurrentUser(): Promise<User | null> {
     try {
-        const cookieStore = cookies();
-        const userId = cookieStore.get('userId')?.value;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-        if (!userId || !fs.existsSync(USERS_PATH)) return null;
+        if (authError || !user) return null;
 
-        const users = await getUsers();
-        const currentUser = users.find(u => u.id === userId);
+        const { data, error } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('id', user.id)
+            .single();
 
-        if (currentUser) {
-            return {
-                ...currentUser,
-                visibility: String(currentUser.visibility) === 'true',
-                history: String(currentUser.history) === 'true',
-                sync: String(currentUser.sync) === 'true'
-            };
-        }
-        return null;
+        if (error || !data) return null;
+
+        return mapUsuarioToUser(data);
     } catch (error) {
         console.error("Error in getCurrentUser:", error);
         return null;
@@ -99,14 +103,36 @@ export async function updateUserProfile(updatedUser: Partial<User>): Promise<boo
     const currentUser = await getCurrentUser();
     if (!currentUser) return false;
 
-    const allUsers = await getUsers();
-    const index = allUsers.findIndex(u => u.id === currentUser.id);
-    if (index === -1) return false;
+    const updateData: Record<string, any> = {};
+    if (updatedUser.username !== undefined) updateData.nombre_usuario = updatedUser.username;
+    if (updatedUser.handle !== undefined) updateData.handle = updatedUser.handle;
+    if (updatedUser.bio !== undefined) updateData.bio = updatedUser.bio;
+    if (updatedUser.avatar !== undefined) updateData.avatar = updatedUser.avatar;
+    if (updatedUser.visibility !== undefined) updateData.visibilidad = updatedUser.visibility;
+    if (updatedUser.history !== undefined) updateData.historial = updatedUser.history;
+    if (updatedUser.sync !== undefined) updateData.sincronizacion = updatedUser.sync;
 
-    allUsers[index] = { ...allUsers[index], ...updatedUser };
+    const { error } = await supabase
+        .from('usuarios')
+        .update(updateData)
+        .eq('id', currentUser.id);
 
-    const csvData = Papa.unparse(allUsers, { header: true });
-    fs.writeFileSync(USERS_PATH, csvData);
+    return !error;
+}
 
-    return true;
+// Helper: map Supabase 'usuarios' row to app 'User' type
+function mapUsuarioToUser(row: any): User {
+    return {
+        id: row.id,
+        username: row.nombre_usuario,
+        handle: row.handle,
+        email: row.email,
+        password: row.contrasena,
+        bio: row.bio,
+        avatar: row.avatar,
+        joined: row.fecha_registro,
+        visibility: row.visibilidad,
+        history: row.historial,
+        sync: row.sincronizacion,
+    };
 }

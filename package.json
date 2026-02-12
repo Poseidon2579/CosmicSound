@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.11.0",
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/auth-helpers-react": "^0.15.0",
+    "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/container-queries": "^0.1.1",
     "autoprefixer": "^10.4.24",
     "framer-motion": "^11.0.0",

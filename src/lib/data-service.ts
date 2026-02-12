@@ -1,233 +1,162 @@
-import fs from 'fs';
-import path from 'path';
-import Papa from 'papaparse';
-
-const CSV_PATH = path.join(process.cwd(), 'dataset', 'Spotify_Youtube.csv', 'Spotify_Youtube.csv');
-const REVIEWS_PATH = path.join(process.cwd(), 'src', 'data', 'reviews.csv');
-const LIKES_PATH = path.join(process.cwd(), 'src', 'data', 'likes.csv');
-
+import { supabase } from './supabase';
 import { Song, Review, Like } from '@/types';
 
-
-let cachedSongs: Song[] = [];
-
-function extractYoutubeId(url: string): string {
-    if (!url) return "";
-    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([^?&"'>]+)/);
-    return match ? match[1] : "";
-}
+// ==================== CANCIONES (Songs) ====================
 
 export async function getAllSongs(): Promise<Song[]> {
-    if (cachedSongs.length > 0) return cachedSongs;
+    const { data, error } = await supabase
+        .from('canciones')
+        .select('*')
+        .order('vistas', { ascending: false });
 
-    return new Promise((resolve, reject) => {
-        const songs: Song[] = [];
-        const stream = fs.createReadStream(CSV_PATH);
+    if (error || !data) {
+        console.error('Error fetching songs:', error);
+        return [];
+    }
 
-        let globalIndex = 0;
-        Papa.parse(stream, {
-            header: true,
-            skipEmptyLines: true,
-            chunk: (results) => {
-                const chunkSongs = (results.data as any[]).map((row) => {
-                    const ytId = extractYoutubeId(row.Url_youtube);
-                    if (!ytId || !row.Artist || !row.Track) return null;
-
-                    const id = globalIndex.toString();
-                    globalIndex++;
-
-                    return {
-                        id,
-                        artist: row.Artist,
-                        track: row.Track,
-                        album: row.Album || "Unknown",
-                        youtubeId: ytId,
-                        views: parseInt(row.Views) || 0,
-                        likes: parseInt(row.Likes) || 0,
-                        genre: "Musical",
-                    };
-                }).filter((s): s is Song => s !== null);
-
-                songs.push(...chunkSongs);
-            },
-            complete: () => {
-                cachedSongs = songs;
-                console.log(`Loaded ${songs.length} songs from CSV`);
-                resolve(songs);
-            },
-            error: (err: any) => reject(err),
-        });
-    });
+    return data.map(mapCancionToSong);
 }
 
-export async function getReviewsForSong(songId: string): Promise<Review[]> {
-    if (!fs.existsSync(REVIEWS_PATH)) return [];
+// ==================== RESEÑAS (Reviews) ====================
 
-    const fileContent = fs.readFileSync(REVIEWS_PATH, 'utf8');
-    return new Promise((resolve) => {
-        Papa.parse(fileContent, {
-            header: true,
-            skipEmptyLines: 'greedy',
-            complete: (results) => {
-                const allReviews = results.data as any[];
-                const filtered = allReviews
-                    .filter(r => r.songId && String(r.songId).trim() === String(songId).trim())
-                    .map(r => ({
-                        ...r,
-                        rating: parseFloat(r.rating) || 0,
-                        verified: String(r.verified) === 'true'
-                    }));
-                resolve(filtered);
-            }
-        });
-    });
+export async function getReviewsForSong(songId: string): Promise<Review[]> {
+    const { data, error } = await supabase
+        .from('resenas')
+        .select('*')
+        .eq('cancion_id', songId);
+
+    if (error || !data) return [];
+
+    return data.map(mapResenaToReview);
 }
 
 export async function getRecentReviews(limit: number = 10): Promise<Review[]> {
-    if (!fs.existsSync(REVIEWS_PATH)) return [];
+    const { data, error } = await supabase
+        .from('resenas')
+        .select('*')
+        .order('id', { ascending: false })
+        .limit(limit);
 
-    const fileContent = fs.readFileSync(REVIEWS_PATH, 'utf8');
-    return new Promise((resolve) => {
-        Papa.parse(fileContent, {
-            header: true,
-            skipEmptyLines: 'greedy',
-            complete: (results) => {
-                const allReviews = (results.data as any[])
-                    .filter(r => r.user && r.comment) // Basic validation
-                    .map(r => ({
-                        ...r,
-                        rating: parseFloat(r.rating) || 0,
-                        verified: String(r.verified) === 'true'
-                    }));
-                // Return latest reviews
-                resolve(allReviews.reverse().slice(0, limit));
-            }
-        });
-    });
+    if (error || !data) return [];
+
+    return data.map(mapResenaToReview);
 }
 
 export async function addReview(review: Review) {
-    const dir = path.dirname(REVIEWS_PATH);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const { error } = await supabase
+        .from('resenas')
+        .insert({
+            usuario: review.user,
+            avatar: review.avatar,
+            fecha: review.time,
+            cancion_id: review.songId,
+            comentario: review.comment,
+            calificacion: review.rating,
+            verificado: review.verified,
+        });
 
-    // Clean up current file to avoid trailing newlines issues
-    let currentContent = "";
-    if (fs.existsSync(REVIEWS_PATH)) {
-        currentContent = fs.readFileSync(REVIEWS_PATH, 'utf8').trim();
-    }
-
-    const reviewLine = {
-        user: review.user,
-        avatar: review.avatar,
-        time: review.time,
-        songId: review.songId,
-        comment: review.comment,
-        rating: review.rating,
-        verified: review.verified
-    };
-
-    const csvData = Papa.unparse([reviewLine], { header: !currentContent });
-
-    if (currentContent) {
-        fs.writeFileSync(REVIEWS_PATH, `${currentContent}\n${csvData}`);
-    } else {
-        fs.writeFileSync(REVIEWS_PATH, csvData);
+    if (error) {
+        console.error('Error adding review:', error);
     }
 }
 
 export async function getReviewsByUser(username: string): Promise<Review[]> {
-    if (!fs.existsSync(REVIEWS_PATH)) return [];
+    const { data, error } = await supabase
+        .from('resenas')
+        .select('*')
+        .eq('usuario', username);
 
-    const fileContent = fs.readFileSync(REVIEWS_PATH, 'utf8');
-    return new Promise((resolve) => {
-        Papa.parse(fileContent, {
-            header: true,
-            skipEmptyLines: 'greedy',
-            complete: (results) => {
-                const allReviews = results.data as any[];
-                const filtered = allReviews
-                    .filter(r => r.user && String(r.user).trim() === String(username).trim())
-                    .map(r => ({
-                        ...r,
-                        rating: parseFloat(r.rating) || 0,
-                        verified: String(r.verified) === 'true'
-                    }));
-                resolve(filtered);
-            }
-        });
-    });
+    if (error || !data) return [];
+
+    return data.map(mapResenaToReview);
 }
 
-// --- Likes System ---
-
-// Like interface imported from @/types
+// ==================== FAVORITOS (Likes) ====================
 
 export async function getLikedSongs(userId: string): Promise<Song[]> {
-    if (!fs.existsSync(LIKES_PATH)) return [];
+    const { data: favData, error: favError } = await supabase
+        .from('favoritos')
+        .select('cancion_id')
+        .eq('usuario_id', userId);
 
-    const fileContent = fs.readFileSync(LIKES_PATH, 'utf8');
-    const likes: Like[] = await new Promise((resolve) => {
-        Papa.parse(fileContent, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => resolve(results.data as Like[])
-        });
-    });
+    if (favError || !favData || favData.length === 0) return [];
 
-    const userLikes = likes.filter(l => l.userId === userId).map(l => l.songId);
-    if (userLikes.length === 0) return [];
+    const songIds = favData.map(f => f.cancion_id);
 
-    // Optimize: Fetch all songs once (cached) and filter
-    const allSongs = await getAllSongs();
-    return allSongs.filter(s => userLikes.includes(s.id));
+    const { data: songsData, error: songsError } = await supabase
+        .from('canciones')
+        .select('*')
+        .in('id', songIds);
+
+    if (songsError || !songsData) return [];
+
+    return songsData.map(mapCancionToSong);
 }
 
 export async function toggleLike(userId: string, songId: string): Promise<boolean> {
-    if (!fs.existsSync(LIKES_PATH)) return false;
+    // Check if already liked
+    const { data: existing } = await supabase
+        .from('favoritos')
+        .select('id')
+        .eq('usuario_id', userId)
+        .eq('cancion_id', songId)
+        .single();
 
-    const fileContent = fs.readFileSync(LIKES_PATH, 'utf8');
-    let likes: Like[] = await new Promise((resolve) => {
-        Papa.parse(fileContent, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => resolve(results.data as Like[])
-        });
-    });
-
-    const existingIndex = likes.findIndex(l => l.userId === userId && l.songId === songId);
-    let isLiked = false;
-
-    if (existingIndex > -1) {
+    if (existing) {
         // Unlike
-        likes.splice(existingIndex, 1);
-        isLiked = false;
+        await supabase
+            .from('favoritos')
+            .delete()
+            .eq('usuario_id', userId)
+            .eq('cancion_id', songId);
+        return false;
     } else {
         // Like
-        likes.push({
-            userId,
-            songId,
-            timestamp: new Date().toISOString()
-        });
-        isLiked = true;
+        await supabase
+            .from('favoritos')
+            .insert({
+                usuario_id: userId,
+                cancion_id: songId,
+                fecha: new Date().toISOString(),
+            });
+        return true;
     }
-
-    const csv = Papa.unparse(likes);
-    fs.writeFileSync(LIKES_PATH, csv);
-
-    return isLiked;
 }
 
 export async function isSongLiked(userId: string, songId: string): Promise<boolean> {
-    if (!fs.existsSync(LIKES_PATH)) return false;
+    const { data } = await supabase
+        .from('favoritos')
+        .select('id')
+        .eq('usuario_id', userId)
+        .eq('cancion_id', songId)
+        .single();
 
-    const fileContent = fs.readFileSync(LIKES_PATH, 'utf8');
-    let likes: Like[] = await new Promise((resolve) => {
-        Papa.parse(fileContent, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => resolve(results.data as Like[])
-        });
-    });
+    return !!data;
+}
 
-    return likes.some(l => l.userId === userId && l.songId === songId);
+// ==================== MAPPERS ====================
+
+function mapCancionToSong(row: any): Song {
+    return {
+        id: row.id,
+        artist: row.artista,
+        track: row.titulo,
+        album: row.album,
+        youtubeId: row.youtube_id,
+        views: row.vistas || 0,
+        likes: row.me_gusta || 0,
+        genre: row.genero || 'Musical',
+    };
+}
+
+function mapResenaToReview(row: any): Review {
+    return {
+        user: row.usuario,
+        avatar: row.avatar,
+        time: row.fecha,
+        songId: row.cancion_id,
+        comment: row.comentario,
+        rating: row.calificacion || 0,
+        verified: row.verificado || false,
+    };
 }
