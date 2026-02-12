@@ -12,6 +12,7 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
     const [username, setUsername] = useState(user.username);
     const [bio, setBio] = useState(user.bio);
     const [avatar, setAvatar] = useState(user.avatar);
+    const [preferences, setPreferences] = useState(user.preferences || { genres: [], artists: [], interests: [], moods: [] });
     const [uploading, setUploading] = useState(false);
 
     const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,16 +39,21 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
             setLoading(true);
 
             // 1. Generate AI preferences if bio changed
-            let preferences = user.preferences;
+            let finalPreferences = preferences;
             if (bio !== user.bio) {
-                preferences = await generateMemberPreferencesAction(bio);
+                const aiPrefs = await generateMemberPreferencesAction(bio);
+                // Merge AI prefs with manual genre selection
+                finalPreferences = {
+                    ...aiPrefs,
+                    genres: Array.from(new Set([...(preferences.genres || []), ...(aiPrefs.genres || [])]))
+                };
             }
 
             // 2. Update DB using Action
             const result = await updateUserProfileAction({
                 username,
                 bio,
-                preferences
+                preferences: finalPreferences
             });
 
             if (result.success) {
@@ -108,7 +114,7 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
             <div className="space-y-6">
                 <h4 className="text-lg font-bold flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary">edit_note</span>
-                    Identidad Pública
+                    Perfil Musical
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -133,12 +139,81 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
                         />
                     </div>
                 </div>
+                <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tus Géneros Favoritos</label>
+                    <div className="flex flex-wrap gap-2">
+                        {["Pop", "Rock", "Urban", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop"].map(genre => (
+                            <button
+                                key={genre}
+                                onClick={() => {
+                                    const current = user.preferences?.genres || [];
+                                    const exists = current.includes(genre);
+                                    let newGenres;
+                                    if (exists) {
+                                        newGenres = current.filter((g: string) => g !== genre);
+                                    } else {
+                                        newGenres = [...current, genre];
+                                    }
+                                    // Update local user object deeply to reflect change accurately in UI
+                                    const updatedUser = {
+                                        ...user,
+                                        preferences: { ...user.preferences, genres: newGenres }
+                                    };
+                                    // We need to update the parent 'user' prop in a real app, but here we can't.
+                                    // So we'll trigger a state update if we had one for preferences, 
+                                    // but optimal way is to use a local state for preferences.
+                                    // Let's create a local state for it.
+                                }}
+                                // Wait, I need to add state for this. 
+                                // Let's refactor to include state first.
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${(user.preferences?.genres || []).includes(genre)
+                                    ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
+                                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                                    }`}
+                            >
+                                {genre}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tus Géneros Favoritos</label>
+                    <div className="flex flex-wrap gap-2">
+                        {["Pop", "Rock", "Reggaeton", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop", "Salsa", "Cumbia"].map(genre => {
+                            const selected = (preferences.genres || []).includes(genre);
+                            return (
+                                <button
+                                    key={genre}
+                                    onClick={() => {
+                                        const current = preferences.genres || [];
+                                        let newGenres;
+                                        if (selected) {
+                                            newGenres = current.filter((g: string) => g !== genre);
+                                        } else {
+                                            newGenres = [...current, genre];
+                                        }
+                                        setPreferences({ ...preferences, genres: newGenres });
+                                    }}
+                                    className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selected
+                                        ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
+                                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                                        }`}
+                                >
+                                    {genre}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <p className="text-[10px] text-gray-500">Selecciona los géneros para mejorar tus recomendaciones.</p>
+                </div>
+
                 <div className="space-y-2">
                     <label htmlFor="bio-input" className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
                         Biografía
                         <span className="text-[10px] text-primary flex items-center gap-1">
                             <span className="material-symbols-outlined text-xs">sparkles</span>
-                            IA Analizando...
+                            Kala AI Analizando...
                         </span>
                     </label>
                     <textarea

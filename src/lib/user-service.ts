@@ -93,14 +93,38 @@ export async function getCurrentUser(): Promise<User | null> {
             .single();
 
         if (error || !data) {
+            // Auto-register user to fix session persistence
+            const newUsuario = {
+                id: user.id,
+                email: user.email || '',
+                nombre_usuario: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Nuevo Usuario',
+                handle: `user_${Date.now().toString().slice(-6)}`,
+                avatar: user.user_metadata?.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${user.email}`,
+                fecha_registro: new Date().toISOString().split('T')[0],
+                visibilidad: true,
+                historial: true,
+                sincronizacion: true,
+                bio: 'Cuenta en proceso de configuración.',
+                preferencias: {}
+            };
+
+            const { error: insertError } = await supabaseBrowser
+                .from('usuarios')
+                .insert(newUsuario);
+
+            if (!insertError) {
+                return mapUsuarioToUser(newUsuario);
+            }
+
+            // Fallback if insert fails (shouldn't happen often)
             return {
                 id: user.id,
-                username: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Nuevo Usuario',
+                username: newUsuario.nombre_usuario,
                 handle: 'completar_perfil',
-                email: user.email || '',
-                bio: 'Cuenta en proceso de configuración.',
-                avatar: user.user_metadata?.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${user.email}`,
-                joined: new Date().toISOString().split('T')[0],
+                email: newUsuario.email,
+                bio: newUsuario.bio,
+                avatar: newUsuario.avatar,
+                joined: newUsuario.fecha_registro,
                 visibility: true,
                 history: true,
                 sync: true,

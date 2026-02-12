@@ -1,14 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { toggleLike, isSongLiked, getLikedSongs } from '@/lib/data-service';
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
     try {
         const cookieStore = cookies();
-        const userId = cookieStore.get('userId')?.value;
 
-        // If no custom cookie, try standard Supabase auth
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    get(name) {
+                        return cookieStore.get(name)?.value;
+                    },
+                    set(name, value, options) {
+                        cookieStore.set({ name, value, ...options });
+                    },
+                    remove(name, options) {
+                        cookieStore.set({ name, value: '', ...options });
+                    },
+                },
+            }
+        );
+
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        // Fallback to legacy cookie if needed (for older sessions)
+        const legacyUserId = cookieStore.get('userId')?.value;
+        const userId = user?.id || legacyUserId;
+
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -19,11 +41,6 @@ export async function POST(request: NextRequest) {
         if (!songId) {
             return NextResponse.json({ error: 'Missing songId' }, { status: 400 });
         }
-
-        // Direct DB operation with the server client (or just the shared one since we validate ID manually)
-        // But since we are validating "userId" from cookie, we can trust it for now.
-        // ideally we use supabase.auth.getUser() but we are using custom auth implementation from previous turns?
-        // Let's stick to the same logic as data-service but inline to avoid issues
 
         // Check if already liked
         const { data: existing } = await supabase
@@ -64,7 +81,23 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     const cookieStore = cookies();
-    const userId = cookieStore.get('userId')?.value;
+
+    // Use Supabase Auth for GET as well
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name) {
+                    return cookieStore.get(name)?.value;
+                },
+            },
+        }
+    );
+
+    const { data: { user } } = await supabase.auth.getUser();
+    const legacyUserId = cookieStore.get('userId')?.value;
+    const userId = user?.id || legacyUserId;
 
     if (!userId) {
         // Return neutral response for guests instead of 401 to avoid console errors
