@@ -49,13 +49,18 @@ export default function Home() {
           rating: ratingsMap[s.id]?.avg || 0
         }));
 
-        setRecommended(attachRating(recs));
-        setTrends(attachRating(trendingList));
-        setTop10(attachRating(topSongs));
+        const recsWithRatings = attachRating(recs);
+        const trendsWithRatings = attachRating(trendingList);
+        const topWithRatings = attachRating(topSongs);
+        const allSongsWithRatings = attachRating(allSongs);
 
-        // Discovery (Random)
-        if (allSongs.length > 0) {
-          setDiscovery(allSongs[Math.floor(Math.random() * allSongs.length)]);
+        setRecommended(recsWithRatings);
+        setTrends(trendsWithRatings);
+        setTop10(topWithRatings);
+
+        // Discovery (Random) - Ensure it has rating!
+        if (allSongsWithRatings.length > 0) {
+          setDiscovery(allSongsWithRatings[Math.floor(Math.random() * allSongsWithRatings.length)]);
         }
       } catch (err) {
         console.error("Failed to fetch page data", err);
@@ -88,8 +93,11 @@ export default function Home() {
                 key={discovery.id}
                 song={discovery}
                 onNext={() => {
-                  // Play a random recommended song next
-                  const next = recommended[Math.floor(Math.random() * recommended.length)] || discovery;
+                  // Play a random recommended song next, ensuring it's different
+                  const remaining = recommended.filter(s => s.id !== discovery.id);
+                  const next = remaining.length > 0
+                    ? remaining[Math.floor(Math.random() * remaining.length)]
+                    : recommended[0]; // Fallback if only 1 song
                   setDiscovery(next);
                 }}
               />

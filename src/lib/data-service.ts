@@ -35,21 +35,29 @@ export async function getTopSongs(limit: number = 10): Promise<Song[]> {
 
     // Deduplicate logic
     const uniqueMap = new Map();
-    songs.forEach(song => {
-        const key = `${song.track.trim().toLowerCase()}-${song.artist.trim().toLowerCase()}`;
-        const ytKey = song.youtubeId || "no-yt";
+    const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-        if (!uniqueMap.has(key) && !uniqueMap.has(ytKey)) {
-            uniqueMap.set(key, song);
-            if (song.youtubeId) uniqueMap.set(ytKey, song);
-        }
+    songs.forEach(song => {
+        // Create a normalized key that ignores "ft", "feat", special chars
+        const normTitle = normalize(song.track);
+        // We use just the first 10 chars of title + first 5 of artist for fuzzy matching if needed, 
+        // but strict normalized title + youtubeID is usually safer.
+        // Let's rely on strict YouTube ID first, then Normalized Title + Normalized Artist
+
+        const ytKey = song.youtubeId;
+        const contentKey = `${normTitle}-${normalize(song.artist)}`;
+
+        if (uniqueMap.has(ytKey)) return;
+        if (uniqueMap.has(contentKey)) return;
+
+        uniqueMap.set(ytKey, song);
+        uniqueMap.set(contentKey, song); // Reserve this spot
     });
 
-    const finalUnique = Array.from(new Set(uniqueMap.values()));
-    const reallyUnique = new Map();
-    finalUnique.forEach(s => reallyUnique.set(s.id, s));
+    // Extract unique songs (values will be duplicated in map, so use Set)
+    const uniqueSongs = Array.from(new Set(uniqueMap.values()));
 
-    return Array.from(reallyUnique.values()).slice(0, limit);
+    return uniqueSongs.slice(0, limit);
 }
 
 export async function searchSongs(query: string, page: number = 1, limit: number = 20): Promise<{ songs: Song[], total: number }> {
