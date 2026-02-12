@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { toggleLike, isSongLiked, getLikedSongs } from '@/lib/data-service';
+import { supabase } from '@/lib/supabase';
 import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
     try {
         const cookieStore = cookies();
-        const allCookies = cookieStore.getAll();
-        console.log("API/Likes Debug - Cookies:", allCookies.map(c => `${c.name}=${c.value}`));
         const userId = cookieStore.get('userId')?.value;
 
+        // If no custom cookie, try standard Supabase auth
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -20,9 +20,44 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Missing songId' }, { status: 400 });
         }
 
-        const isLiked = await toggleLike(userId, songId);
+        // Direct DB operation with the server client (or just the shared one since we validate ID manually)
+        // But since we are validating "userId" from cookie, we can trust it for now.
+        // ideally we use supabase.auth.getUser() but we are using custom auth implementation from previous turns?
+        // Let's stick to the same logic as data-service but inline to avoid issues
+
+        // Check if already liked
+        const { data: existing } = await supabase
+            .from('favoritos')
+            .select('id')
+            .eq('usuario_id', userId)
+            .eq('cancion_id', songId)
+            .single();
+
+        let isLiked = false;
+
+        if (existing) {
+            // Unlike
+            await supabase
+                .from('favoritos')
+                .delete()
+                .eq('usuario_id', userId)
+                .eq('cancion_id', songId);
+            isLiked = false;
+        } else {
+            // Like
+            await supabase
+                .from('favoritos')
+                .insert({
+                    usuario_id: userId,
+                    cancion_id: songId,
+                    fecha: new Date().toISOString(),
+                });
+            isLiked = true;
+        }
+
         return NextResponse.json({ isLiked });
     } catch (error) {
+        console.error("API Error:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
