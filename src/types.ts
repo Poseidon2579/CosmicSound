@@ -11,6 +11,7 @@ export interface User {
     history: boolean;
     sync: boolean;
     isPartial?: boolean;
+    preferences?: any;
 }
 
 export interface Song {

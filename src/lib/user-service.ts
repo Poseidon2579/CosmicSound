@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { cookies } from 'next/headers';
 import { User } from '@/types';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Simple Base64 "hash" for demonstration purposes
 const hashPassword = (password: string) => Buffer.from(password).toString('base64');
@@ -142,6 +143,7 @@ export async function updateUserProfile(updatedUser: Partial<User>): Promise<boo
     if (updatedUser.visibility !== undefined) updateData.visibilidad = updatedUser.visibility;
     if (updatedUser.history !== undefined) updateData.historial = updatedUser.history;
     if (updatedUser.sync !== undefined) updateData.sincronizacion = updatedUser.sync;
+    if (updatedUser.preferences !== undefined) updateData.preferencias = updatedUser.preferences;
 
     const { error } = await supabase
         .from('usuarios')
@@ -149,6 +151,61 @@ export async function updateUserProfile(updatedUser: Partial<User>): Promise<boo
         .eq('id', currentUser.id);
 
     return !error;
+}
+
+export async function uploadAvatar(file: File): Promise<string | null> {
+    try {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) return null;
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${currentUser.id}-${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, file);
+
+        if (uploadError) {
+            console.error("Upload error:", uploadError);
+            return null;
+        }
+
+        const { data } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+        return data.publicUrl;
+    } catch (error) {
+        console.error("Error uploading avatar:", error);
+        return null;
+    }
+}
+
+export async function generateMemberPreferences(bio: string): Promise<any> {
+    try {
+        const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const prompt = `Analiza la siguiente biografía de un usuario de una red social de música y extrae sus preferencias musicales en formato JSON. 
+        Incluye géneros, artistas, instrumentos o vibras mencionadas. 
+        Bio: "${bio}"
+        Formato de salida esperado: { "genres": [], "artists": [], "interests": [], "moods": [] }`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        // Clean markdown if present
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            return JSON.parse(jsonMatch[0]);
+        }
+        return {};
+    } catch (error) {
+        console.error("Error generating preferences:", error);
+        return {};
+    }
 }
 
 // Helper: map Supabase 'usuarios' row to app 'User' type
@@ -165,5 +222,6 @@ function mapUsuarioToUser(row: any): User {
         visibility: row.visibilidad,
         history: row.historial,
         sync: row.sincronizacion,
+        preferences: row.preferencias
     };
 }

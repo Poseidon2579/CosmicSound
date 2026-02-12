@@ -14,8 +14,19 @@ CREATE TABLE IF NOT EXISTS usuarios (
   fecha_registro DATE DEFAULT CURRENT_DATE,
   visibilidad BOOLEAN DEFAULT true,
   historial BOOLEAN DEFAULT true,
-  sincronizacion BOOLEAN DEFAULT true
+  sincronizacion BOOLEAN DEFAULT true,
+  preferencias JSONB DEFAULT '{}'::jsonb -- Vector-ready preferences
 );
+
+-- Configuración de Storage para Avatares
+-- Nota: El bucket 'avatars' debe ser creado manualmente en el dashboard o por API
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "Avatares públicos" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+CREATE POLICY "Usuarios suben sus avatares" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars');
+CREATE POLICY "Usuarios borran sus avatares" ON storage.objects FOR DELETE USING (bucket_id = 'avatars');
 
 -- Tabla: canciones
 CREATE TABLE IF NOT EXISTS canciones (
@@ -74,11 +85,12 @@ CREATE POLICY "Eliminar favoritos" ON favoritos FOR DELETE USING (true);
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.usuarios (id, nombre_usuario, email, avatar)
+  INSERT INTO public.usuarios (id, nombre_usuario, email, contrasena, avatar)
   VALUES (
     new.id,
     COALESCE(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Anonymous'),
     new.email,
+    'oauth_account', -- Contraseña de relleno para evitar el error
     new.raw_user_meta_data->>'avatar_url'
   );
   RETURN NEW;
