@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 interface YouTubePlayerProps {
     youtubeId: string;
     nextSongId?: string;
+    onEnd?: () => void;
 }
 
 declare global {
@@ -38,9 +39,13 @@ export default function YouTubePlayer({ youtubeId, nextSongId }: YouTubePlayerPr
 
         const onPlayerStateChange = (event: any) => {
             // YT.PlayerState.ENDED is 0
-            if (event.data === 0 && nextSongId) {
-                console.log("Song ended, moving to next:", nextSongId);
-                router.push(`/track/${nextSongId}`);
+            if (event.data === 0) {
+                if (onEnd) {
+                    onEnd();
+                } else if (nextSongId) {
+                    console.log("Song ended, moving to next:", nextSongId);
+                    router.push(`/track/${nextSongId}`);
+                }
             }
         };
 

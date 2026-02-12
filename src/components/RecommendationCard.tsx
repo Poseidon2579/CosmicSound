@@ -1,4 +1,5 @@
 import Link from "next/link";
+import YouTubePlayer from "./YouTubePlayer";
 
 interface Song {
     id: string;
@@ -8,7 +9,7 @@ interface Song {
     youtubeId: string;
 }
 
-export default function RecommendationCard({ song }: { song: Song }) {
+export default function RecommendationCard({ song, onNext }: { song: Song, onNext?: () => void }) {
     if (!song) return null;
 
     return (
@@ -21,16 +22,13 @@ export default function RecommendationCard({ song }: { song: Song }) {
                 {/* Background Glow for Card */}
                 <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/10 blur-[80px] rounded-full pointer-events-none"></div>
 
-                <Link href={`/track/${song.id}`} className="relative group shrink-0 w-full md:w-[240px]">
-                    <img
-                        className="w-full aspect-square object-cover rounded-xl shadow-2xl group-hover:scale-[1.02] transition-transform duration-500"
-                        alt={song.track}
-                        src={`https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`}
+                {/* Video Player Container */}
+                <div className="relative shrink-0 w-full md:w-[320px] aspect-video rounded-xl shadow-2xl overflow-hidden bg-black group-hover:scale-[1.02] transition-transform duration-500 z-20">
+                    <YouTubePlayer
+                        youtubeId={song.youtubeId}
+                        onEnd={onNext}
                     />
-                    <div className="absolute inset-0 m-auto size-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110">
-                        <span className="material-symbols-outlined !text-3xl fill-1">play_arrow</span>
-                    </div>
-                </Link>
+                </div>
 
                 <div className="flex flex-col gap-4 relative z-10">
                     <div className="flex items-center gap-3">

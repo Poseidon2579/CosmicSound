@@ -83,7 +83,17 @@ export default function Home() {
 
           {/* Main Content Grid: Discovery + Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {discovery && <RecommendationCard song={discovery} />}
+            {discovery && (
+              <RecommendationCard
+                key={discovery.id}
+                song={discovery}
+                onNext={() => {
+                  // Play a random recommended song next
+                  const next = recommended[Math.floor(Math.random() * recommended.length)] || discovery;
+                  setDiscovery(next);
+                }}
+              />
+            )}
             <ActivityFeed />
           </div>
 
