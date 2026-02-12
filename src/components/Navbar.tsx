@@ -1,13 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { User } from "@/types";
+import { signOut } from "@/lib/auth-service";
 
 export default function Navbar({ user }: { user: User | null }) {
     const pathname = usePathname();
+    const router = useRouter();
 
     if (pathname === '/signin') return null;
+
+    const handleLogout = async () => {
+        try {
+            await signOut();
+            // Optional: also call the API if you want to clear other custom cookies
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/signin';
+        } catch (error) {
+            console.error("Error signing out:", error);
+            window.location.href = '/signin';
+        }
+    };
 
     return (
         <header className="flex items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
@@ -40,10 +54,7 @@ export default function Navbar({ user }: { user: User | null }) {
                                 </div>
                             </Link>
                             <button
-                                onClick={async () => {
-                                    await fetch('/api/auth/logout', { method: 'POST' });
-                                    window.location.href = '/signin';
-                                }}
+                                onClick={handleLogout}
                                 className="text-xs font-bold uppercase tracking-widest text-white/50 hover:text-red-400 transition-colors"
                             >
                                 Salir
