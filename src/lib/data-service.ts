@@ -19,18 +19,37 @@ export async function getAllSongs(): Promise<Song[]> {
 }
 
 export async function getTopSongs(limit: number = 10): Promise<Song[]> {
+    // Fetch more than limit to allow for deduplication
     const { data, error } = await supabase
         .from('canciones')
         .select('*')
         .order('vistas', { ascending: false })
-        .limit(limit);
+        .limit(limit * 5); // Fetch 5x to be safe
 
     if (error || !data) {
         console.error('Error fetching top songs:', error);
         return [];
     }
 
-    return data.map(mapCancionToSong);
+    const songs = data.map(mapCancionToSong);
+
+    // Deduplicate logic
+    const uniqueMap = new Map();
+    songs.forEach(song => {
+        const key = `${song.track.trim().toLowerCase()}-${song.artist.trim().toLowerCase()}`;
+        const ytKey = song.youtubeId || "no-yt";
+
+        if (!uniqueMap.has(key) && !uniqueMap.has(ytKey)) {
+            uniqueMap.set(key, song);
+            if (song.youtubeId) uniqueMap.set(ytKey, song);
+        }
+    });
+
+    const finalUnique = Array.from(new Set(uniqueMap.values()));
+    const reallyUnique = new Map();
+    finalUnique.forEach(s => reallyUnique.set(s.id, s));
+
+    return Array.from(reallyUnique.values()).slice(0, limit);
 }
 
 export async function searchSongs(query: string, page: number = 1, limit: number = 20): Promise<{ songs: Song[], total: number }> {
