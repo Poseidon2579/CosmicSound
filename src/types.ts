@@ -10,6 +10,7 @@ export interface User {
     visibility: boolean;
     history: boolean;
     sync: boolean;
+    isPartial?: boolean;
 }
 
 export interface Song {

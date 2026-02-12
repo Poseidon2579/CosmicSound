@@ -83,8 +83,6 @@ import { createServerClient } from '@supabase/auth-helpers-nextjs';
 export async function getCurrentUser(): Promise<User | null> {
     try {
         const cookieStore = cookies();
-        const allCookies = cookieStore.getAll();
-        console.log("[getCurrentUser] Available Cookies:", allCookies.map(c => c.name));
 
         const supabaseServer = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -108,7 +106,22 @@ export async function getCurrentUser(): Promise<User | null> {
             .eq('id', user.id)
             .single();
 
-        if (error || !data) return null;
+        if (error || !data) {
+            // Return a partial user so the UI knows we have a session but no profile
+            return {
+                id: user.id,
+                username: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Nuevo Usuario',
+                handle: 'completar_perfil',
+                email: user.email || '',
+                bio: 'Cuenta en proceso de configuración.',
+                avatar: user.user_metadata?.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${user.email}`,
+                joined: new Date().toISOString().split('T')[0],
+                visibility: true,
+                history: true,
+                sync: true,
+                isPartial: true
+            };
+        }
 
         return mapUsuarioToUser(data);
     } catch (error) {
