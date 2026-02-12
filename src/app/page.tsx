@@ -4,14 +4,16 @@ import Hero from "@/components/Hero";
 import SongCard from "@/components/SongCard";
 import RecommendationCard from "@/components/RecommendationCard";
 import ActivityFeed from "@/components/ActivityFeed";
+import MusicCarousel from "@/components/MusicCarousel";
 import { useState, useEffect } from "react";
 import { getCurrentUser, updatePreferencesFromSearch } from "@/lib/user-service";
-import { getAllSongs, getRecommendedSongs, getTrendingSongs } from "@/lib/data-service";
+import { getAllSongs, getRecommendedSongs, getTrendingSongs, getTopSongs, getSongRatings } from "@/lib/data-service";
 import { Song, User } from "@/types";
 
 export default function Home() {
-  const [trends, setTrends] = useState<Song[]>([]);
-  const [recommended, setRecommended] = useState<Song[]>([]);
+  const [trends, setTrends] = useState<(Song & { rating?: number })[]>([]);
+  const [recommended, setRecommended] = useState<(Song & { rating?: number })[]>([]);
+  const [top10, setTop10] = useState<(Song & { rating?: number })[]>([]);
   const [discovery, setDiscovery] = useState<Song | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -23,14 +25,30 @@ export default function Home() {
         setUser(currentUser);
 
         // Fetch parallel for performance
-        const [recs, trendingList, allSongs] = await Promise.all([
+        const [recs, trendingList, topSongs, allSongs] = await Promise.all([
           getRecommendedSongs(currentUser?.preferences),
           getTrendingSongs(),
+          getTopSongs(10),
           getAllSongs()
         ]);
 
-        setRecommended(recs);
-        setTrends(trendingList);
+        // Batch fetch ratings
+        const allFetchedIds = Array.from(new Set([
+          ...recs.map(s => s.id),
+          ...trendingList.map(s => s.id),
+          ...topSongs.map(s => s.id)
+        ]));
+
+        const ratingsMap = await getSongRatings(allFetchedIds);
+
+        const attachRating = (list: Song[]) => list.map(s => ({
+          ...s,
+          rating: ratingsMap[s.id]?.avg || 0
+        }));
+
+        setRecommended(attachRating(recs));
+        setTrends(attachRating(trendingList));
+        setTop10(attachRating(topSongs));
 
         // Discovery (Random)
         if (allSongs.length > 0) {
@@ -61,53 +79,51 @@ export default function Home() {
         <main className="layout-content-container flex flex-col max-w-[1200px] flex-1">
           <Hero onSearch={handleSearch} />
 
-          {/* AI Recommended Section */}
-          {recommended.length > 0 && (
-            <section className="mb-16">
-              <div className="flex items-center justify-between px-2 pb-5">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">Recomendado para ti</h2>
-                  <span className="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary/30 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[12px]">sparkles</span>
-                    AI
-                  </span>
-                </div>
-              </div>
+          {/* Top 10 Ranking */}
+          <section className="relative overflow-hidden mb-16 px-2">
+            <div className="flex items-center gap-2 mb-10">
+              <span className="material-symbols-outlined text-primary text-3xl">workspace_premium</span>
+              <h2 className="text-white text-3xl font-black italic uppercase tracking-tighter">Top 10 Global</h2>
+            </div>
 
-              <div className="flex w-full overflow-x-auto pb-4 gap-6 no-scrollbar">
-                {recommended.map((song) => (
-                  <div key={song.id} className="min-w-[160px]">
+            <MusicCarousel title="" icon={null}>
+              {top10.map((song, index) => (
+                <div key={song.id} className="relative group/top min-w-[280px] md:min-w-[320px] snap-start flex items-center gap-6 py-4">
+                  <div className="absolute left-[-15px] top-[-10px] text-[120px] font-black text-white/5 italic select-none z-0 group-hover/top:text-primary/10 transition-colors">
+                    {index + 1}
+                  </div>
+                  <div className="relative z-10 w-full pl-8">
                     <SongCard song={song} />
                   </div>
-                ))}
+                </div>
+              ))}
+            </MusicCarousel>
+          </section>
+
+          {/* AI Recommended Section */}
+          <MusicCarousel
+            title="Recomendado para ti"
+            subtitle="RKLES AI"
+            icon={<span className="material-symbols-outlined text-blue-400">psychology</span>}
+          >
+            {recommended.map((song) => (
+              <div key={song.id} className="min-w-[180px] md:min-w-[220px] snap-start">
+                <SongCard song={song} />
               </div>
-            </section>
-          )}
+            ))}
+          </MusicCarousel>
 
           {/* Trends Carousel */}
-          <section className="mb-16">
-            <div className="flex items-center justify-between px-2 pb-5">
-              <h2 className="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">Tendencias Ahora</h2>
-            </div>
-
-            <div className="flex w-full overflow-x-auto pb-4 gap-6 no-scrollbar">
-              {loading ? (
-                Array(6).fill(0).map((_, i) => (
-                  <div key={i} className="min-w-[160px] animate-pulse">
-                    <div className="w-full aspect-square bg-white/5 rounded-2xl mb-3"></div>
-                    <div className="h-4 bg-white/5 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-white/5 rounded w-1/2"></div>
-                  </div>
-                ))
-              ) : (
-                trends.map((song) => (
-                  <div key={song.id} className="min-w-[160px]">
-                    <SongCard song={song} />
-                  </div>
-                ))
-              )}
-            </div>
-          </section>
+          <MusicCarousel
+            title="Tendencias Ahora"
+            icon={<span className="material-symbols-outlined text-red-500 animate-pulse">trending_up</span>}
+          >
+            {trends.map((song) => (
+              <div key={song.id} className="min-w-[180px] md:min-w-[220px] snap-start">
+                <SongCard song={song} />
+              </div>
+            ))}
+          </MusicCarousel>
 
           {/* Main Content Grid: Discovery + Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">

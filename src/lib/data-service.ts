@@ -18,6 +18,21 @@ export async function getAllSongs(): Promise<Song[]> {
     return data.map(mapCancionToSong);
 }
 
+export async function getTopSongs(limit: number = 10): Promise<Song[]> {
+    const { data, error } = await supabase
+        .from('canciones')
+        .select('*')
+        .order('vistas', { ascending: false })
+        .limit(limit);
+
+    if (error || !data) {
+        console.error('Error fetching top songs:', error);
+        return [];
+    }
+
+    return data.map(mapCancionToSong);
+}
+
 export async function searchSongs(query: string, page: number = 1, limit: number = 20): Promise<{ songs: Song[], total: number }> {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -98,6 +113,34 @@ export async function getReviewsByUser(username: string): Promise<Review[]> {
     if (error || !data) return [];
 
     return data.map(mapResenaToReview);
+}
+
+export async function getSongRatings(songIds: string[]): Promise<Record<string, { avg: number, count: number }>> {
+    const { data, error } = await supabase
+        .from('resenas')
+        .select('cancion_id, calificacion')
+        .in('cancion_id', songIds);
+
+    if (error || !data) return {};
+
+    const ratings: Record<string, { sum: number, count: number }> = {};
+    data.forEach(row => {
+        if (!ratings[row.cancion_id]) {
+            ratings[row.cancion_id] = { sum: 0, count: 0 };
+        }
+        ratings[row.cancion_id].sum += row.calificacion || 0;
+        ratings[row.cancion_id].count += 1;
+    });
+
+    const result: Record<string, { avg: number, count: number }> = {};
+    Object.keys(ratings).forEach(id => {
+        result[id] = {
+            avg: ratings[id].sum / ratings[id].count,
+            count: ratings[id].count
+        };
+    });
+
+    return result;
 }
 
 // ==================== FAVORITOS (Likes) ====================

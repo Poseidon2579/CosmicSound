@@ -2,14 +2,31 @@ export const dynamic = 'force-dynamic';
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReviewForm from "@/components/ReviewForm";
-import { getAllSongs, getReviewsForSong } from "@/lib/data-service";
+import { getAllSongs, getReviewsForSong, getLikedSongs } from "@/lib/data-service";
 import { getCurrentUserServer as getCurrentUser } from "@/lib/user-service-server";
+import { Song } from "@/types";
+import FavoriteButton from "@/components/FavoriteButton";
+import YouTubePlayer from "@/components/YouTubePlayer";
 
-export default async function TrackPage({ params }: { params: { id: string } }) {
-    const songs = await getAllSongs();
-    const song = songs.find((s) => s.id === params.id);
+export default async function TrackPage({ params, searchParams }: { params: { id: string }, searchParams: { playlist?: string } }) {
+    const user = await getCurrentUser();
+    const isFavoritePlaylist = searchParams.playlist === 'favorites' && user;
+
+    let songs: Song[] = [];
+    if (isFavoritePlaylist) {
+        songs = await getLikedSongs(user.id);
+    }
+
+    // If not in favorites or favorites is empty/doesn't contain requested song, fallback to all
+    if (songs.length === 0 || !songs.find(s => s.id === params.id)) {
+        songs = await getAllSongs();
+    }
+
+    const songIndex = songs.findIndex((s) => s.id === params.id);
+    const song = songs[songIndex];
     if (!song) return notFound();
 
+    const nextSong = songs[(songIndex + 1) % songs.length];
     const reviews = await getReviewsForSong(params.id);
 
     return (
@@ -19,28 +36,23 @@ export default async function TrackPage({ params }: { params: { id: string } }) 
 
                     {/* Reproductor de Video */}
                     <section className="w-full">
-                        <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-surface-dark group border border-white/5">
-                            <iframe
-                                width="100%"
-                                height="100%"
-                                src={`https://www.youtube.com/embed/${song.youtubeId}?autoplay=0&rel=0&modestbranding=1`}
-                                title={song.track}
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                                className="relative z-10"
-                            ></iframe>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-20"></div>
-                        </div>
+                        <YouTubePlayer youtubeId={song.youtubeId} nextSongId={nextSong.id} />
                     </section>
 
                     {/* Información y Rating */}
                     <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
                         <div className="lg:col-span-7 flex flex-col gap-8">
-                            <div className="flex flex-col gap-2">
-                                <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                                    {song.track}
-                                </h1>
+                            <div className="flex flex-col gap-2 relative">
+                                <div className="flex items-center justify-between gap-4">
+                                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                                        {song.track}
+                                    </h1>
+                                    <FavoriteButton
+                                        songId={song.id}
+                                        iconSize={32}
+                                        className="size-14 bg-white/5 backdrop-blur-sm border border-white/10 shrink-0"
+                                    />
+                                </div>
                                 <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">
                                     Explorando el universo sonoro de {song.artist}.
                                 </p>

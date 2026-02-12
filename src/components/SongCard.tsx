@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import FavoriteButton from "./FavoriteButton";
 
 interface Song {
     id: string;
@@ -11,6 +12,7 @@ interface Song {
     artist: string;
     genre: string;
     youtubeId: string;
+    rating?: number;
 }
 
 export default function SongCard({ song }: { song: Song }) {
@@ -99,24 +101,24 @@ export default function SongCard({ song }: { song: Song }) {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
 
-                    {/* Like Button */}
-                    <button
-                        onClick={toggleLike}
-                        className={`absolute top-2 right-2 z-20 p-2 rounded-full transition-all duration-300 ${isLiked
-                            ? "bg-primary text-white scale-110 shadow-lg shadow-primary/40 opacity-100"
-                            : "bg-black/40 text-white hover:bg-black/60 opacity-0 group-hover:opacity-100"
-                            }`}
-                    >
-                        <span
-                            className={`material-symbols-outlined text-[20px] transition-transform ${isLiked && isAnimating ? "scale-125" : "scale-100"} ${isLiked ? 'fill-1' : 'fill-0'}`}
-                        >
-                            favorite
-                        </span>
-                    </button>
+                    {/* Favorite Button */}
+                    <FavoriteButton
+                        songId={song.id}
+                        initialLiked={isLiked}
+                        className="absolute top-2 right-2 z-20 size-9 bg-black/40 backdrop-blur-md opacity-0 group-hover:opacity-100"
+                    />
                 </div>
-                <div>
+                <div className="flex flex-col gap-0.5">
                     <p className="text-white text-sm font-semibold leading-tight line-clamp-1 group-hover:text-primary transition-colors">{song.track}</p>
-                    <p className="text-gray-500 text-xs mt-1">{song.artist} • {song.genre}</p>
+                    <div className="flex items-center justify-between mt-1">
+                        <p className="text-gray-500 text-[11px] truncate max-w-[70%]">{song.artist}</p>
+                        {song.rating !== undefined && (
+                            <div className="flex text-yellow-500 gap-0.5 items-center">
+                                <span className="material-symbols-outlined text-[12px] fill-1">star</span>
+                                <span className="text-[10px] font-bold text-gray-400">{song.rating.toFixed(1)}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </Link>

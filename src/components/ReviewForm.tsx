@@ -62,6 +62,21 @@ export default function ReviewForm({ songId, user }: { songId: string, user: Use
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Califica esta canción y comparte tu experiencia con la comunidad.</p>
 
             <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+                {!user && (
+                    <div className="absolute inset-0 bg-white/40 dark:bg-black/60 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center p-8 text-center">
+                        <div className="size-16 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-4">
+                            <span className="material-symbols-outlined text-4xl">lock</span>
+                        </div>
+                        <h4 className="text-xl font-bold text-white mb-2">Solo usuarios registrados</h4>
+                        <p className="text-sm text-gray-400 mb-6 max-w-xs">Sé parte del cosmos. Regístrate para guardar favoritos, calificar canciones y comentar.</p>
+                        <button
+                            onClick={(e) => { e.preventDefault(); router.push('/signin'); }}
+                            className="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-8 rounded-full shadow-lg shadow-primary/20 transition-all active:scale-95"
+                        >
+                            Iniciar Sesión
+                        </button>
+                    </div>
+                )}
                 <div className="flex flex-col gap-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tu Calificación</label>
                     <div className="flex gap-1">

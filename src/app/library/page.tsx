@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import SongCard from "@/components/SongCard";
 import { getLikedSongs } from "@/lib/data-service";
@@ -18,6 +19,15 @@ export default async function LibraryPage() {
                             <h1 className="text-4xl font-black tracking-tight text-white">Mi Universo</h1>
                             <p className="text-gray-400 mt-1">Tu colección personal de sonidos cósmicos.</p>
                         </div>
+                        {likedSongs.length > 0 && (
+                            <Link
+                                href={`/track/${likedSongs[0].id}?playlist=favorites`}
+                                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-primary/20 transition-all active:scale-95"
+                            >
+                                <span className="material-symbols-outlined fill-1">play_arrow</span>
+                                Reproducir Todo
+                            </Link>
+                        )}
                     </div>
 
                     {/* Tabs */}
@@ -25,17 +35,17 @@ export default async function LibraryPage() {
                         <button className="px-6 py-2 rounded-full bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20">
                             Canciones Guardadas
                         </button>
-                        <button className="px-6 py-2 rounded-full text-gray-400 text-sm font-bold hover:text-white transition-colors">
-                            Álbumes Favoritos
-                        </button>
                     </div>
                 </header>
 
                 <section className="flex-1 overflow-y-auto px-10 pb-32">
                     {likedSongs.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            {likedSongs.map(song => (
-                                <SongCard key={song.id} song={song} />
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                            {likedSongs.map((song, index) => (
+                                <SongCard
+                                    key={song.id}
+                                    song={song}
+                                />
                             ))}
                         </div>
                     ) : (
