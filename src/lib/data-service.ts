@@ -193,12 +193,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function getRecommendedSongs(userPreferences: any): Promise<Song[]> {
     try {
+        const allSongs = await getAllSongs();
+
+        // If no preferences, return mixed selection (not just first 6)
         if (!userPreferences || (!userPreferences.genres?.length && !userPreferences.artists?.length)) {
-            // Fallback to trends if no preferences
-            return getAllSongs().then(songs => songs.slice(0, 6));
+            return allSongs.sort(() => 0.5 - Math.random()).slice(0, 6);
         }
 
-        const allSongs = await getAllSongs();
         const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -216,9 +217,45 @@ export async function getRecommendedSongs(userPreferences: any): Promise<Song[]>
             return allSongs.filter(s => recommendedIds.includes(s.id));
         }
 
-        return allSongs.slice(0, 6);
+        return allSongs.sort(() => 0.5 - Math.random()).slice(0, 6);
     } catch (error) {
         console.error("Error getting AI recommendations:", error);
         return getAllSongs().then(songs => songs.slice(0, 6));
+    }
+}
+
+/**
+ * Get trending songs based on real February 2026 data.
+ * Tries to match global hits with the local database or provides a robust selection.
+ */
+export async function getTrendingSongs(): Promise<Song[]> {
+    try {
+        const allSongs = await getAllSongs();
+
+        // Hits from research: Harry Styles, Ella Langley, Taylor Swift, Bad Bunny, Bruno Mars
+        const trendingArtists = ["Harry Styles", "Ella Langley", "Taylor Swift", "Bad Bunny", "Bruno Mars", "Olivia Dean"];
+        const trendingGenres = ["Pop", "Country", "Latin"];
+
+        // Filter songs that match trending criteria
+        let matchedSongs = allSongs.filter(s =>
+            trendingArtists.some(artist => s.artist.toLowerCase().includes(artist.toLowerCase())) ||
+            trendingGenres.some(genre => s.genre.toLowerCase().includes(genre.toLowerCase()))
+        );
+
+        // Sort by views to prioritize actual popularity
+        matchedSongs.sort((a, b) => b.views - a.views);
+
+        // Ensure we have at least 10 songs, if not fill with popular ones
+        if (matchedSongs.length < 10) {
+            const additions = allSongs
+                .filter(s => !matchedSongs.find(m => m.id === s.id))
+                .slice(0, 10 - matchedSongs.length);
+            matchedSongs = [...matchedSongs, ...additions];
+        }
+
+        return matchedSongs.slice(0, 10);
+    } catch (error) {
+        console.error("Error fetching trending songs:", error);
+        return getAllSongs().then(songs => songs.slice(0, 10));
     }
 }

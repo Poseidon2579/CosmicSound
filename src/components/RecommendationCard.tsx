@@ -1,4 +1,4 @@
-"use client";
+import Link from "next/link";
 
 interface Song {
     id: string;
@@ -20,16 +20,18 @@ export default function RecommendationCard({ song }: { song: Song }) {
             <div className="relative overflow-hidden rounded-xl border border-white/5 bg-surface-dark p-6 md:p-8 flex flex-col md:flex-row gap-8 items-start md:items-center">
                 {/* Background Glow for Card */}
                 <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/10 blur-[80px] rounded-full pointer-events-none"></div>
-                <div className="relative group shrink-0 w-full md:w-[240px]">
+
+                <Link href={`/track/${song.id}`} className="relative group shrink-0 w-full md:w-[240px]">
                     <img
                         className="w-full aspect-square object-cover rounded-xl shadow-2xl group-hover:scale-[1.02] transition-transform duration-500"
                         alt={song.track}
                         src={`https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`}
                     />
-                    <button className="absolute inset-0 m-auto size-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110">
+                    <div className="absolute inset-0 m-auto size-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110">
                         <span className="material-symbols-outlined !text-3xl fill-1">play_arrow</span>
-                    </button>
-                </div>
+                    </div>
+                </Link>
+
                 <div className="flex flex-col gap-4 relative z-10">
                     <div className="flex items-center gap-3">
                         <span className="bg-primary/20 text-primary border border-primary/20 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Elección IA</span>
@@ -49,7 +51,12 @@ export default function RecommendationCard({ song }: { song: Song }) {
                         </p>
                     </div>
                     <div className="flex gap-4 mt-2">
-                        <button className="flex-1 bg-white text-black font-bold text-sm py-2.5 px-4 rounded hover:bg-gray-200 transition-colors">Reproducir Ahora</button>
+                        <Link
+                            href={`/track/${song.id}`}
+                            className="flex-1 bg-white text-black font-bold text-sm py-2.5 px-4 rounded hover:bg-gray-200 transition-colors text-center"
+                        >
+                            Reproducir Ahora
+                        </Link>
                         <button className="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors">
                             <span className="material-symbols-outlined !text-[20px]">favorite</span>
                         </button>

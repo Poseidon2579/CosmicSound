@@ -228,6 +228,16 @@ export async function updatePreferencesFromSearch(query: string): Promise<void> 
 
 // Helper: map Supabase 'usuarios' row to app 'User' type
 export function mapUsuarioToUser(row: any): User {
+    // Robust avatar mapping to avoid 406 errors with empty paths
+    let avatarUrl = row.avatar;
+    if (avatarUrl && avatarUrl.includes('/storage/v1/object/public/avatars/')) {
+        const parts = avatarUrl.split('/');
+        const fileName = parts[parts.length - 1];
+        if (!fileName || fileName === 'undefined' || fileName === '') {
+            avatarUrl = null; // Let the fallback handle it
+        }
+    }
+
     return {
         id: row.id,
         username: row.nombre_usuario,
@@ -235,7 +245,7 @@ export function mapUsuarioToUser(row: any): User {
         email: row.email,
         password: row.contrasena,
         bio: row.bio,
-        avatar: row.avatar,
+        avatar: avatarUrl || `https://api.dicebear.com/9.x/avataaars/svg?seed=${row.email || row.id}`,
         joined: row.fecha_registro,
         visibility: row.visibilidad,
         history: row.historial,

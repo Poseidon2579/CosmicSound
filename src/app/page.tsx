@@ -6,7 +6,7 @@ import RecommendationCard from "@/components/RecommendationCard";
 import ActivityFeed from "@/components/ActivityFeed";
 import { useState, useEffect } from "react";
 import { getCurrentUser, updatePreferencesFromSearch } from "@/lib/user-service";
-import { getAllSongs, getRecommendedSongs } from "@/lib/data-service";
+import { getAllSongs, getRecommendedSongs, getTrendingSongs } from "@/lib/data-service";
 import { Song, User } from "@/types";
 
 export default function Home() {
@@ -22,12 +22,15 @@ export default function Home() {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
 
-        const allSongs = await getAllSongs();
-        setTrends(allSongs.slice(0, 10));
+        // Fetch parallel for performance
+        const [recs, trendingList, allSongs] = await Promise.all([
+          getRecommendedSongs(currentUser?.preferences),
+          getTrendingSongs(),
+          getAllSongs()
+        ]);
 
-        // Get AI Recommendations
-        const recs = await getRecommendedSongs(currentUser?.preferences);
         setRecommended(recs);
+        setTrends(trendingList);
 
         // Discovery (Random)
         if (allSongs.length > 0) {
