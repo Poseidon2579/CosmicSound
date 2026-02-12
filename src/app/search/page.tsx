@@ -13,7 +13,7 @@ export default async function SearchPage({
     let localResults = [];
     if (query) {
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
             const res = await fetch(`${baseUrl}/api/songs?q=${encodeURIComponent(query)}&limit=50`, {
                 next: { revalidate: 3600 }
             });
