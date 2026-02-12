@@ -78,13 +78,28 @@ export async function loginUser(email: string, password: string): Promise<User |
     }
 }
 
+import { createServerClient } from '@supabase/auth-helpers-nextjs';
+
 export async function getCurrentUser(): Promise<User | null> {
     try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const cookieStore = cookies();
+        const supabaseServer = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    get(name) {
+                        return cookieStore.get(name)?.value;
+                    },
+                },
+            }
+        );
+
+        const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
 
         if (authError || !user) return null;
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseServer
             .from('usuarios')
             .select('*')
             .eq('id', user.id)
