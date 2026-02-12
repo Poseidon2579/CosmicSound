@@ -7,19 +7,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0');
 
 :root {
-  --cosmic-bg: #121022;
-  --cosmic-card: #1c1c2e;
-  --cosmic-accent: #2513ec;
-  --text-main: #F3F4F6;
-  --text-muted: #9CA3AF;
+  --background-light: #ffffff;
+  --background-dark: #050510;
+  /* Deep Cosmic Navy */
+  --surface-light: #f3f4f6;
+  --surface-dark: rgba(20, 20, 40, 0.7);
+  /* Glassy surface */
+  --primary: #9d4edd;
+  /* Electric Violet */
+  --secondary: #e0aaff;
+  --accent: #ff007f;
+  /* Cyber Pink */
+  --text-primary-light: #1f2937;
+  --text-primary-dark: #f9fafb;
+  --text-secondary-light: #6b7280;
+  --text-secondary-dark: #9ca3af;
 }
 
-body {
-  background-color: var(--cosmic-bg);
-  color: var(--text-main);
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  body {
+    @apply bg-background-light dark:bg-transparent text-text-primary-light dark:text-text-primary-dark transition-colors duration-300;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {
