@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Hero() {
+export default function Hero({ onSearch }: { onSearch?: (query: string) => void }) {
     const [query, setQuery] = useState("");
     const router = useRouter();
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (query.trim()) {
+            if (onSearch) onSearch(query);
             router.push(`/search?q=${encodeURIComponent(query)}`);
         }
     };

@@ -5,43 +5,48 @@ import SongCard from "@/components/SongCard";
 import RecommendationCard from "@/components/RecommendationCard";
 import ActivityFeed from "@/components/ActivityFeed";
 import { useState, useEffect } from "react";
-
-interface Song {
-  id: string;
-  track: string;
-  artist: string;
-  genre: string;
-  youtubeId: string;
-}
+import { getCurrentUser, updatePreferencesFromSearch } from "@/lib/user-service";
+import { getAllSongs, getRecommendedSongs } from "@/lib/data-service";
+import { Song, User } from "@/types";
 
 export default function Home() {
   const [trends, setTrends] = useState<Song[]>([]);
-  const [recommendation, setRecommendation] = useState<Song | null>(null);
+  const [recommended, setRecommended] = useState<Song[]>([]);
+  const [discovery, setDiscovery] = useState<Song | null>(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/songs?limit=10');
-        const data = await res.json();
-        setTrends(data.songs);
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
 
-        // Pick a random song for discovery from the first 100 songs
-        const discoRes = await fetch('/api/songs?page=2&limit=50');
-        const discoData = await discoRes.json();
-        if (discoData.songs.length > 0) {
-          setRecommendation(discoData.songs[Math.floor(Math.random() * discoData.songs.length)]);
-        } else {
-          setRecommendation(data.songs[0]);
+        const allSongs = await getAllSongs();
+        setTrends(allSongs.slice(0, 10));
+
+        // Get AI Recommendations
+        const recs = await getRecommendedSongs(currentUser?.preferences);
+        setRecommended(recs);
+
+        // Discovery (Random)
+        if (allSongs.length > 0) {
+          setDiscovery(allSongs[Math.floor(Math.random() * allSongs.length)]);
         }
       } catch (err) {
-        console.error("Failed to fetch songs", err);
+        console.error("Failed to fetch page data", err);
       } finally {
         setLoading(false);
       }
     }
     fetchData();
   }, []);
+
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) return;
+    // Track search to update vector preferences
+    await updatePreferencesFromSearch(query);
+  };
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-hidden bg-background-dark text-slate-900 dark:text-white font-display transition-colors duration-300">
@@ -51,25 +56,39 @@ export default function Home() {
 
       <div className="layout-container flex h-full grow flex-col z-10 px-4 md:px-10 lg:px-40 py-5">
         <main className="layout-content-container flex flex-col max-w-[1200px] flex-1">
-          <Hero />
+          <Hero onSearch={handleSearch} />
+
+          {/* AI Recommended Section */}
+          {recommended.length > 0 && (
+            <section className="mb-16">
+              <div className="flex items-center justify-between px-2 pb-5">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">Recomendado para ti</h2>
+                  <span className="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary/30 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[12px]">sparkles</span>
+                    AI
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex w-full overflow-x-auto pb-4 gap-6 no-scrollbar">
+                {recommended.map((song) => (
+                  <div key={song.id} className="min-w-[160px]">
+                    <SongCard song={song} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Trends Carousel */}
           <section className="mb-16">
             <div className="flex items-center justify-between px-2 pb-5">
               <h2 className="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">Tendencias Ahora</h2>
-              <div className="flex gap-2">
-                <button className="size-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white transition">
-                  <span className="material-symbols-outlined !text-sm">arrow_back</span>
-                </button>
-                <button className="size-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white transition">
-                  <span className="material-symbols-outlined !text-sm">arrow_forward</span>
-                </button>
-              </div>
             </div>
 
             <div className="flex w-full overflow-x-auto pb-4 gap-6 no-scrollbar">
               {loading ? (
-                // Loading skeleton placeholders
                 Array(6).fill(0).map((_, i) => (
                   <div key={i} className="min-w-[160px] animate-pulse">
                     <div className="w-full aspect-square bg-white/5 rounded-2xl mb-3"></div>
@@ -87,9 +106,9 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Main Content Grid: Recommendation + Activity Feed */}
+          {/* Main Content Grid: Discovery + Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
-            {recommendation && <RecommendationCard song={recommendation} />}
+            {discovery && <RecommendationCard song={discovery} />}
             <ActivityFeed />
           </div>
         </main>
