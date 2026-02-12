@@ -57,7 +57,7 @@ export default function ActivityFeed() {
             try {
                 const res = await fetch('/api/reviews?mode=recent');
                 const data = await res.json();
-                setFeedItems(data);
+                setFeedItems(data.slice(0, 3));
 
                 // Fetch song details for these items to show track names if needed
                 const songData: Record<string, Song> = {};

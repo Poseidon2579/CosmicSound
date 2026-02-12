@@ -81,7 +81,7 @@ export default function Home() {
   if (loading) return <HomeSkeleton />;
 
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col pt-10">
+    <div className="font-display text-slate-900 dark:text-white min-h-screen flex flex-col pt-10">
       <main className="flex-grow w-full px-4 md:px-6 py-8">
         <div className="max-w-[1400px] mx-auto flex flex-col gap-16">
           <Hero onSearch={handleSearch} />
