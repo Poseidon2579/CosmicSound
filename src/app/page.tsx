@@ -5,12 +5,15 @@ import SongCard from "@/components/SongCard";
 import RecommendationCard from "@/components/RecommendationCard";
 import ActivityFeed from "@/components/ActivityFeed";
 import MusicCarousel from "@/components/MusicCarousel";
+import HomeSkeleton from "@/components/HomeSkeleton";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { getCurrentUser, updatePreferencesFromSearch } from "@/lib/user-service";
 import { getAllSongs, getRecommendedSongs, getTrendingSongs, getTopSongs, getSongRatings } from "@/lib/data-service";
 import { Song, User } from "@/types";
 
 export default function Home() {
+  const router = useRouter();
   const [trends, setTrends] = useState<(Song & { rating?: number })[]>([]);
   const [recommended, setRecommended] = useState<(Song & { rating?: number })[]>([]);
   const [top10, setTop10] = useState<(Song & { rating?: number })[]>([]);
@@ -67,38 +70,22 @@ export default function Home() {
     if (!query.trim()) return;
     // Track search to update vector preferences
     await updatePreferencesFromSearch(query);
+    router.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
-  return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-hidden bg-background-dark text-slate-900 dark:text-white font-display transition-colors duration-300">
-      {/* Background Ambient Gradients */}
-      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-[#2513ec]/20 via-[#121022]/50 to-transparent pointer-events-none z-0"></div>
-      <div className="absolute top-[-200px] right-[-100px] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+  if (loading) return <HomeSkeleton />;
 
-      <div className="layout-container flex h-full grow flex-col z-10 px-4 md:px-10 lg:px-40 py-5">
-        <main className="layout-content-container flex flex-col max-w-[1200px] flex-1">
+  return (
+    <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col pt-10">
+      <main className="flex-grow w-full px-4 md:px-6 py-8">
+        <div className="max-w-[1400px] mx-auto flex flex-col gap-16">
           <Hero onSearch={handleSearch} />
 
-          {/* Top 10 Ranking */}
-          <section className="relative overflow-hidden mb-16 px-2">
-            <div className="flex items-center gap-2 mb-10">
-              <span className="material-symbols-outlined text-primary text-3xl">workspace_premium</span>
-              <h2 className="text-white text-3xl font-black italic uppercase tracking-tighter">Top 10 Global</h2>
-            </div>
-
-            <MusicCarousel title="" icon={null}>
-              {top10.map((song, index) => (
-                <div key={song.id} className="relative group/top min-w-[280px] md:min-w-[320px] snap-start flex items-center gap-6 py-4">
-                  <div className="absolute left-[-15px] top-[-10px] text-[120px] font-black text-white/5 italic select-none z-0 group-hover/top:text-primary/10 transition-colors">
-                    {index + 1}
-                  </div>
-                  <div className="relative z-10 w-full pl-8">
-                    <SongCard song={song} />
-                  </div>
-                </div>
-              ))}
-            </MusicCarousel>
-          </section>
+          {/* Main Content Grid: Discovery + Activity Feed */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {discovery && <RecommendationCard song={discovery} />}
+            <ActivityFeed />
+          </div>
 
           {/* AI Recommended Section */}
           <MusicCarousel
@@ -113,6 +100,27 @@ export default function Home() {
             ))}
           </MusicCarousel>
 
+          {/* Top 10 Ranking */}
+          <section className="relative">
+            <div className="flex items-center gap-2 mb-10">
+              <span className="material-symbols-outlined text-primary text-3xl">workspace_premium</span>
+              <h2 className="text-white text-3xl font-black italic uppercase tracking-tighter">Top 10 Global</h2>
+            </div>
+
+            <MusicCarousel title="" icon={null}>
+              {top10.map((song, index) => (
+                <div key={song.id} className="relative group/top min-w-[280px] md:min-w-[320px] snap-start flex items-center gap-6 py-4 pl-6">
+                  <div className="absolute left-[-5px] top-[-15px] text-[120px] font-black text-white/10 italic select-none z-0 group-hover/top:text-primary/20 transition-colors pointer-events-none">
+                    {index + 1}
+                  </div>
+                  <div className="relative z-10 w-full pl-12">
+                    <SongCard song={song} />
+                  </div>
+                </div>
+              ))}
+            </MusicCarousel>
+          </section>
+
           {/* Trends Carousel */}
           <MusicCarousel
             title="Tendencias Ahora"
@@ -125,16 +133,11 @@ export default function Home() {
             ))}
           </MusicCarousel>
 
-          {/* Main Content Grid: Discovery + Activity Feed */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
-            {discovery && <RecommendationCard song={discovery} />}
-            <ActivityFeed />
-          </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
       {/* Nebula Visual Accent */}
       <div className="fixed bottom-0 left-0 w-full h-[30vh] bg-gradient-to-t from-primary/10 to-transparent pointer-events-none -z-10" />
-    </div>
+    </div >
   );
 }

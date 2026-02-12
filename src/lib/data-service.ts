@@ -240,14 +240,14 @@ export async function getRecommendedSongs(userPreferences: any): Promise<Song[]>
 
         // If no preferences, return mixed selection (not just first 6)
         if (!userPreferences || (!userPreferences.genres?.length && !userPreferences.artists?.length)) {
-            return allSongs.sort(() => 0.5 - Math.random()).slice(0, 6);
+            return allSongs.sort(() => 0.5 - Math.random()).slice(0, 10);
         }
 
         const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `Basado en estas preferencias de usuario: ${JSON.stringify(userPreferences)}
-        Selecciona las 6 mejores canciones de esta lista que más encajen.
+        Selecciona las 10 mejores canciones de esta lista que más encajen.
         Lista de canciones: ${JSON.stringify(allSongs.map(s => ({ id: s.id, title: s.track, artist: s.artist, genre: s.genre })))}
         Responde SOLO con un array de IDs de las canciones en JSON: ["id1", "id2", ...]`;
 
@@ -255,15 +255,29 @@ export async function getRecommendedSongs(userPreferences: any): Promise<Song[]>
         const text = (await result.response).text();
         const jsonMatch = text.match(/\[[\s\S]*\]/);
 
+        let recommendedSongs: Song[] = [];
+
         if (jsonMatch) {
             const recommendedIds = JSON.parse(jsonMatch[0]);
-            return allSongs.filter(s => recommendedIds.includes(s.id));
+            recommendedSongs = allSongs.filter(s => recommendedIds.includes(s.id));
+        } else {
+            recommendedSongs = allSongs.sort(() => 0.5 - Math.random()).slice(0, 10);
         }
 
-        return allSongs.sort(() => 0.5 - Math.random()).slice(0, 6);
+        // Ensure uniqueness by content
+        const uniqueMap = new Map();
+        recommendedSongs.forEach(song => {
+            const key = `${song.track.toLowerCase()}-${song.artist.toLowerCase()}`;
+            if (!uniqueMap.has(key)) {
+                uniqueMap.set(key, song);
+            }
+        });
+
+        return Array.from(uniqueMap.values());
+
     } catch (error) {
         console.error("Error getting AI recommendations:", error);
-        return getAllSongs().then(songs => songs.slice(0, 6));
+        return getAllSongs().then(songs => songs.slice(0, 10));
     }
 }
 
@@ -296,7 +310,16 @@ export async function getTrendingSongs(): Promise<Song[]> {
             matchedSongs = [...matchedSongs, ...additions];
         }
 
-        return matchedSongs.slice(0, 10);
+        // Remove duplicates just in case (checking Title + Artist to be sure)
+        const uniqueMap = new Map();
+        matchedSongs.forEach(song => {
+            const key = `${song.track.toLowerCase()}-${song.artist.toLowerCase()}`;
+            if (!uniqueMap.has(key)) {
+                uniqueMap.set(key, song);
+            }
+        });
+
+        return Array.from(uniqueMap.values()).slice(0, 10);
     } catch (error) {
         console.error("Error fetching trending songs:", error);
         return getAllSongs().then(songs => songs.slice(0, 10));
