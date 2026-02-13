@@ -9,7 +9,7 @@ export default async function LibraryPage() {
     const likedSongs = user ? await getLikedSongs(user.id) : [];
 
     return (
-        <div className="flex min-h-screen bg-background-dark text-white">
+        <div className="flex min-h-screen bg-transparent text-white">
             <Sidebar user={user} />
 
             <main className="flex-1 flex flex-col overflow-hidden">

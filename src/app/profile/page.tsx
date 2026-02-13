@@ -11,7 +11,7 @@ export default async function ProfilePage() {
 
     if (!user) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background-dark text-white">
+            <div className="min-h-screen flex items-center justify-center bg-transparent text-white">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold mb-4">Usuario no encontrado</h1>
                     <Link href="/" className="text-primary hover:underline">Volver al inicio</Link>
@@ -27,7 +27,7 @@ export default async function ProfilePage() {
     const joinedYear = new Date(user.joined).getFullYear();
 
     return (
-        <main className="min-h-screen pt-24 pb-20 px-6 max-w-5xl mx-auto bg-background-dark">
+        <main className="min-h-screen pt-24 pb-20 px-6 max-w-5xl mx-auto bg-transparent">
             {/* Profile Header */}
             <section className="flex flex-col items-center justify-center pt-8 pb-10">
                 <div className="relative group">
