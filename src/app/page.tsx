@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { getCurrentUser, updatePreferencesFromSearch } from "@/lib/user-service";
 import { getRecommendedSongs, getTrendingSongs, getTopSongs, getSongRatings, getRandomSong } from "@/lib/data-service";
 import { Song, User } from "@/types";
+import { getDisplayGenre } from "@/utils/genre-mappings";
 
 const MusicCarousel = dynamic(() => import("@/components/MusicCarousel"), {
   loading: () => <div className="h-64 w-full animate-pulse bg-white/5 rounded-xl mb-8" />,
