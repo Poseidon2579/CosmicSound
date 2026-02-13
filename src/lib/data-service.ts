@@ -81,6 +81,8 @@ export async function getTopSongs(limit: number = 10): Promise<Song[]> {
     return uniqueSongs.slice(0, limit);
 }
 
+import { getDbGenre } from "@/utils/genre-mappings";
+
 export async function searchSongs(
     query: string,
     page: number = 1,
@@ -93,10 +95,13 @@ export async function searchSongs(
 
     let filterIds: string[] | null = null;
 
+    // Normalize Genre Input (Handle "Electrónica" -> "Electronic")
+    const dbGenre = genre && genre !== 'Todos' ? getDbGenre(genre) : null;
+
     // 1. Resolve Genre IDs if filter exists
-    if (genre && genre !== 'Todos') {
+    if (dbGenre) {
         try {
-            const { data: gData } = await supabase.from('genres').select('id').ilike('name', genre).single();
+            const { data: gData } = await supabase.from('genres').select('id').ilike('name', dbGenre).single();
             if (gData) {
                 const { data: sIds } = await supabase.from('song_genres').select('song_id').eq('genre_id', gData.id);
                 if (sIds) {
