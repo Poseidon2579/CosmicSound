@@ -137,25 +137,26 @@ export async function searchSongs(
         .from('canciones_con_rating')
         .select('*', { count: 'exact' });
 
-    if (query) {
-        searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
-    }
-
-    // Apply Relational Filter if we resolved IDs
+    // 1. Prioritize Relational Filters (New Table)
     if (filterIds !== null) {
         if (filterIds.length === 0) {
-            // No matches found in relations
-            // Return empty or let AI handle it
+            // If we have no IDs for the filter, it's a hard empty result
+            return { songs: [], total: 0 };
         }
         searchBuilder = searchBuilder.in('id', filterIds);
     } else {
-        // Fallback to Legacy String Matching if relational lookup failed or wasn't done
+        // Legacy fallback if relations didn't resolve ANY IDs (shouldn't happen with valid filters)
         if (genre && genre !== 'Todos') {
             searchBuilder = searchBuilder.ilike('genero', `%${genre}%`);
         }
         if (decade) {
             searchBuilder = searchBuilder.ilike('decada', `%${decade}%`);
         }
+    }
+
+    // 2. Apply Text Query (if exists) as an additional filter
+    if (query) {
+        searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
     }
 
     let { data, error, count } = await searchBuilder
