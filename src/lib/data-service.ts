@@ -235,51 +235,105 @@ export async function searchSongs(
             total: count || 0
         };
     }
+}
 
-    export async function getSearchSuggestions(query: string): Promise<{ text: string, type: 'song' | 'artist', id?: string }[]> {
-        if (!query || query.length < 3) return [];
+export async function getSearchSuggestions(query: string): Promise<{ text: string, type: 'song' | 'artist', id?: string }[]> {
+    if (!query || query.length < 3) return [];
 
-        const { data, error } = await supabase
-            .from('canciones_con_rating')
-            .select('titulo, artista, id, youtube_id')
-            .or(`titulo.ilike.%${query}%,artista.ilike.%${query}%`)
-            .limit(10);
+    const { data, error } = await supabase
+        .from('canciones_con_rating')
+        .select('titulo, artista, id, youtube_id')
+        .or(`titulo.ilike.%${query}%,artista.ilike.%${query}%`)
+        .limit(10);
 
-        if (error || !data) return [];
+    if (error || !data) return [];
 
-        const suggestions: { text: string, type: 'song' | 'artist', id?: string }[] = [];
-        const seen = new Set();
+    const suggestions: { text: string, type: 'song' | 'artist', id?: string }[] = [];
+    const seen = new Set();
 
-        data.forEach(item => {
-            // Add Artist suggestion if new
-            if (!seen.has(`artist:${item.artista}`)) {
-                if (item.artista.toLowerCase().includes(query.toLowerCase())) {
-                    suggestions.push({ text: item.artista, type: 'artist' });
-                    seen.add(`artist:${item.artista}`);
-                }
+    data.forEach(item => {
+        // Add Artist suggestion if new
+        if (!seen.has(`artist:${item.artista}`)) {
+            if (item.artista.toLowerCase().includes(query.toLowerCase())) {
+                suggestions.push({ text: item.artista, type: 'artist' });
+                seen.add(`artist:${item.artista}`);
             }
+        }
 
-            // Add Song suggestion
-            if (item.titulo.toLowerCase().includes(query.toLowerCase())) {
-                suggestions.push({ text: `${item.titulo} - ${item.artista}`, type: 'song', id: item.id });
-            }
-        });
+        // Add Song suggestion
+        if (item.titulo.toLowerCase().includes(query.toLowerCase())) {
+            suggestions.push({ text: `${item.titulo} - ${item.artista}`, type: 'song', id: item.id });
+        }
+    });
 
-        return suggestions.slice(0, 8); // Limit to 8 suggestions
+    return suggestions.slice(0, 8); // Limit to 8 suggestions
+}
+
+export async function getAlbums(): Promise<string[]> {
+    const { data, error } = await supabase
+        .from('canciones')
+        .select('album')
+        .not('album', 'is', null)
+        .order('album');
+
+    if (error || !data) {
+        console.error('Error fetching albums:', error);
+        return [];
     }
 
-    decadeData.forEach((d: any) => {
-        const count = d.song_decades?.[0]?.count || 0;
-        stats.decades[d.name] = count;
-    });
+    // Deduplicate albums (case insensitive)
+    const uniqueAlbums = Array.from(new Set(data.map(item => item.album).filter(Boolean)));
+    return uniqueAlbums.sort();
 }
 
-    } catch (err) {
-    console.error("Unexpected error in getFilterStats:", err);
-    return { genres: {}, decades: {} };
-}
+export async function getFilterStats(): Promise<{ genres: Record<string, number>, decades: Record<string, number>, albums: Record<string, number> }> {
+    // 1. Genres Stats
+    const { data: genreData } = await supabase
+        .from('song_genres')
+        .select('genre_id, genres(name)');
 
-return stats;
+    const genreCounts: Record<string, number> = {};
+    if (genreData) {
+        genreData.forEach((item: any) => {
+            const name = item.genres?.name;
+            if (name) {
+                genreCounts[name] = (genreCounts[name] || 0) + 1;
+            }
+        });
+    }
+
+    // 2. Decades Stats
+    const { data: decadeData } = await supabase
+        .from('song_decades')
+        .select('decade_id, decades(name)');
+
+    const decadeCounts: Record<string, number> = {};
+    if (decadeData) {
+        decadeData.forEach((item: any) => {
+            const name = item.decades?.name;
+            if (name) {
+                decadeCounts[name] = (decadeCounts[name] || 0) + 1;
+            }
+        });
+    }
+
+    // 3. Albums Stats
+    const { data: albumData } = await supabase
+        .from('canciones')
+        .select('album')
+        .not('album', 'is', null);
+
+    const albumCounts: Record<string, number> = {};
+    if (albumData) {
+        albumData.forEach((item: any) => {
+            const name = item.album;
+            if (name) {
+                albumCounts[name] = (albumCounts[name] || 0) + 1;
+            }
+        });
+    }
+
+    return { genres: genreCounts, decades: decadeCounts, albums: albumCounts };
 }
 
 // Keep legacy logic as fallback until migration is 100% confirmed
