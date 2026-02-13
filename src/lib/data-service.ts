@@ -91,6 +91,48 @@ export async function searchSongs(
     const from = (page - 1) * limit;
     const to = from + (limit * 3) - 1;
 
+    let filterIds: string[] | null = null;
+
+    // 1. Resolve Genre IDs if filter exists
+    if (genre && genre !== 'Todos') {
+        try {
+            const { data: gData } = await supabase.from('genres').select('id').ilike('name', genre).single();
+            if (gData) {
+                const { data: sIds } = await supabase.from('song_genres').select('song_id').eq('genre_id', gData.id);
+                if (sIds) {
+                    const ids = sIds.map(o => o.song_id);
+                    filterIds = ids;
+                }
+            } else {
+                // Genre not found in new table? Fallback or empty?
+                // Let's assume empty if not found, but keep null to fallback to legacy string logic if migration failed
+            }
+        } catch (e) {
+            console.error("Error resolving genre relation:", e);
+        }
+    }
+
+    // 2. Resolve Decade IDs if filter exists
+    if (decade) {
+        try {
+            const { data: dData } = await supabase.from('decades').select('id').ilike('name', decade).single();
+            if (dData) {
+                const { data: sIds } = await supabase.from('song_decades').select('song_id').eq('decade_id', dData.id);
+                if (sIds) {
+                    const ids = sIds.map(o => o.song_id);
+                    // Intersect if filterIds already exists
+                    if (filterIds !== null) {
+                        filterIds = filterIds.filter(id => ids.includes(id));
+                    } else {
+                        filterIds = ids;
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Error resolving decade relation:", e);
+        }
+    }
+
     let searchBuilder = supabase
         .from('canciones_con_rating')
         .select('*', { count: 'exact' });
@@ -99,21 +141,29 @@ export async function searchSongs(
         searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
     }
 
-    if (genre && genre !== 'Todos') {
-        searchBuilder = searchBuilder.ilike('genero', `%${genre}%`);
-    }
-
-    if (decade) {
-        searchBuilder = searchBuilder.ilike('decada', `%${decade}%`);
+    // Apply Relational Filter if we resolved IDs
+    if (filterIds !== null) {
+        if (filterIds.length === 0) {
+            // No matches found in relations
+            // Return empty or let AI handle it
+        }
+        searchBuilder = searchBuilder.in('id', filterIds);
+    } else {
+        // Fallback to Legacy String Matching if relational lookup failed or wasn't done
+        if (genre && genre !== 'Todos') {
+            searchBuilder = searchBuilder.ilike('genero', `%${genre}%`);
+        }
+        if (decade) {
+            searchBuilder = searchBuilder.ilike('decada', `%${decade}%`);
+        }
     }
 
     let { data, error, count } = await searchBuilder
         .order('vistas', { ascending: false })
-        .order('titulo', { ascending: true }) // Secondary sort for stability
+        .order('titulo', { ascending: true })
         .range(from, to);
 
-    // AI FALLBACK: If filtering by genre/decade and no results found, 
-    // ask Gemini to find matches in our current dataset
+    // AI FALLBACK: If filtering by genre/decade and no results found
     if ((!data || data.length === 0) && (genre || decade || query)) {
         try {
             console.log("No DB results for filter. Attempting AI Smart Search...");
@@ -202,62 +252,85 @@ export async function getSearchSuggestions(query: string): Promise<{ text: strin
     return suggestions.slice(0, 8); // Limit to 8 suggestions
 }
 
-export async function getFilterStats(genres: string[], decades: string[]): Promise<{ genres: Record<string, number>, decades: Record<string, number> }> {
+export async function getFilterStats(selectedGenres: string[], selectedDecades: string[]): Promise<{ genres: Record<string, number>, decades: Record<string, number> }> {
     const stats = {
         genres: {} as Record<string, number>,
         decades: {} as Record<string, number>
     };
 
-    // Initialize with 0
+    try {
+        // Query Genres with Counts
+        // Note: This relies on the foreign key 'song_genres_genre_id_fkey' existing
+        const { data: genreData, error: genreError } = await supabase
+            .from('genres')
+            .select('name, song_genres(count)');
+
+        if (genreError) {
+            console.error("Error fetching genre stats relationally:", genreError);
+            // Fallback to legacy method if new tables fail (e.g. migration not run)
+            return getFilterStatsLegacy(selectedGenres, selectedDecades);
+        }
+
+        genreData?.forEach((g: any) => {
+            // song_genres comes back as array of objects with count, e.g. [{ count: 10 }]
+            const count = g.song_genres?.[0]?.count || 0;
+            stats.genres[g.name] = count;
+        });
+
+        // Query Decades with Counts
+        const { data: decadeData, error: decadeError } = await supabase
+            .from('decades')
+            .select('name, song_decades(count)');
+
+        if (!decadeError && decadeData) {
+            decadeData.forEach((d: any) => {
+                const count = d.song_decades?.[0]?.count || 0;
+                stats.decades[d.name] = count;
+            });
+        }
+
+    } catch (err) {
+        console.error("Unexpected error in getFilterStats:", err);
+        return getFilterStatsLegacy(selectedGenres, selectedDecades);
+    }
+
+    // Debug logging
+    console.log("Filter Stats (Relational):", JSON.stringify(stats, null, 2));
+
+    return stats;
+}
+
+// Keep legacy logic as fallback until migration is 100% confirmed
+async function getFilterStatsLegacy(genres: string[], decades: string[]) {
+    console.warn("Using Legacy Filter Stats Logic");
+    const stats = {
+        genres: {} as Record<string, number>,
+        decades: {} as Record<string, number>
+    };
     genres.forEach(g => stats.genres[g] = 0);
     decades.forEach(d => stats.decades[d] = 0);
 
-    // Fetch ALL generic and decade data (lightweight query)
-    // We fetch 1000 rows to be safe, assuming the library isn't massive yet. 
-    // If it grows, we can switch back to count queries or RPC.
     const { data, error } = await supabase
         .from('canciones_con_rating')
         .select('genero, decada');
 
-    if (error || !data) {
-        console.error("Error fetching stats data:", error);
-        return stats;
-    }
+    if (error || !data) return stats;
 
     data.forEach((row: any) => {
-        // Normalize row genres to a searchable string
-        let genreSearchable = "";
-        if (Array.isArray(row.genero)) {
-            genreSearchable = row.genero.join(" ").toLowerCase();
-        } else {
-            genreSearchable = String(row.genero || "").toLowerCase();
-        }
+        let genreSearchable = Array.isArray(row.genero) ? row.genero.join(" ") : String(row.genero || "");
+        genreSearchable = genreSearchable.toLowerCase();
 
-        // Check each TARGET genre
         genres.forEach(g => {
-            if (genreSearchable.includes(g.toLowerCase())) {
-                stats.genres[g] = (stats.genres[g] || 0) + 1;
-            }
+            if (genreSearchable.includes(g.toLowerCase())) stats.genres[g] = (stats.genres[g] || 0) + 1;
         });
 
-        // Normalize row decades to a searchable string
-        let decadeSearchable = "";
-        if (Array.isArray(row.decada)) {
-            decadeSearchable = row.decada.join(" ").toLowerCase();
-        } else {
-            decadeSearchable = String(row.decada || "").toLowerCase();
-        }
+        let decadeSearchable = Array.isArray(row.decada) ? row.decada.join(" ") : String(row.decada || "");
+        decadeSearchable = decadeSearchable.toLowerCase();
 
         decades.forEach(d => {
-            if (decadeSearchable.includes(d.toLowerCase())) {
-                stats.decades[d] = (stats.decades[d] || 0) + 1;
-            }
+            if (decadeSearchable.includes(d.toLowerCase())) stats.decades[d] = (stats.decades[d] || 0) + 1;
         });
     });
-
-    // Debug logging
-    console.log("Filter Stats Calculated:", JSON.stringify(stats, null, 2));
-
     return stats;
 }
 
