@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReviewForm from "@/components/ReviewForm";
-import { getAllSongs, getReviewsForSong, getLikedSongs } from "@/lib/data-service";
+import { getAllSongs, getReviewsForSong, getLikedSongs, getSongById } from "@/lib/data-service";
 import { getCurrentUserServer as getCurrentUser } from "@/lib/user-service-server";
 import { Song } from "@/types";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -17,9 +17,16 @@ export default async function TrackPage({ params, searchParams }: { params: { id
         songs = await getLikedSongs(user.id);
     }
 
-    // If not in favorites or favorites is empty/doesn't contain requested song, fallback to all
+    // If not in favorites or favorites is empty/doesn't contain requested song, fallback to specific fetch or all
     if (songs.length === 0 || !songs.find(s => s.id === params.id)) {
-        songs = await getAllSongs();
+        const directSong = await getSongById(params.id);
+        if (directSong) {
+            // We found it directly, use it. We also fetch others for "next song" logic if desired, 
+            // or just put this one in the list.
+            songs = [directSong, ...await getAllSongs(10)]; // Add some context songs
+        } else {
+            songs = await getAllSongs();
+        }
     }
 
     const songIndex = songs.findIndex((s) => s.id === params.id);

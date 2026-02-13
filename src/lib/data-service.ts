@@ -81,9 +81,14 @@ export async function getTopSongs(limit: number = 10): Promise<Song[]> {
     return uniqueSongs.slice(0, limit);
 }
 
-export async function searchSongs(query: string, page: number = 1, limit: number = 20, genre?: string): Promise<{ songs: Song[], total: number }> {
+export async function searchSongs(
+    query: string,
+    page: number = 1,
+    limit: number = 20,
+    genre?: string,
+    decade?: string
+): Promise<{ songs: Song[], total: number }> {
     const from = (page - 1) * limit;
-    // Fetch 3x more to allow for deduplication while maintaining page size
     const to = from + (limit * 3) - 1;
 
     let searchBuilder = supabase
@@ -94,14 +99,45 @@ export async function searchSongs(query: string, page: number = 1, limit: number
         searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
     }
 
-    if (genre) {
-        // Use ilike to handle case sensitivity issues in the DB
-        searchBuilder = searchBuilder.ilike('genero', genre);
+    if (genre && genre !== 'Todos') {
+        searchBuilder = searchBuilder.ilike('genero', `%${genre}%`);
     }
 
-    const { data, error, count } = await searchBuilder
+    if (decade) {
+        searchBuilder = searchBuilder.ilike('decada', `%${decade}%`);
+    }
+
+    let { data, error, count } = await searchBuilder
         .order('vistas', { ascending: false })
         .range(from, to);
+
+    // AI FALLBACK: If filtering by genre/decade and no results found, 
+    // ask Gemini to find matches in our current dataset
+    if ((!data || data.length === 0) && (genre || decade || query)) {
+        try {
+            console.log("No DB results for filter. Attempting AI Smart Search...");
+            const allSongs = await getAllSongs(100);
+            const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+            const filterContext = `Género: ${genre || 'Cualquiera'}, Década: ${decade || 'Cualquiera'}, Búsqueda: ${query || 'Ninguna'}`;
+            const prompt = `De esta lista de canciones, selecciona las 20 que mejor encajen con: ${filterContext}.
+            Lista: ${JSON.stringify(allSongs.map(s => ({ id: s.id, track: s.track, artist: s.artist, genre: s.genre, decade: s.decade })))}
+            Responde SOLO con el JSON de los IDs: ["id1", "id2", ...]`;
+
+            const result = await model.generateContent(prompt);
+            const text = (await result.response).text();
+            const jsonMatch = text.match(/\[[\s\S]*\]/);
+
+            if (jsonMatch) {
+                const ids = JSON.parse(jsonMatch[0]);
+                data = allSongs.filter(s => ids.includes(s.id));
+                count = data.length;
+            }
+        } catch (aiError) {
+            console.error("AI Fallback search failed:", aiError);
+        }
+    }
 
     if (error || !data) {
         console.error('Error searching songs:', error);
@@ -215,6 +251,22 @@ export async function getSongRatings(songIds: string[]): Promise<Record<string, 
     return result;
 }
 
+
+export async function getSongById(id: string): Promise<Song | null> {
+    const { data, error } = await supabase
+        .from('canciones_con_rating')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error || !data) {
+        // console.error(`Error fetching song ${id}:`, error);
+        return null;
+    }
+
+    return mapCancionToSong(data);
+}
+
 // ==================== FAVORITOS (Likes) ====================
 
 export async function getLikedSongs(userId: string): Promise<Song[]> {
@@ -291,7 +343,8 @@ function mapCancionToSong(row: any): Song {
         likes: row.me_gusta || 0,
         genre: row.genero || 'Musical',
         rating: row.avg_rating || 0,
-        reviewCount: row.review_count || 0
+        reviewCount: row.review_count || 0,
+        decade: row.decada
     };
 }
 

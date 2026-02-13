@@ -20,6 +20,7 @@ export default function SearchPage() {
     const [total, setTotal] = useState(0);
     const [user, setUser] = useState<User | null>(null);
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+    const [selectedDecade, setSelectedDecade] = useState<string | null>(null);
     const [page, setPage] = useState(1);
     const pageSize = 20;
 
@@ -30,7 +31,13 @@ export default function SearchPage() {
                 const currentUser = await getCurrentUser();
                 setUser(currentUser);
 
-                const { songs: searchResults, total: totalResults } = await searchSongs(query, page, pageSize, selectedGenre || undefined);
+                const { songs: searchResults, total: totalResults } = await searchSongs(
+                    query,
+                    page,
+                    pageSize,
+                    selectedGenre || undefined,
+                    selectedDecade || undefined
+                );
                 setSongs(searchResults);
                 setTotal(totalResults);
             } catch (error) {
@@ -41,12 +48,12 @@ export default function SearchPage() {
         }
 
         fetchResults();
-    }, [query, selectedGenre, page]);
+    }, [query, selectedGenre, selectedDecade, page]);
 
     const totalPages = Math.ceil(total / pageSize);
 
     return (
-        <div className="flex min-h-screen bg-background-dark text-white font-display">
+        <div className="flex min-h-screen bg-transparent text-white font-display">
             <Sidebar user={user} />
 
             <main className="flex-1 overflow-y-auto p-8">
@@ -66,29 +73,47 @@ export default function SearchPage() {
                         </div>
                     </div>
 
-                    {/* Genre Filters */}
-                    <div className="flex flex-wrap gap-2">
-                        <button
-                            onClick={() => { setSelectedGenre(null); setPage(1); }}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${!selectedGenre
-                                ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
-                                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                                }`}
-                        >
-                            Todos
-                        </button>
-                        {GENRES.map(genre => (
+                    <div className="flex flex-col gap-4">
+                        {/* Genre Filters */}
+                        <div className="flex flex-wrap gap-2">
                             <button
-                                key={genre}
-                                onClick={() => { setSelectedGenre(genre); setPage(1); }}
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedGenre === genre
+                                onClick={() => { setSelectedGenre(null); setPage(1); }}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${!selectedGenre
                                     ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
                                     : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                                     }`}
                             >
-                                {genre}
+                                Todos
                             </button>
-                        ))}
+                            {GENRES.map(genre => (
+                                <button
+                                    key={genre}
+                                    onClick={() => { setSelectedGenre(genre); setPage(1); }}
+                                    className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedGenre === genre
+                                        ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
+                                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                        }`}
+                                >
+                                    {genre}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Decade Filters */}
+                        <div className="flex flex-wrap gap-2">
+                            {["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"].map(decade => (
+                                <button
+                                    key={decade}
+                                    onClick={() => { setSelectedDecade(selectedDecade === decade ? null : decade); setPage(1); }}
+                                    className={`px-3 py-1 rounded-md text-[10px] font-bold border transition-all ${selectedDecade === decade
+                                        ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
+                                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                        }`}
+                                >
+                                    {decade}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </header>
 

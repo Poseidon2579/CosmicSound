@@ -25,6 +25,7 @@ export interface Song {
     genre: string;
     rating?: number;
     reviewCount?: number;
+    decade?: string;
 }
 
 export interface Review {

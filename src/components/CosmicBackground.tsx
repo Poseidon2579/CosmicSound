@@ -1,232 +1,164 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from "react";
 
-// --- Types ---
-interface Vector3 {
+interface Star {
     x: number;
     y: number;
     z: number;
-}
-
-interface Star {
-    pos: Vector3;
     size: number;
     color: string;
     glow: number;
+    pulseOffset: number; // For twinkling
 }
 
-interface CelestialObject {
-    pos: Vector3;
-    type: 'planet' | 'nebula' | 'blackhole' | 'cluster';
-    size: number;
+interface Planet {
+    name: string;
     color: string;
-    seed: number;
+    size: number;
+    distance: number; // Distance from sun
+    speed: number;   // Orbit speed
+    angle: number;   // Current orbit angle
+    type: 'star' | 'planet' | 'moon';
+    parent?: Planet; // For moons
+    textureUrl?: string;
+    texture?: HTMLImageElement;
+    ringTextureUrl?: string;
+    ringTexture?: HTMLImageElement;
+    hasRings?: boolean;
+}
+
+interface ShootingStar {
+    x: number;
+    y: number;
+    z: number;
+    vx: number;
+    vy: number;
+    vz: number;
+    life: number;
+    size: number;
 }
 
 export default function CosmicBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mousePos = useRef({ x: 0, y: 0 });
+    const stars = useRef<Star[]>([]);
+    const planets = useRef<Planet[]>([]);
+    const shootingStars = useRef<ShootingStar[]>([]);
+    const imagesLoaded = useRef(false);
+
+    // Initialize celestial bodies
+    useEffect(() => {
+        // Create Stars
+        const starColors = ['#ffffff', '#fbfcfc', '#fffbed', '#eef2ff', '#faf5ff', '#fff1f2', '#bae6fd'];
+        if (stars.current.length === 0) {
+            for (let i = 0; i < 2000; i++) {
+                stars.current.push({
+                    x: (Math.random() - 0.5) * 4000,
+                    y: (Math.random() - 0.5) * 4000,
+                    z: Math.random() * 4000,
+                    size: 0.3 + Math.random() * 2.5,
+                    color: starColors[Math.floor(Math.random() * starColors.length)],
+                    glow: Math.random() > 0.85 ? 15 : 4,
+                    pulseOffset: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        // Create Solar System
+        if (planets.current.length === 0) {
+            const sun: Planet = {
+                name: "Sun",
+                color: "#FDB813",
+                size: 250,
+                distance: 0,
+                speed: 0,
+                angle: 0,
+                type: 'star',
+                textureUrl: "/assets/planets/sun.jpg"
+            };
+
+            const earth: Planet = {
+                name: "Earth",
+                color: "#2E8B57",
+                size: 90,
+                distance: 900,
+                speed: 0.0005,
+                angle: Math.random() * Math.PI * 2,
+                type: 'planet',
+                textureUrl: "/assets/planets/earth.jpg"
+            };
+
+            const moon: Planet = {
+                name: "Moon",
+                color: "#cfcfcf",
+                size: 25,
+                distance: 140,
+                speed: 0.02,
+                angle: Math.random() * Math.PI * 2,
+                type: 'moon',
+                parent: earth,
+                textureUrl: "/assets/planets/moon.jpg"
+            };
+
+            const mars: Planet = {
+                name: "Mars",
+                color: "#E27B58",
+                size: 70,
+                distance: 1400,
+                speed: 0.0003,
+                angle: Math.random() * Math.PI * 2,
+                type: 'planet',
+                textureUrl: "/assets/planets/mars.jpg"
+            };
+
+            const saturn: Planet = {
+                name: "Saturn",
+                color: "#E3E0C0",
+                size: 160,
+                distance: 2200,
+                speed: 0.0001,
+                angle: Math.random() * Math.PI * 2,
+                type: 'planet',
+                hasRings: true,
+                textureUrl: "/assets/planets/saturn.jpg",
+                ringTextureUrl: "/assets/planets/saturn_ring.png"
+            };
+
+            planets.current = [sun, earth, moon, mars, saturn];
+        }
+
+        // Load Images
+        if (!imagesLoaded.current) {
+            planets.current.forEach(p => {
+                if (p.textureUrl) {
+                    const img = new Image();
+                    img.src = p.textureUrl;
+                    img.onload = () => { p.texture = img; };
+                }
+                if (p.ringTextureUrl) {
+                    const img = new Image();
+                    img.src = p.ringTextureUrl;
+                    img.onload = () => { p.ringTexture = img; };
+                }
+            });
+            imagesLoaded.current = true;
+        }
+
+    }, []);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-
-        const ctx = canvas.getContext('2d', { alpha: false });
+        const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-
-        // --- Camera State ---
-        let yaw = 0; // Horizontal auto-rotation
-        let pitch = 0; // Vertical manual tilt
-        const fov = 1000; // Field of view depth
-
-        // --- Assets ---
-        const starCount = 1500;
-        const stars: Star[] = [];
-        // Space isn't just black and white! Let's reflect that.
-        const starColors = [
-            '#ffffff', // White
-            '#fbfcfc', // Off-white
-            '#fffbed', // Soft yellow
-            '#eef2ff', // Soft blue
-            '#faf5ff', // Soft purple
-            '#fff1f2', // Soft red
-            '#bae6fd'  // Sky blue
-        ];
-
-        for (let i = 0; i < starCount; i++) {
-            const phi = Math.acos(-1 + (2 * i) / starCount);
-            const theta = Math.sqrt(starCount * Math.PI) * phi;
-            const r = 2500 + Math.random() * 1000;
-            stars.push({
-                pos: {
-                    x: r * Math.cos(theta) * Math.sin(phi),
-                    y: r * Math.sin(theta) * Math.sin(phi),
-                    z: r * Math.cos(phi)
-                },
-                size: 0.3 + Math.random() * 2.5, // Varied sizes for depth
-                color: starColors[Math.floor(Math.random() * starColors.length)],
-                glow: Math.random() > 0.85 ? 15 : 4
-            });
-        }
-
-        const celestialObjects: CelestialObject[] = [
-            { pos: { x: 1200, y: -400, z: 800 }, type: 'planet', size: 140, color: '#a855f7', seed: 42 },
-            { pos: { x: -2500, y: 800, z: -1200 }, type: 'planet', size: 200, color: '#3b82f6', seed: 99 },
-            { pos: { x: 800, y: 1500, z: -3000 }, type: 'planet', size: 120, color: '#10b981', seed: 123 },
-            { pos: { x: -3500, y: -1200, z: 2500 }, type: 'planet', size: 280, color: '#ef4444', seed: 456 },
-            { pos: { x: 4000, y: 500, z: -500 }, type: 'planet', size: 160, color: '#f59e0b', seed: 789 },
-            { pos: { x: 0, y: 2500, z: 1000 }, type: 'nebula', size: 800, color: '#6366f1', seed: 777 },
-            { pos: { x: -2000, y: -2500, z: -1500 }, type: 'nebula', size: 700, color: '#ec4899', seed: 88 }
-        ];
-
-        let shootingStars: { pos: Vector3; vel: Vector3; life: number }[] = [];
-
-        // --- Projection Logic ---
-        function project(p: Vector3) {
-            // Constant drift (Slow auto-rotation)
-            let x = p.x * Math.cos(yaw) - p.z * Math.sin(yaw);
-            let z = p.x * Math.sin(yaw) + p.z * Math.cos(yaw);
-            let y = p.y;
-
-            // Manual Vertical tilt
-            let y_final = y * Math.cos(pitch) - z * Math.sin(pitch);
-            let z_final = y * Math.sin(pitch) + z * Math.cos(pitch);
-
-            if (z_final < 100) return null;
-
-            const scale = fov / z_final;
-            return {
-                x: (x * scale) + width / 2,
-                y: (y_final * scale) + height / 2,
-                scale: scale,
-                z: z_final
-            };
-        }
-
-        // --- Render Helpers ---
-        function drawPlanet(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, color: string) {
-            ctx.save();
-            const grad = ctx.createRadialGradient(x - size * 0.3, y - size * 0.3, size * 0.1, x, y, size);
-            grad.addColorStop(0, '#fff');
-            grad.addColorStop(0.2, color);
-            grad.addColorStop(1, '#050510');
-
-            ctx.shadowBlur = size * 0.4;
-            ctx.shadowColor = color;
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-
-            // Atmosphere
-            ctx.strokeStyle = `${color}22`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.arc(x, y, size * 1.05, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        function drawNebula(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, color: string) {
-            const grad = ctx.createRadialGradient(x, y, 0, x, y, size);
-            grad.addColorStop(0, `${color}12`);
-            grad.addColorStop(0.5, `${color}06`);
-            grad.addColorStop(1, 'transparent');
-
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // --- Animation Loop ---
-        function animate() {
-            if (!ctx || !canvas) return;
-
-            // GHOSTLY Slow movement
-            yaw += 0.00008;
-            // Control pitch (Y only) via mouse
-            pitch = (Math.sin(Date.now() * 0.00004) * 0.04) + (mousePos.current.y * 0.15);
-
-            ctx.fillStyle = '#010103';
-            ctx.fillRect(0, 0, width, height);
-
-            // Distance sorting: far to near
-            // 1. Nebulae
-            celestialObjects.filter(o => o.type === 'nebula').forEach(obj => {
-                const p = project(obj.pos);
-                if (p) drawNebula(ctx, p.x, p.y, obj.size * p.scale * 2.8, obj.color);
-            });
-
-            // 2. Multicolored Stars
-            stars.forEach(s => {
-                const p = project(s.pos);
-                if (p) {
-                    const finalSize = s.size * p.scale;
-                    if (finalSize < 0.15) return;
-
-                    ctx.globalAlpha = Math.min(1, p.scale * 3);
-                    if (s.glow > 5 && p.scale > 0.7) {
-                        ctx.shadowBlur = s.glow;
-                        ctx.shadowColor = s.color;
-                    }
-
-                    ctx.fillStyle = s.color;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, finalSize, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.shadowBlur = 0;
-                }
-            });
-            ctx.globalAlpha = 1;
-
-            // 3. Planets
-            celestialObjects.filter(o => o.type === 'planet').forEach(obj => {
-                const p = project(obj.pos);
-                if (p) drawPlanet(ctx, p.x, p.y, obj.size * p.scale, obj.color);
-            });
-
-            // 4. Ghostly Shooting Stars
-            if (Math.random() < 0.006) {
-                const angle = Math.random() * Math.PI * 2;
-                const r = 3500;
-                shootingStars.push({
-                    pos: { x: r * Math.cos(angle), y: (Math.random() - 0.5) * 3000, z: r * Math.sin(angle) },
-                    vel: { x: (Math.random() - 0.5) * 35, y: (Math.random() - 0.5) * 35, z: (Math.random() - 0.5) * 35 },
-                    life: 1.0
-                });
-            }
-
-            shootingStars.forEach((s, i) => {
-                const pStart = project(s.pos);
-                s.pos.x += s.vel.x;
-                s.pos.y += s.vel.y;
-                s.pos.z += s.vel.z;
-                const pEnd = project(s.pos);
-                s.life -= 0.012;
-
-                if (pStart && pEnd && s.life > 0) {
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${s.life * 0.6})`;
-                    ctx.lineWidth = 1 * pStart.scale;
-                    ctx.beginPath();
-                    ctx.moveTo(pStart.x, pStart.y);
-                    ctx.lineTo(pEnd.x, pEnd.y);
-                    ctx.stroke();
-                }
-            });
-            shootingStars = shootingStars.filter(s => s.life > 0);
-
-            requestAnimationFrame(animate);
-        }
-
-        animate();
+        let animationFrameId: number;
+        let width = 0;
+        let height = 0;
+        let yaw = 0;
+        let pitch = 0;
+        let time = 0;
 
         const handleResize = () => {
             width = window.innerWidth;
@@ -236,18 +168,279 @@ export default function CosmicBackground() {
         };
 
         const handleMouseMove = (e: MouseEvent) => {
-            // We ignore e.clientX for stability
             mousePos.current = {
-                x: 0, // Locked
+                x: 0,
                 y: (e.clientY / height) * 2 - 1
             };
         };
 
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener("resize", handleResize);
+        window.addEventListener("mousemove", handleMouseMove);
+        handleResize();
+
+        const render = () => {
+            ctx.fillStyle = "#030014";
+            ctx.fillRect(0, 0, width, height);
+
+            const cx = width / 2;
+            const cy = height / 2;
+            const fov = 800;
+            time += 0.02;
+
+            // Camera props
+            yaw += 0.00008;
+            pitch = (Math.sin(Date.now() * 0.00004) * 0.04) + (mousePos.current.y * 0.15);
+            const cosYaw = Math.cos(yaw);
+            const sinYaw = Math.sin(yaw);
+            const cosPitch = Math.cos(pitch);
+            const sinPitch = Math.sin(pitch);
+
+            // --- SHOOTING STARS ---
+            if (Math.random() < 0.015) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 3000 + Math.random() * 1000;
+                const startX = Math.cos(angle) * dist;
+                const startY = (Math.random() - 0.5) * 2000;
+                const startZ = Math.sin(angle) * dist;
+
+                const speed = 40 + Math.random() * 40;
+                const targetX = (Math.random() - 0.5) * 2000;
+                const targetY = (Math.random() - 0.5) * 2000;
+                const targetZ = (Math.random() - 0.5) * 2000;
+
+                const dx = targetX - startX;
+                const dy = targetY - startY;
+                const dz = targetZ - startZ;
+                const len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                shootingStars.current.push({
+                    x: startX,
+                    y: startY,
+                    z: startZ,
+                    vx: (dx / len) * speed,
+                    vy: (dy / len) * speed,
+                    vz: (dz / len) * speed,
+                    life: 1.0,
+                    size: 2 + Math.random() * 3
+                });
+            }
+
+            for (let i = shootingStars.current.length - 1; i >= 0; i--) {
+                const s = shootingStars.current[i];
+                const prevX = s.x;
+                const prevY = s.y;
+                const prevZ = s.z;
+
+                s.x += s.vx;
+                s.y += s.vy;
+                s.z += s.vz;
+                s.life -= 0.01;
+
+                if (s.life <= 0) {
+                    shootingStars.current.splice(i, 1);
+                    continue;
+                }
+
+                let x1 = prevX * cosYaw - prevZ * sinYaw;
+                let z1 = prevZ * cosYaw + prevX * sinYaw;
+                let y1 = prevY * cosPitch - z1 * sinPitch;
+                let finalZ1 = z1 * cosPitch + prevY * sinPitch;
+
+                let x2 = s.x * cosYaw - s.z * sinYaw;
+                let z2 = s.z * cosYaw + s.x * sinYaw;
+                let y2 = s.y * cosPitch - z2 * sinPitch;
+                let finalZ2 = z2 * cosPitch + s.y * sinPitch;
+
+                if (finalZ1 > 0 && finalZ2 > 0) {
+                    const scale1 = fov / finalZ1;
+                    const sx1 = cx + x1 * scale1;
+                    const sy1 = cy + y1 * scale1;
+
+                    const scale2 = fov / finalZ2;
+                    const sx2 = cx + x2 * scale2;
+                    const sy2 = cy + y2 * scale2;
+
+                    const gradient = ctx.createLinearGradient(sx1, sy1, sx2, sy2);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
+                    gradient.addColorStop(1, `rgba(255, 255, 255, ${s.life})`);
+
+                    ctx.beginPath();
+                    ctx.moveTo(sx1, sy1);
+                    ctx.lineTo(sx2, sy2);
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = s.size * scale2;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                }
+            }
+
+            // --- STARS ---
+            const starsRef = stars.current;
+            for (let i = 0; i < starsRef.length; i++) {
+                const star = starsRef[i];
+                star.z -= 0.5;
+                if (star.z < 1) {
+                    star.z += 4000;
+                    star.x = (Math.random() - 0.5) * 4000;
+                    star.y = (Math.random() - 0.5) * 4000;
+                }
+
+                let x = star.x;
+                let z = star.z;
+
+                let x2 = x * cosYaw - z * sinYaw;
+                let z2 = z * cosYaw + x * sinYaw;
+
+                let y = star.y;
+                let y2 = y * cosPitch - z2 * sinPitch;
+                let z3 = z2 * cosPitch + y * sinPitch;
+
+                if (z3 > 0) {
+                    const scale = fov / z3;
+                    const screenX = cx + x2 * scale;
+                    const screenY = cy + y2 * scale;
+                    const size = star.size * scale;
+
+                    if (screenX > 0 && screenX < width && screenY > 0 && screenY < height) {
+                        ctx.beginPath();
+                        const twinkle = 0.5 + 0.5 * Math.sin(time * 3 + star.pulseOffset);
+                        ctx.globalAlpha = 0.2 + 0.8 * twinkle;
+                        ctx.fillStyle = star.color;
+                        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        if (star.glow > 2) {
+                            ctx.shadowBlur = star.glow * (2000 / z3) * twinkle;
+                            ctx.shadowColor = star.color;
+                            ctx.fill();
+                            ctx.shadowBlur = 0;
+                        }
+                        ctx.globalAlpha = 1.0;
+                    }
+                }
+            }
+
+            // --- PLANETS ---
+            planets.current.forEach(planet => {
+                if (planet.type !== 'star') {
+                    planet.angle += planet.speed;
+                }
+
+                let px, py, pz;
+                if (planet.type === 'moon' && planet.parent) {
+                    const pDist = planet.parent.distance;
+                    const pAngle = planet.parent.angle;
+                    const parentX = Math.cos(pAngle) * pDist;
+                    const parentZ = Math.sin(pAngle) * pDist;
+
+                    px = parentX + Math.cos(planet.angle) * planet.distance;
+                    py = 0;
+                    pz = parentZ + Math.sin(planet.angle) * planet.distance + 2000;
+                } else {
+                    px = Math.cos(planet.angle) * planet.distance;
+                    py = 0;
+                    pz = Math.sin(planet.angle) * planet.distance + 2000;
+                }
+
+                let x2 = px * cosYaw - pz * sinYaw;
+                let z2 = pz * cosYaw + px * sinYaw;
+
+                let y = py;
+                let y2 = y * cosPitch - z2 * sinPitch;
+                let z3 = z2 * cosPitch + y * sinPitch;
+
+                if (z3 > 0) {
+                    const scale = fov / z3;
+                    const screenX = cx + x2 * scale;
+                    const screenY = cy + y2 * scale;
+                    const size = planet.size * scale;
+
+                    // Draw Planet
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                    ctx.clip(); // Mask to circle
+
+                    if (planet.texture) {
+                        ctx.drawImage(planet.texture, screenX - size, screenY - size, size * 2, size * 2);
+
+                        // Inner shadow for sphere effect
+                        const gradient = ctx.createRadialGradient(screenX - size * 0.3, screenY - size * 0.3, size * 0.1, screenX, screenY, size);
+                        if (planet.type === 'star') {
+                            gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                            gradient.addColorStop(1, 'rgba(255, 200, 50, 0.2)');
+                        } else {
+                            gradient.addColorStop(0, 'rgba(0,0,0,0)');
+                            gradient.addColorStop(0.8, 'rgba(0,0,0,0.3)');
+                            gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+                        }
+                        ctx.fillStyle = gradient;
+                        ctx.fill();
+
+                    } else {
+                        // Fallback
+                        ctx.fillStyle = planet.color;
+                        ctx.fill();
+                    }
+                    ctx.restore(); // Remove clip
+
+                    // Sun Glow
+                    if (planet.type === 'star') {
+                        const sunPulse = 1 + 0.05 * Math.sin(time * 0.5);
+                        ctx.shadowBlur = (100 * scale) * sunPulse;
+                        ctx.shadowColor = planet.color;
+
+                        // Helper to draw glow without texture interference
+                        ctx.globalCompositeOperation = 'screen';
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(253, 184, 19, 0.2)`;
+                        ctx.fill();
+                        ctx.globalCompositeOperation = 'source-over';
+
+                        // Corona
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, size * 1.5 * sunPulse, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(253, 184, 19, 0.1)`;
+                        ctx.fill();
+
+                        ctx.shadowBlur = 0;
+                    }
+
+                    // Rings (Saturn)
+                    if (planet.hasRings && planet.ringTexture) {
+                        ctx.save();
+                        // 3D transform for ring
+                        // Simple 2D approximation: scale Y based on pitch
+                        const ringW = size * 4.5;
+                        const ringH = size * 4.5 * 0.4; // Tilted aspect
+
+                        ctx.translate(screenX, screenY);
+                        ctx.rotate(pitch * -0.5); // Tilt
+                        ctx.drawImage(planet.ringTexture, -ringW / 2, -ringH / 2, ringW, ringH);
+                        ctx.restore();
+                    } else if (planet.hasRings) {
+                        // Procedural fallback
+                        ctx.beginPath();
+                        ctx.ellipse(screenX, screenY, size * 2.2, size * 0.6, pitch * -0.5, 0, Math.PI * 2);
+                        ctx.strokeStyle = "rgba(200, 200, 180, 0.4)";
+                        ctx.lineWidth = size * 0.5;
+                        ctx.stroke();
+                    }
+
+                    ctx.shadowBlur = 0;
+                }
+            });
+
+            animationFrameId = requestAnimationFrame(render);
+        };
+
+        render();
+
         return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener("resize", handleResize);
+            window.removeEventListener("mousemove", handleMouseMove);
+            cancelAnimationFrame(animationFrameId);
         };
     }, []);
 
@@ -255,6 +448,7 @@ export default function CosmicBackground() {
         <canvas
             ref={canvasRef}
             className="fixed top-0 left-0 w-full h-full -z-50 pointer-events-none"
+            style={{ background: '#030014' }}
         />
     );
 }
