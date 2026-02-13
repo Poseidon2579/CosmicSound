@@ -62,19 +62,20 @@ export async function getTopSongs(limit: number = 10): Promise<Song[]> {
 
 export async function searchSongs(query: string, page: number = 1, limit: number = 20, genre?: string): Promise<{ songs: Song[], total: number }> {
     const from = (page - 1) * limit;
-    const to = from + limit - 1;
+    // Fetch 3x more to allow for deduplication while maintaining page size
+    const to = from + (limit * 3) - 1;
 
     let searchBuilder = supabase
         .from('canciones_con_rating')
         .select('*', { count: 'exact' });
 
     if (query) {
-        // Simple search across artist and title
         searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
     }
 
     if (genre) {
-        searchBuilder = searchBuilder.eq('genero', genre);
+        // Use ilike to handle case sensitivity issues in the DB
+        searchBuilder = searchBuilder.ilike('genero', genre);
     }
 
     const { data, error, count } = await searchBuilder
@@ -86,8 +87,27 @@ export async function searchSongs(query: string, page: number = 1, limit: number
         return { songs: [], total: 0 };
     }
 
+    const allSongs = data.map(mapCancionToSong);
+
+    // Deduplication logic
+    const uniqueMap = new Map();
+    const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    allSongs.forEach(song => {
+        const ytKey = song.youtubeId;
+        const contentKey = `${normalize(song.track)}-${normalize(song.artist)}`;
+
+        if (uniqueMap.has(ytKey)) return;
+        if (uniqueMap.has(contentKey)) return;
+
+        uniqueMap.set(ytKey, song);
+        uniqueMap.set(contentKey, song);
+    });
+
+    const uniqueSongs = Array.from(new Set(uniqueMap.values()));
+
     return {
-        songs: data.map(mapCancionToSong),
+        songs: uniqueSongs.slice(0, limit),
         total: count || 0
     };
 }
