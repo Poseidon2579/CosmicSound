@@ -7,6 +7,7 @@ import { Song, User } from "@/types";
 import SongCard from "@/components/SongCard";
 import Sidebar from "@/components/Sidebar";
 import { getCurrentUser } from "@/lib/user-service";
+import SmartSearchInput from "@/components/SmartSearchInput";
 
 const GENRES = ["Pop", "Rock", "Reggaeton", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop", "Salsa", "Cumbia"];
 
@@ -65,12 +66,16 @@ export default function SearchPage() {
                         >
                             <span className="material-symbols-outlined">arrow_back</span>
                         </button>
-                        <div>
-                            <h1 className="text-3xl font-bold">Explorar el Cosmos</h1>
-                            <p className="text-gray-400">
-                                {loading ? "Buscando..." : query ? `Encontramos ${total} resultados para "${query}"` : `Explorando ${total} señales sonoras`}
-                            </p>
+                        <div className="flex-1">
+                            {/* Smart Search Bar */}
+                            <SmartSearchInput initialQuery={query} />
                         </div>
+                    </div>
+
+                    <div className="pl-14">
+                        <p className="text-gray-400 text-sm">
+                            {loading ? "Buscando..." : query ? `Encontramos ${total} resultados para "${query}"` : `Explorando ${total} señales sonoras`}
+                        </p>
                     </div>
 
                     <div className="flex flex-col gap-4">

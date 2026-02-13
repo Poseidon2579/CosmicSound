@@ -109,6 +109,7 @@ export async function searchSongs(
 
     let { data, error, count } = await searchBuilder
         .order('vistas', { ascending: false })
+        .order('titulo', { ascending: true }) // Secondary sort for stability
         .range(from, to);
 
     // AI FALLBACK: If filtering by genre/decade and no results found, 
@@ -167,6 +168,38 @@ export async function searchSongs(
         songs: uniqueSongs.slice(0, limit),
         total: count || 0
     };
+}
+
+export async function getSearchSuggestions(query: string): Promise<{ text: string, type: 'song' | 'artist', id?: string }[]> {
+    if (!query || query.length < 3) return [];
+
+    const { data, error } = await supabase
+        .from('canciones_con_rating')
+        .select('titulo, artista, id, youtube_id')
+        .or(`titulo.ilike.%${query}%,artista.ilike.%${query}%`)
+        .limit(10);
+
+    if (error || !data) return [];
+
+    const suggestions: { text: string, type: 'song' | 'artist', id?: string }[] = [];
+    const seen = new Set();
+
+    data.forEach(item => {
+        // Add Artist suggestion if new
+        if (!seen.has(`artist:${item.artista}`)) {
+            if (item.artista.toLowerCase().includes(query.toLowerCase())) {
+                suggestions.push({ text: item.artista, type: 'artist' });
+                seen.add(`artist:${item.artista}`);
+            }
+        }
+
+        // Add Song suggestion
+        if (item.titulo.toLowerCase().includes(query.toLowerCase())) {
+            suggestions.push({ text: `${item.titulo} - ${item.artista}`, type: 'song', id: item.id });
+        }
+    });
+
+    return suggestions.slice(0, 8); // Limit to 8 suggestions
 }
 
 // ==================== RESEÑAS (Reviews) ====================
