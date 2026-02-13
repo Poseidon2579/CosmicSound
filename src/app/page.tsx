@@ -9,7 +9,7 @@ import HomeSkeleton from "@/components/HomeSkeleton";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, updatePreferencesFromSearch } from "@/lib/user-service";
-import { getAllSongs, getRecommendedSongs, getTrendingSongs, getTopSongs, getSongRatings } from "@/lib/data-service";
+import { getAllSongs, getRecommendedSongs, getTrendingSongs, getTopSongs, getSongRatings, getRandomSong } from "@/lib/data-service";
 import { Song, User } from "@/types";
 
 export default function Home() {
@@ -20,47 +20,48 @@ export default function Home() {
   const [discovery, setDiscovery] = useState<Song | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [selectedDecade, setSelectedDecade] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true); // Maybe re-trigger loading on filter change? Let's check.
       try {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
 
-        // Fetch parallel for performance
-        const [recs, trendingList, topSongs, allSongs] = await Promise.all([
-          getRecommendedSongs(currentUser?.preferences),
+        // Fetch parallel for performance - Removed getAllSongs (too heavy)
+        const [recs, trendingList, topSongs, disc] = await Promise.all([
+          getRecommendedSongs({ ...currentUser?.preferences, genres: selectedGenre ? [selectedGenre] : currentUser?.preferences?.genres, decades: selectedDecade ? [selectedDecade] : currentUser?.preferences?.decades }),
           getTrendingSongs(),
           getTopSongs(10),
-          getAllSongs()
+          getRandomSong()
         ]);
 
         // Batch fetch ratings
         const allFetchedIds = Array.from(new Set([
-          ...recs.map(s => s.id),
-          ...trendingList.map(s => s.id),
-          ...topSongs.map(s => s.id)
+          ...recs.map((s: Song) => s.id),
+          ...trendingList.map((s: Song) => s.id),
+          ...topSongs.map((s: Song) => s.id),
+          ...(disc ? [disc.id] : [])
         ]));
 
         const ratingsMap = await getSongRatings(allFetchedIds);
 
-        const attachRating = (list: Song[]) => list.map(s => ({
+        const attachRating = (list: Song[]) => list.map((s: Song) => ({
           ...s,
           rating: ratingsMap[s.id]?.avg || 0
         }));
 
-        const recsWithRatings = attachRating(recs);
-        const trendsWithRatings = attachRating(trendingList);
-        const topWithRatings = attachRating(topSongs);
-        const allSongsWithRatings = attachRating(allSongs);
+        setRecommended(attachRating(recs));
+        setTrends(attachRating(trendingList));
+        setTop10(attachRating(topSongs));
 
-        setRecommended(recsWithRatings);
-        setTrends(trendsWithRatings);
-        setTop10(topWithRatings);
-
-        // Discovery (Random) - Ensure it has rating!
-        if (allSongsWithRatings.length > 0) {
-          setDiscovery(allSongsWithRatings[Math.floor(Math.random() * allSongsWithRatings.length)]);
+        if (disc) {
+          setDiscovery({
+            ...disc,
+            rating: ratingsMap[disc.id]?.avg || 0
+          });
         }
       } catch (err) {
         console.error("Failed to fetch page data", err);
@@ -85,6 +86,40 @@ export default function Home() {
       <main className="flex-grow w-full px-4 md:px-6 py-8">
         <div className="max-w-[1400px] mx-auto flex flex-col gap-16">
           <Hero onSearch={handleSearch} />
+
+          {/* Filters Bar */}
+          <div className="flex flex-col gap-6 -mt-8">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mr-2">Géneros:</span>
+              {["Pop", "Rock", "Reggaeton", "Electronic", "Urban", "Indie"].map(genre => (
+                <button
+                  key={genre}
+                  onClick={() => setSelectedGenre(selectedGenre === genre ? null : genre)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedGenre === genre
+                    ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
+                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                    }`}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mr-2">Décadas:</span>
+              {["80s", "90s", "2000s", "2010s", "2020s"].map(decade => (
+                <button
+                  key={decade}
+                  onClick={() => setSelectedDecade(selectedDecade === decade ? null : decade)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedDecade === decade
+                    ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
+                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                    }`}
+                >
+                  {decade}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Main Content Grid: Discovery + Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

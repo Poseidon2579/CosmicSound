@@ -1,7 +1,6 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { motion, useAnimationControls } from "framer-motion";
 
 interface Review {
     user: string;
@@ -51,15 +50,17 @@ function StarRating({ rating }: { rating: number }) {
 export default function ActivityFeed() {
     const [feedItems, setFeedItems] = useState<Review[]>([]);
     const [songs, setSongs] = useState<Record<string, Song>>({});
+    const containerRef = useRef<HTMLDivElement>(null);
+    const controls = useAnimationControls();
 
     useEffect(() => {
         async function fetchActivity() {
             try {
                 const res = await fetch('/api/reviews?mode=recent');
                 const data = await res.json();
-                setFeedItems(data.slice(0, 3));
+                setFeedItems(data);
 
-                // Fetch song details for these items to show track names if needed
+                // Fetch song details for these items
                 const songData: Record<string, Song> = {};
                 for (const item of data) {
                     if (!songs[item.songId]) {
@@ -78,41 +79,60 @@ export default function ActivityFeed() {
         fetchActivity();
     }, []);
 
+    // Double the items for seamless animation loop
+    const doubledItems = [...feedItems, ...feedItems];
+
     return (
         <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-5">
             <div className="flex items-center justify-between">
                 <h2 className="text-white text-xl font-bold leading-tight tracking-[-0.015em]">Actividad Reciente</h2>
                 <a className="text-primary text-xs font-bold hover:underline" href="#">Ver Todo</a>
             </div>
-            <div className="flex flex-col gap-4">
-                {feedItems.length > 0 ? feedItems.map((item, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-gradient-to-br from-surface-dark to-transparent border border-white/5 hover:border-white/10 transition-colors group">
-                        <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-center gap-3">
-                                <img className="size-8 rounded-full object-cover ring-2 ring-primary/20" alt={item.user} src={item.avatar} />
-                                <div>
-                                    <p className="text-sm text-white font-semibold">{item.user}</p>
-                                    <p className="text-[10px] text-gray-500">{item.time}</p>
+
+            <div
+                className="relative h-[480px] overflow-hidden"
+                style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)' }}
+            >
+                <motion.div
+                    className="flex flex-col gap-4"
+                    animate={{
+                        y: feedItems.length > 0 ? ["0%", "-50%"] : 0
+                    }}
+                    transition={{
+                        duration: feedItems.length * 5, // Slow speed relative to count
+                        ease: "linear",
+                        repeat: Infinity
+                    }}
+                >
+                    {doubledItems.length > 0 ? doubledItems.map((item, i) => (
+                        <div key={i} className="p-4 rounded-xl bg-gradient-to-br from-surface-dark to-transparent border border-white/5 hover:border-white/10 transition-colors group shrink-0">
+                            <div className="flex items-start justify-between mb-2">
+                                <div className="flex items-center gap-3">
+                                    <img className="size-8 rounded-full object-cover ring-2 ring-primary/20" alt={item.user} src={item.avatar} />
+                                    <div>
+                                        <p className="text-sm text-white font-semibold">{item.user}</p>
+                                        <p className="text-[10px] text-gray-500">{item.time}</p>
+                                    </div>
                                 </div>
+                                <StarRating rating={item.rating} />
                             </div>
-                            <StarRating rating={item.rating} />
+                            <p className="text-xs text-primary font-medium mb-1 truncate">
+                                {songs[item.songId] ? (
+                                    <>
+                                        En <Link href={`/track/${item.songId}`} className="hover:underline">"{songs[item.songId].track}"</Link>
+                                    </>
+                                ) : (
+                                    `Cargando canción...`
+                                )}
+                            </p>
+                            <p className="text-sm text-gray-300 leading-snug">
+                                {item.comment}
+                            </p>
                         </div>
-                        <p className="text-xs text-primary font-medium mb-1 truncate">
-                            {songs[item.songId] ? (
-                                <>
-                                    En <Link href={`/track/${item.songId}`} className="hover:underline">"{songs[item.songId].track}"</Link>
-                                </>
-                            ) : (
-                                `Cargando canción...`
-                            )}
-                        </p>
-                        <p className="text-sm text-gray-300 leading-snug">
-                            {item.comment}
-                        </p>
-                    </div>
-                )) : (
-                    <p className="text-gray-500 text-sm italic py-4">Cargando actividad...</p>
-                )}
+                    )) : (
+                        <p className="text-gray-500 text-sm italic py-4">Cargando actividad...</p>
+                    )}
+                </motion.div>
             </div>
         </div>
     );

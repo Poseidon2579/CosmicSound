@@ -40,6 +40,11 @@ export default function Hero({ onSearch }: { onSearch?: (query: string) => void 
                     <h1 className="text-white text-5xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
                         Explora el Universo del Sonido
                     </h1>
+                    <div className="flex items-center justify-center gap-2">
+                        <span className="h-[1px] w-8 bg-primary/50"></span>
+                        <p className="text-primary text-xs font-black uppercase tracking-[0.3em] italic">KALA AI MUSIC</p>
+                        <span className="h-[1px] w-8 bg-primary/50"></span>
+                    </div>
                     <p className="text-gray-400 text-lg font-normal leading-normal">
                         Descubre nuevas dimensiones musicales, recomendadas por IA y la comunidad.
                     </p>

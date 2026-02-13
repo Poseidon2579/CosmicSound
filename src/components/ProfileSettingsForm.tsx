@@ -142,51 +142,13 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
                 <div className="space-y-3">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tus Géneros Favoritos</label>
                     <div className="flex flex-wrap gap-2">
-                        {["Pop", "Rock", "Urban", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop"].map(genre => (
-                            <button
-                                key={genre}
-                                onClick={() => {
-                                    const current = user.preferences?.genres || [];
-                                    const exists = current.includes(genre);
-                                    let newGenres;
-                                    if (exists) {
-                                        newGenres = current.filter((g: string) => g !== genre);
-                                    } else {
-                                        newGenres = [...current, genre];
-                                    }
-                                    // Update local user object deeply to reflect change accurately in UI
-                                    const updatedUser = {
-                                        ...user,
-                                        preferences: { ...user.preferences, genres: newGenres }
-                                    };
-                                    // We need to update the parent 'user' prop in a real app, but here we can't.
-                                    // So we'll trigger a state update if we had one for preferences, 
-                                    // but optimal way is to use a local state for preferences.
-                                    // Let's create a local state for it.
-                                }}
-                                // Wait, I need to add state for this. 
-                                // Let's refactor to include state first.
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${(user.preferences?.genres || []).includes(genre)
-                                    ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
-                                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
-                                    }`}
-                            >
-                                {genre}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="space-y-3">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tus Géneros Favoritos</label>
-                    <div className="flex flex-wrap gap-2">
-                        {["Pop", "Rock", "Reggaeton", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop", "Salsa", "Cumbia"].map(genre => {
-                            const selected = (preferences.genres || []).includes(genre);
+                        {["Pop", "Rock", "Urban", "Reggaeton", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop", "Salsa", "Cumbia"].map(genre => {
+                            const selected = (preferences?.genres || []).includes(genre);
                             return (
                                 <button
                                     key={genre}
                                     onClick={() => {
-                                        const current = preferences.genres || [];
+                                        const current = preferences?.genres || [];
                                         let newGenres;
                                         if (selected) {
                                             newGenres = current.filter((g: string) => g !== genre);
@@ -205,7 +167,37 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
                             );
                         })}
                     </div>
-                    <p className="text-[10px] text-gray-500">Selecciona los géneros para mejorar tus recomendaciones.</p>
+                </div>
+
+                <div className="space-y-3">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tus Décadas Favoritas</label>
+                    <div className="flex flex-wrap gap-2">
+                        {["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"].map(decade => {
+                            const selected = (preferences?.decades || []).includes(decade);
+                            return (
+                                <button
+                                    key={decade}
+                                    onClick={() => {
+                                        const current = preferences?.decades || [];
+                                        let newDecades;
+                                        if (selected) {
+                                            newDecades = current.filter((d: string) => d !== decade);
+                                        } else {
+                                            newDecades = [...current, decade];
+                                        }
+                                        setPreferences({ ...preferences, decades: newDecades });
+                                    }}
+                                    className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selected
+                                        ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
+                                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                                        }`}
+                                >
+                                    {decade}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <p className="text-[10px] text-gray-500">Selecciona los géneros y décadas para mejorar tu brújula musical.</p>
                 </div>
 
                 <div className="space-y-2">
@@ -213,7 +205,7 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
                         Biografía
                         <span className="text-[10px] text-primary flex items-center gap-1">
                             <span className="material-symbols-outlined text-xs">sparkles</span>
-                            Kala AI Analizando...
+                            <span className="font-black italic uppercase tracking-tighter">KALA AI MUSIC</span> Analizando...
                         </span>
                     </label>
                     <textarea

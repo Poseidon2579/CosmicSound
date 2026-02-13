@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const mode = searchParams.get('mode');
 
     if (mode === 'recent') {
-        const reviews = await getRecentReviews(6);
+        const reviews = await getRecentReviews(20);
         return NextResponse.json(reviews);
     }
 

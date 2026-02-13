@@ -3,12 +3,12 @@ import { Song, Review, Like } from '@/types';
 
 // ==================== CANCIONES (Songs) ====================
 
-export async function getAllSongs(): Promise<Song[]> {
+export async function getAllSongs(limit: number = 50): Promise<Song[]> {
     const { data, error } = await supabase
         .from('canciones_con_rating')
         .select('*')
         .order('vistas', { ascending: false })
-        .limit(100); // Limit default fetch
+        .limit(limit);
 
     if (error || !data) {
         console.error('Error fetching songs:', error);
@@ -16,6 +16,27 @@ export async function getAllSongs(): Promise<Song[]> {
     }
 
     return data.map(mapCancionToSong);
+}
+
+export async function getRandomSong(): Promise<Song | null> {
+    // First, get total count
+    const { count } = await supabase
+        .from('canciones')
+        .select('*', { count: 'exact', head: true });
+
+    if (!count) return null;
+
+    // Pick a random offset
+    const randomOffset = Math.floor(Math.random() * count);
+
+    const { data, error } = await supabase
+        .from('canciones_con_rating')
+        .select('*')
+        .range(randomOffset, randomOffset)
+        .single();
+
+    if (error || !data) return null;
+    return mapCancionToSong(data);
 }
 
 export async function getTopSongs(limit: number = 10): Promise<Song[]> {
@@ -289,10 +310,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function getRecommendedSongs(userPreferences: any): Promise<Song[]> {
     try {
-        const allSongs = await getAllSongs();
+        // Limit songs sent to Gemini for performance
+        const allSongs = await getAllSongs(40);
 
-        // If no preferences, return mixed selection (not just first 6)
-        if (!userPreferences || (!userPreferences.genres?.length && !userPreferences.artists?.length)) {
+        // If no preferences, return mixed selection
+        if (!userPreferences || (!userPreferences.genres?.length && !userPreferences.decades?.length)) {
             return allSongs.sort(() => 0.5 - Math.random()).slice(0, 10);
         }
 
