@@ -82,6 +82,7 @@ export default function FavoriteButton({
             disabled={isLoading}
             className={`relative flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95 ${className}`}
             title={isLiked ? "Quitar de favoritos" : "Añadir a favoritos"}
+            aria-label={isLiked ? "Quitar de favoritos" : "Añadir a favoritos"}
         >
             <AnimatePresence mode="wait">
                 <motion.span

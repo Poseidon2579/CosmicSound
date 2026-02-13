@@ -208,31 +208,55 @@ export async function getFilterStats(genres: string[], decades: string[]): Promi
         decades: {} as Record<string, number>
     };
 
-    // Parallelize genre counts
-    const genrePromises = genres.map(async (genre) => {
-        const { count } = await supabase
-            .from('canciones_con_rating')
-            .select('*', { count: 'exact', head: true })
-            .ilike('genero', `%${genre}%`);
-        return { key: genre, count: count || 0 };
+    // Initialize with 0
+    genres.forEach(g => stats.genres[g] = 0);
+    decades.forEach(d => stats.decades[d] = 0);
+
+    // Fetch ALL generic and decade data (lightweight query)
+    // We fetch 1000 rows to be safe, assuming the library isn't massive yet. 
+    // If it grows, we can switch back to count queries or RPC.
+    const { data, error } = await supabase
+        .from('canciones_con_rating')
+        .select('genero, decada');
+
+    if (error || !data) {
+        console.error("Error fetching stats data:", error);
+        return stats;
+    }
+
+    data.forEach((row: any) => {
+        // Normalize row genres to a searchable string
+        let genreSearchable = "";
+        if (Array.isArray(row.genero)) {
+            genreSearchable = row.genero.join(" ").toLowerCase();
+        } else {
+            genreSearchable = String(row.genero || "").toLowerCase();
+        }
+
+        // Check each TARGET genre
+        genres.forEach(g => {
+            if (genreSearchable.includes(g.toLowerCase())) {
+                stats.genres[g] = (stats.genres[g] || 0) + 1;
+            }
+        });
+
+        // Normalize row decades to a searchable string
+        let decadeSearchable = "";
+        if (Array.isArray(row.decada)) {
+            decadeSearchable = row.decada.join(" ").toLowerCase();
+        } else {
+            decadeSearchable = String(row.decada || "").toLowerCase();
+        }
+
+        decades.forEach(d => {
+            if (decadeSearchable.includes(d.toLowerCase())) {
+                stats.decades[d] = (stats.decades[d] || 0) + 1;
+            }
+        });
     });
 
-    // Parallelize decade counts
-    const decadePromises = decades.map(async (decade) => {
-        const { count } = await supabase
-            .from('canciones_con_rating')
-            .select('*', { count: 'exact', head: true })
-            .ilike('decada', `%${decade}%`);
-        return { key: decade, count: count || 0 };
-    });
-
-    const [genreResults, decadeResults] = await Promise.all([
-        Promise.all(genrePromises),
-        Promise.all(decadePromises)
-    ]);
-
-    genreResults.forEach(r => stats.genres[r.key] = r.count);
-    decadeResults.forEach(r => stats.decades[r.key] = r.count);
+    // Debug logging
+    console.log("Filter Stats Calculated:", JSON.stringify(stats, null, 2));
 
     return stats;
 }

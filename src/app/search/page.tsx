@@ -108,22 +108,21 @@ export default function SearchPage() {
                             {GENRES.map(genre => {
                                 const count = filterStats?.genres[genre] || 0;
                                 const isSelected = selectedGenre === genre;
-                                const isDisabled = !loading && count === 0;
+                                const isZero = !loading && count === 0;
 
                                 return (
                                     <button
                                         key={genre}
-                                        onClick={() => { if (!isDisabled) { setSelectedGenre(genre); setPage(1); } }}
-                                        disabled={isDisabled}
+                                        onClick={() => { setSelectedGenre(genre); setPage(1); }}
                                         className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all flex items-center gap-1 ${isSelected
                                             ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
-                                            : isDisabled
-                                                ? "bg-white/5 border-transparent text-gray-600 cursor-not-allowed opacity-50"
+                                            : isZero
+                                                ? "bg-white/5 border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5"
                                                 : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                                             }`}
                                     >
                                         {genre}
-                                        {filterStats && <span className="text-[10px] opacity-70">({count})</span>}
+                                        {filterStats && <span className={`text-[10px] ${isZero ? 'opacity-40' : 'opacity-70'}`}>({count})</span>}
                                     </button>
                                 );
                             })}
@@ -134,22 +133,21 @@ export default function SearchPage() {
                             {["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"].map(decade => {
                                 const count = filterStats?.decades[decade] || 0;
                                 const isSelected = selectedDecade === decade;
-                                const isDisabled = !loading && count === 0;
+                                const isZero = !loading && count === 0;
 
                                 return (
                                     <button
                                         key={decade}
-                                        onClick={() => { if (!isDisabled) { setSelectedDecade(isSelected ? null : decade); setPage(1); } }}
-                                        disabled={isDisabled}
+                                        onClick={() => { setSelectedDecade(isSelected ? null : decade); setPage(1); }}
                                         className={`px-3 py-1 rounded-md text-[10px] font-bold border transition-all flex items-center gap-1 ${isSelected
                                             ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
-                                            : isDisabled
-                                                ? "bg-white/5 border-transparent text-gray-600 cursor-not-allowed opacity-50"
+                                            : isZero
+                                                ? "bg-white/5 border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5"
                                                 : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                                             }`}
                                     >
                                         {decade}
-                                        {filterStats && <span className="text-[9px] opacity-70">({count})</span>}
+                                        {filterStats && <span className={`text-[9px] ${isZero ? 'opacity-40' : 'opacity-70'}`}>({count})</span>}
                                     </button>
                                 );
                             })}

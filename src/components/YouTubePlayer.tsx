@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface YouTubePlayerProps {
@@ -20,8 +20,11 @@ export default function YouTubePlayer({ youtubeId, nextSongId, onEnd }: YouTubeP
     const playerRef = useRef<any>(null);
     const router = useRouter();
     const iframeId = `yt-player-${youtubeId}`;
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
+        if (!isLoaded) return;
+
         // Load YouTube API script if not already loaded
         if (!window.YT) {
             const tag = document.createElement("script");
@@ -33,27 +36,36 @@ export default function YouTubePlayer({ youtubeId, nextSongId, onEnd }: YouTubeP
         }
 
         const onPlayerReady = (event: any) => {
-            // Auto play is already handled by URL param, but we can double check
             event.target.playVideo();
         };
 
         const onPlayerStateChange = (event: any) => {
-            // YT.PlayerState.ENDED is 0
-            if (event.data === 0) {
+            if (event.data === 0) { // ENDED
                 console.log("Song finished, triggering next...");
                 if (onEnd) {
                     onEnd();
                 } else if (nextSongId) {
                     router.push(`/track/${nextSongId}`);
-                    // Optional: force reload if nextjs cache is too aggressive
-                    // window.location.href = `/track/${nextSongId}`;
                 }
             }
         };
 
         const initPlayer = () => {
             if (!window.YT || !window.YT.Player) return;
+            // Destroy existing instance if any (safety check)
+            if (playerRef.current) {
+                try { playerRef.current.destroy(); } catch (e) { }
+            }
+
             playerRef.current = new window.YT.Player(iframeId, {
+                height: '100%',
+                width: '100%',
+                videoId: youtubeId,
+                playerVars: {
+                    autoplay: 1,
+                    modestbranding: 1,
+                    rel: 0,
+                },
                 events: {
                     onReady: onPlayerReady,
                     onStateChange: onPlayerStateChange,
@@ -69,25 +81,41 @@ export default function YouTubePlayer({ youtubeId, nextSongId, onEnd }: YouTubeP
 
         return () => {
             if (playerRef.current) {
-                playerRef.current.destroy();
+                try { playerRef.current.destroy(); } catch (e) { }
             }
         };
-    }, [youtubeId, nextSongId, router, iframeId]);
+    }, [youtubeId, nextSongId, router, iframeId, isLoaded, onEnd]);
+
+    if (!isLoaded) {
+        return (
+            <div
+                className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-surface-dark group border border-white/5 cursor-pointer"
+                onClick={() => setIsLoaded(true)}
+                role="button"
+                aria-label="Play video"
+            >
+                {/* Thumbnail */}
+                <img
+                    src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
+                    alt="Video thumbnail"
+                    className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                />
+
+                {/* Play Button Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="size-16 bg-primary/90 text-white rounded-full flex items-center justify-center p-4 shadow-[0_0_30px_rgba(59,130,246,0.5)] group-hover:scale-110 transition-transform duration-300 backdrop-blur-sm">
+                        <span className="material-symbols-outlined !text-[32px] ml-1">play_arrow</span>
+                    </div>
+                </div>
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+            </div>
+        );
+    }
 
     return (
-        <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-surface-dark group border border-white/5">
-            <iframe
-                id={iframeId}
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&autoplay=1&mute=0&rel=0&modestbranding=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                className="relative z-10"
-            ></iframe>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-20"></div>
+        <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black border border-white/5">
+            <div id={iframeId} className="w-full h-full" />
         </div>
     );
 }

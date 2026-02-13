@@ -67,11 +67,26 @@ export default function CosmicBackground() {
         let pitch = 0;
         let time = 0;
 
+        // Configuration (mutable to allow updates on resize)
+        let MAX_STARS = 2000;
+        let SHOOTING_STAR_CHANCE = 0.02;
+
         const handleResize = () => {
             width = window.innerWidth;
             height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
+            if (canvas) {
+                canvas.width = width;
+                canvas.height = height;
+            }
+            // Reduce density on mobile
+            const isMobile = window.innerWidth < 768;
+            MAX_STARS = isMobile ? 300 : 2000; // Reduced for mobile
+            SHOOTING_STAR_CHANCE = isMobile ? 0.005 : 0.02;
+
+            // Re-initialize stars if count differs significantly
+            // We'll just trim or add on next render frame effectively, 
+            // but for now let's just clear and rebuild if needed or let the loop handle usage.
+            // Actually, simply limiting the loop in render is cheaper than re-allocating.
         };
 
         const handleMouseMove = (e: MouseEvent) => {
@@ -83,7 +98,7 @@ export default function CosmicBackground() {
 
         window.addEventListener("resize", handleResize);
         window.addEventListener("mousemove", handleMouseMove);
-        handleResize();
+        handleResize(); // Initial sizing
 
         const render = () => {
             ctx.fillStyle = "#030014";
@@ -91,7 +106,7 @@ export default function CosmicBackground() {
 
             const cx = width / 2;
             const cy = height / 2;
-            const fov = 1000; // Increased FOV for depth
+            const fov = 1000;
             time += 0.02;
 
             // Camera props
@@ -103,7 +118,7 @@ export default function CosmicBackground() {
             const sinPitch = Math.sin(pitch);
 
             // --- SHOOTING STARS ---
-            if (Math.random() < 0.02) {
+            if (Math.random() < SHOOTING_STAR_CHANCE) {
                 const angle = Math.random() * Math.PI * 2;
                 const dist = 4000 + Math.random() * 2000;
                 const startX = Math.cos(angle) * dist;
@@ -183,7 +198,11 @@ export default function CosmicBackground() {
 
             // --- STARS ---
             const starsRef = stars.current;
-            for (let i = 0; i < starsRef.length; i++) {
+            // Limit the loop to MAX_STARS to improve performance on mobile
+            // without needing to splice/resize the array
+            const activeStars = Math.min(starsRef.length, MAX_STARS);
+
+            for (let i = 0; i < activeStars; i++) {
                 const star = starsRef[i];
                 star.z -= 0.5;
                 if (star.z < 1) {
@@ -238,17 +257,29 @@ export default function CosmicBackground() {
         return () => {
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("mousemove", handleMouseMove);
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
     }, []);
 
-
-
     return (
-        <canvas
-            ref={canvasRef}
-            className="fixed top-0 left-0 w-full h-full -z-50 pointer-events-none"
-            style={{ background: '#030014' }}
-        />
+        <>
+            {/* Mobile Static Background - Zero JS overhead */}
+            <div className="fixed inset-0 -z-50 bg-[#030014] md:hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-transparent to-purple-900/20" />
+                <div
+                    className="absolute top-0 left-0 w-full h-full opacity-[0.03]"
+                    style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+                    }}
+                />
+            </div>
+
+            {/* Desktop Animated Background */}
+            <canvas
+                ref={canvasRef}
+                className="fixed top-0 left-0 w-full h-full -z-50 pointer-events-none hidden md:block"
+                style={{ background: '#030014' }}
+            />
+        </>
     );
 }

@@ -3,14 +3,23 @@
 import Hero from "@/components/Hero";
 import SongCard from "@/components/SongCard";
 import RecommendationCard from "@/components/RecommendationCard";
-import ActivityFeed from "@/components/ActivityFeed";
-import MusicCarousel from "@/components/MusicCarousel";
 import HomeSkeleton from "@/components/HomeSkeleton";
+import dynamic from 'next/dynamic';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, updatePreferencesFromSearch } from "@/lib/user-service";
-import { getAllSongs, getRecommendedSongs, getTrendingSongs, getTopSongs, getSongRatings, getRandomSong } from "@/lib/data-service";
+import { getRecommendedSongs, getTrendingSongs, getTopSongs, getSongRatings, getRandomSong } from "@/lib/data-service";
 import { Song, User } from "@/types";
+
+const MusicCarousel = dynamic(() => import("@/components/MusicCarousel"), {
+  loading: () => <div className="h-64 w-full animate-pulse bg-white/5 rounded-xl mb-8" />,
+  ssr: false
+});
+
+const ActivityFeed = dynamic(() => import("@/components/ActivityFeed"), {
+  loading: () => <div className="h-64 w-full animate-pulse bg-white/5 rounded-xl" />,
+  ssr: false
+});
 
 export default function Home() {
   const router = useRouter();
@@ -30,7 +39,7 @@ export default function Home() {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
 
-        // Fetch parallel for performance - Removed getAllSongs (too heavy)
+        // Fetch parallel for performance
         const [recs, trendingList, topSongs, disc] = await Promise.all([
           getRecommendedSongs({ ...currentUser?.preferences, genres: selectedGenre ? [selectedGenre] : currentUser?.preferences?.genres, decades: selectedDecade ? [selectedDecade] : currentUser?.preferences?.decades }),
           getTrendingSongs(),

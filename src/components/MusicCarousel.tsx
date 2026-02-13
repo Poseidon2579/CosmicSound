@@ -56,6 +56,7 @@ export default function MusicCarousel({ title, subtitle, children, icon }: Music
                 {showLeftArrow && (
                     <button
                         onClick={() => scroll("left")}
+                        aria-label="Scroll left"
                         className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-30 size-10 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-primary transition-all shadow-xl opacity-100"
                     >
                         <ChevronLeft size={24} />
@@ -66,6 +67,7 @@ export default function MusicCarousel({ title, subtitle, children, icon }: Music
                 {showRightArrow && (
                     <button
                         onClick={() => scroll("right")}
+                        aria-label="Scroll right"
                         className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-30 size-10 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-primary transition-all shadow-xl opacity-100"
                     >
                         <ChevronRight size={24} />

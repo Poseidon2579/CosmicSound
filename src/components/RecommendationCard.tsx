@@ -33,8 +33,8 @@ export default function RecommendationCard({ song, onNext }: { song: Song, onNex
 
                 <div className="flex flex-col gap-4 relative z-10">
                     <div className="flex items-center gap-3">
-                        <span className="bg-primary/20 text-primary border border-primary/20 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Elección IA</span>
-                        <span className="text-gray-400 text-xs">Basado en lo que has escuchado recientemente</span>
+                        <span className="bg-primary/30 text-white border border-primary/40 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-[0_0_10px_rgba(59,130,246,0.2)]">Elección IA</span>
+                        <span className="text-gray-300 text-xs">Basado en lo que has escuchado recientemente</span>
                     </div>
                     <div>
                         <h3 className="text-3xl font-black text-white leading-tight">{song.track}</h3>
@@ -61,7 +61,10 @@ export default function RecommendationCard({ song, onNext }: { song: Song, onNex
                             className="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors"
                             iconSize={20}
                         />
-                        <button className="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors">
+                        <button
+                            className="size-10 flex items-center justify-center rounded border border-white/10 text-white hover:bg-white/10 transition-colors"
+                            aria-label="Add to playlist"
+                        >
                             <span className="material-symbols-outlined !text-[20px]">playlist_add</span>
                         </button>
                     </div>
