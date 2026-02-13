@@ -116,7 +116,7 @@ export default function Home() {
                       : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
                       }`}
                   >
-                    {genre}
+                    {getDisplayGenre(genre)}
                     <span className="text-[10px] opacity-50 ml-1">({count})</span>
                   </button>
                 ))}
