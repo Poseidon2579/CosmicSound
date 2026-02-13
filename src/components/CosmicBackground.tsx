@@ -41,50 +41,60 @@ export default function CosmicBackground() {
         canvas.height = height;
 
         // --- Camera State ---
-        let yaw = 0; // Horizontal rotation
-        let pitch = 0; // Vertical rotation
+        let yaw = 0; // Horizontal auto-rotation
+        let pitch = 0; // Vertical manual tilt
         const fov = 1000; // Field of view depth
 
         // --- Assets ---
-        const starCount = 1200;
+        const starCount = 1500;
         const stars: Star[] = [];
-        const starColors = ['#fff', '#bae6fd', '#fef08a', '#fecaca', '#ddd6fe'];
+        // Space isn't just black and white! Let's reflect that.
+        const starColors = [
+            '#ffffff', // White
+            '#fbfcfc', // Off-white
+            '#fffbed', // Soft yellow
+            '#eef2ff', // Soft blue
+            '#faf5ff', // Soft purple
+            '#fff1f2', // Soft red
+            '#bae6fd'  // Sky blue
+        ];
 
         for (let i = 0; i < starCount; i++) {
             const phi = Math.acos(-1 + (2 * i) / starCount);
             const theta = Math.sqrt(starCount * Math.PI) * phi;
-            const r = 2500 + Math.random() * 800;
+            const r = 2500 + Math.random() * 1000;
             stars.push({
                 pos: {
                     x: r * Math.cos(theta) * Math.sin(phi),
                     y: r * Math.sin(theta) * Math.sin(phi),
                     z: r * Math.cos(phi)
                 },
-                size: 0.5 + Math.random() * 2.5,
+                size: 0.3 + Math.random() * 2.5, // Varied sizes for depth
                 color: starColors[Math.floor(Math.random() * starColors.length)],
-                glow: Math.random() > 0.8 ? 20 : 5
+                glow: Math.random() > 0.85 ? 15 : 4
             });
         }
 
         const celestialObjects: CelestialObject[] = [
-            { pos: { x: 1200, y: -400, z: 800 }, type: 'planet', size: 140, color: '#a855f7', seed: 42 }, // Lavender
-            { pos: { x: -2000, y: 600, z: -1500 }, type: 'planet', size: 180, color: '#3b82f6', seed: 99 }, // Blue gas
-            { pos: { x: 800, y: 1200, z: -2500 }, type: 'planet', size: 100, color: '#10b981', seed: 123 }, // Greenish
-            { pos: { x: -3000, y: -800, z: 2000 }, type: 'planet', size: 220, color: '#ef4444', seed: 456 }, // Red Giant
-            { pos: { x: 0, y: 2000, z: 500 }, type: 'nebula', size: 600, color: '#6366f1', seed: 777 },
-            { pos: { x: -1500, y: -2000, z: -1000 }, type: 'nebula', size: 500, color: '#ec4899', seed: 88 }
+            { pos: { x: 1200, y: -400, z: 800 }, type: 'planet', size: 140, color: '#a855f7', seed: 42 },
+            { pos: { x: -2500, y: 800, z: -1200 }, type: 'planet', size: 200, color: '#3b82f6', seed: 99 },
+            { pos: { x: 800, y: 1500, z: -3000 }, type: 'planet', size: 120, color: '#10b981', seed: 123 },
+            { pos: { x: -3500, y: -1200, z: 2500 }, type: 'planet', size: 280, color: '#ef4444', seed: 456 },
+            { pos: { x: 4000, y: 500, z: -500 }, type: 'planet', size: 160, color: '#f59e0b', seed: 789 },
+            { pos: { x: 0, y: 2500, z: 1000 }, type: 'nebula', size: 800, color: '#6366f1', seed: 777 },
+            { pos: { x: -2000, y: -2500, z: -1500 }, type: 'nebula', size: 700, color: '#ec4899', seed: 88 }
         ];
 
         let shootingStars: { pos: Vector3; vel: Vector3; life: number }[] = [];
 
         // --- Projection Logic ---
         function project(p: Vector3) {
-            // Rotate around Y (Yaw) - Horizontal only auto
+            // Constant drift (Slow auto-rotation)
             let x = p.x * Math.cos(yaw) - p.z * Math.sin(yaw);
             let z = p.x * Math.sin(yaw) + p.z * Math.cos(yaw);
             let y = p.y;
 
-            // Rotate around X (Pitch) - Controlled by mouse y
+            // Manual Vertical tilt
             let y_final = y * Math.cos(pitch) - z * Math.sin(pitch);
             let z_final = y * Math.sin(pitch) + z * Math.cos(pitch);
 
@@ -105,7 +115,7 @@ export default function CosmicBackground() {
             const grad = ctx.createRadialGradient(x - size * 0.3, y - size * 0.3, size * 0.1, x, y, size);
             grad.addColorStop(0, '#fff');
             grad.addColorStop(0.2, color);
-            grad.addColorStop(1, '#08081a');
+            grad.addColorStop(1, '#050510');
 
             ctx.shadowBlur = size * 0.4;
             ctx.shadowColor = color;
@@ -116,7 +126,7 @@ export default function CosmicBackground() {
             ctx.restore();
 
             // Atmosphere
-            ctx.strokeStyle = `${color}33`;
+            ctx.strokeStyle = `${color}22`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.arc(x, y, size * 1.05, 0, Math.PI * 2);
@@ -125,8 +135,8 @@ export default function CosmicBackground() {
 
         function drawNebula(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, color: string) {
             const grad = ctx.createRadialGradient(x, y, 0, x, y, size);
-            grad.addColorStop(0, `${color}15`);
-            grad.addColorStop(0.5, `${color}08`);
+            grad.addColorStop(0, `${color}12`);
+            grad.addColorStop(0.5, `${color}06`);
             grad.addColorStop(1, 'transparent');
 
             ctx.fillStyle = grad;
@@ -139,29 +149,30 @@ export default function CosmicBackground() {
         function animate() {
             if (!ctx || !canvas) return;
 
-            // EXTREMELY Slow Rotation
-            yaw += 0.0001;
-            // Only vertical mouse control
-            pitch = (Math.sin(Date.now() * 0.00005) * 0.05) + (mousePos.current.y * 0.2);
+            // GHOSTLY Slow movement
+            yaw += 0.00008;
+            // Control pitch (Y only) via mouse
+            pitch = (Math.sin(Date.now() * 0.00004) * 0.04) + (mousePos.current.y * 0.15);
 
-            ctx.fillStyle = '#010105';
+            ctx.fillStyle = '#010103';
             ctx.fillRect(0, 0, width, height);
 
+            // Distance sorting: far to near
             // 1. Nebulae
             celestialObjects.filter(o => o.type === 'nebula').forEach(obj => {
                 const p = project(obj.pos);
-                if (p) drawNebula(ctx, p.x, p.y, obj.size * p.scale * 2.5, obj.color);
+                if (p) drawNebula(ctx, p.x, p.y, obj.size * p.scale * 2.8, obj.color);
             });
 
-            // 2. Stars with Glow and Color
+            // 2. Multicolored Stars
             stars.forEach(s => {
                 const p = project(s.pos);
                 if (p) {
                     const finalSize = s.size * p.scale;
-                    if (finalSize < 0.2) return;
+                    if (finalSize < 0.15) return;
 
-                    ctx.globalAlpha = Math.min(1, p.scale * 4);
-                    if (s.glow > 5 && p.scale > 0.8) {
+                    ctx.globalAlpha = Math.min(1, p.scale * 3);
+                    if (s.glow > 5 && p.scale > 0.7) {
                         ctx.shadowBlur = s.glow;
                         ctx.shadowColor = s.color;
                     }
@@ -182,13 +193,13 @@ export default function CosmicBackground() {
                 if (p) drawPlanet(ctx, p.x, p.y, obj.size * p.scale, obj.color);
             });
 
-            // 4. Shooting Stars
-            if (Math.random() < 0.008) {
+            // 4. Ghostly Shooting Stars
+            if (Math.random() < 0.006) {
                 const angle = Math.random() * Math.PI * 2;
-                const r = 3000;
+                const r = 3500;
                 shootingStars.push({
-                    pos: { x: r * Math.cos(angle), y: (Math.random() - 0.5) * 2000, z: r * Math.sin(angle) },
-                    vel: { x: (Math.random() - 0.5) * 40, y: (Math.random() - 0.5) * 40, z: (Math.random() - 0.5) * 40 },
+                    pos: { x: r * Math.cos(angle), y: (Math.random() - 0.5) * 3000, z: r * Math.sin(angle) },
+                    vel: { x: (Math.random() - 0.5) * 35, y: (Math.random() - 0.5) * 35, z: (Math.random() - 0.5) * 35 },
                     life: 1.0
                 });
             }
@@ -199,11 +210,11 @@ export default function CosmicBackground() {
                 s.pos.y += s.vel.y;
                 s.pos.z += s.vel.z;
                 const pEnd = project(s.pos);
-                s.life -= 0.015;
+                s.life -= 0.012;
 
                 if (pStart && pEnd && s.life > 0) {
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${s.life * 0.8})`;
-                    ctx.lineWidth = 1.5 * pStart.scale;
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${s.life * 0.6})`;
+                    ctx.lineWidth = 1 * pStart.scale;
                     ctx.beginPath();
                     ctx.moveTo(pStart.x, pStart.y);
                     ctx.lineTo(pEnd.x, pEnd.y);
@@ -225,8 +236,9 @@ export default function CosmicBackground() {
         };
 
         const handleMouseMove = (e: MouseEvent) => {
+            // We ignore e.clientX for stability
             mousePos.current = {
-                x: (e.clientX / width) * 2 - 1,
+                x: 0, // Locked
                 y: (e.clientY / height) * 2 - 1
             };
         };

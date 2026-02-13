@@ -16,21 +16,146 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
     const [uploading, setUploading] = useState(false);
 
     const allGenres = [
-        "Pop", "Rock", "Urban", "Reggaeton", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop", "Salsa", "Cumbia",
-        "Punk", "Techno", "House", "Trance", "Dubstep", "Ambient", "Dreampop", "Shoegaze", "Synthwave", "Vaporwave", "Afrobeat", "Bossa Nova", "Samba",
-        "Bolero", "Tango", "Mariachi", "Flamenco", "Bluegrass", "Country", "Folk", "Gospel", "Soul", "Funk", "Disco", "Ska", "Reggae", "Dancehall",
-        "Bachata", "Merengue", "Vallenato", "Trap", "Drill", "Grime", "Garage", "Industrial", "EBM", "Ethereal", "New Wave", "Post-Punk", "Darkwave",
-        "Grunge", "Britpop", "Hardcore", "Emo", "Screamo", "Math Rock", "Post-Rock", "Stoner Rock", "Psychedelic", "Sludge", "Doom Metal", "Black Metal",
-        "Death Metal", "Thrash", "Power Metal", "Symphonic Metal", "Melodic Death", "Eurobeat", "Hyperpop", "J-Pop", "J-Rock", "Visual Kei", "Math Core",
-        "Glitch", "Breakcore", "IDM", "Trip Hop", "Acid Jazz", "Nu Jazz", "Hardstyle", "Hard Trance", "Minimal", "Deep House", "Progressive", "Psybient",
-        "Goa", "Dark Psy", "Chillstep", "Future Bass", "Trap Latino", "Corrido", "Ranchera", "Trova", "Son Cubano", "Mambo", "Guaguancó"
-    ].sort();
+        { id: "pop", en: "Pop", es: "Pop" },
+        { id: "rock", en: "Rock", es: "Rock" },
+        { id: "urban", en: "Urban", es: "Urbano" },
+        { id: "reggaeton", en: "Reggaeton", es: "Reggaeton" },
+        { id: "hip-hop", en: "Hip Hop", es: "Hip Hop" },
+        { id: "electronic", en: "Electronic", es: "Electrónica" },
+        { id: "indie", en: "Indie", es: "Indie" },
+        { id: "rnb", en: "R&B", es: "R&B" },
+        { id: "jazz", en: "Jazz", es: "Jazz" },
+        { id: "classical", en: "Classical", es: "Clásica" },
+        { id: "metal", en: "Metal", es: "Metal" },
+        { id: "lo-fi", en: "Lo-Fi", es: "Lo-Fi" },
+        { id: "k-pop", en: "K-Pop", es: "K-Pop" },
+        { id: "salsa", en: "Salsa", es: "Salsa" },
+        { id: "cumbia", en: "Cumbia", es: "Cumbia" },
+        { id: "punk", en: "Punk", es: "Punk" },
+        { id: "techno", en: "Techno", es: "Techno" },
+        { id: "house", en: "House", es: "House" },
+        { id: "trance", en: "Trance", es: "Trance" },
+        { id: "dubstep", en: "Dubstep", es: "Dubstep" },
+        { id: "ambient", en: "Ambient", es: "Ambient" },
+        { id: "dreampop", en: "Dreampop", es: "Dreampop" },
+        { id: "shoegaze", en: "Shoegaze", es: "Shoegaze" },
+        { id: "synthwave", en: "Synthwave", es: "Synthwave" },
+        { id: "vaporwave", en: "Vaporwave", es: "Vaporwave" },
+        { id: "afrobeat", en: "Afrobeat", es: "Afrobeat" },
+        { id: "bossa-nova", en: "Bossa Nova", es: "Bossa Nova" },
+        { id: "samba", en: "Samba", es: "Samba" },
+        { id: "bolero", en: "Bolero", es: "Bolero" },
+        { id: "tango", en: "Tango", es: "Tango" },
+        { id: "mariachi", en: "Mariachi", es: "Mariachi" },
+        { id: "flamenco", en: "Flamenco", es: "Flamenco" },
+        { id: "bluegrass", en: "Bluegrass", es: "Bluegrass" },
+        { id: "country", en: "Country", es: "Country" },
+        { id: "folk", en: "Folk", es: "Folk" },
+        { id: "gospel", en: "Gospel", es: "Gospel" },
+        { id: "soul", en: "Soul", es: "Soul" },
+        { id: "funk", en: "Funk", es: "Funk" },
+        { id: "disco", en: "Disco", es: "Disco" },
+        { id: "ska", en: "Ska", es: "Ska" },
+        { id: "reggae", en: "Reggae", es: "Reggae" },
+        { id: "dancehall", en: "Dancehall", es: "Dancehall" },
+        { id: "bachata", en: "Bachata", es: "Bachata" },
+        { id: "merengue", en: "Merengue", es: "Merengue" },
+        { id: "vallenato", en: "Vallenato", es: "Vallenato" },
+        { id: "trap", en: "Trap", es: "Trap" },
+        { id: "drill", en: "Drill", es: "Drill" },
+        { id: "grime", en: "Grime", es: "Grime" },
+        { id: "garage", en: "Garage", es: "Garage" },
+        { id: "industrial", en: "Industrial", es: "Industrial" },
+        { id: "ebm", en: "EBM", es: "EBM" },
+        { id: "ethereal", en: "Ethereal", es: "Etéreo" },
+        { id: "new-wave", en: "New Wave", es: "New Wave" },
+        { id: "post-punk", en: "Post-Punk", es: "Post-Punk" },
+        { id: "darkwave", en: "Darkwave", es: "Darkwave" },
+        { id: "grunge", en: "Grunge", es: "Grunge" },
+        { id: "britpop", en: "Britpop", es: "Britpop" },
+        { id: "hardcore", en: "Hardcore", es: "Hardcore" },
+        { id: "emo", en: "Emo", es: "Emo" },
+        { id: "screamo", en: "Screamo", es: "Screamo" },
+        { id: "math-rock", en: "Math Rock", es: "Math Rock" },
+        { id: "post-rock", en: "Post-Rock", es: "Post-Rock" },
+        { id: "stoner-rock", en: "Stoner Rock", es: "Stoner Rock" },
+        { id: "psychedelic", en: "Psychedelic", es: "Psicodelia" },
+        { id: "sludge", en: "Sludge", es: "Sludge" },
+        { id: "doom-metal", en: "Doom Metal", es: "Doom Metal" },
+        { id: "black-metal", en: "Black Metal", es: "Black Metal" },
+        { id: "death-metal", en: "Death Metal", es: "Death Metal" },
+        { id: "thrash", en: "Thrash", es: "Thrash" },
+        { id: "power-metal", en: "Power Metal", es: "Power Metal" },
+        { id: "symphonic-metal", en: "Symphonic Metal", es: "Metal Sinfónico" },
+        { id: "melodic-death", en: "Melodic Death", es: "Death Melódico" },
+        { id: "eurobeat", en: "Eurobeat", es: "Eurobeat" },
+        { id: "hyperpop", en: "Hyperpop", es: "Hyperpop" },
+        { id: "j-pop", en: "J-Pop", es: "J-Pop" },
+        { id: "j-rock", en: "J-Rock", es: "J-Rock" },
+        { id: "visual-kei", en: "Visual Kei", es: "Visual Kei" },
+        { id: "math-core", en: "Math Core", es: "Math Core" },
+        { id: "glitch", en: "Glitch", es: "Glitch" },
+        { id: "breakcore", en: "Breakcore", es: "Breakcore" },
+        { id: "idm", en: "IDM", es: "IDM" },
+        { id: "trip-hop", en: "Trip Hop", es: "Trip Hop" },
+        { id: "acid-jazz", en: "Acid Jazz", es: "Acid Jazz" },
+        { id: "nu-jazz", en: "Nu Jazz", es: "Nu Jazz" },
+        { id: "hardstyle", en: "Hardstyle", es: "Hardstyle" },
+        { id: "hard-trance", en: "Hard Trance", es: "Hard Trance" },
+        { id: "minimal", en: "Minimal", es: "Minimal" },
+        { id: "deep-house", en: "Deep House", es: "Deep House" },
+        { id: "progressive", en: "Progressive", es: "Progresivo" },
+        { id: "psybient", en: "Psybient", es: "Psybient" },
+        { id: "goa", en: "Goa", es: "Goa" },
+        { id: "dark-psy", en: "Dark Psy", es: "Dark Psy" },
+        { id: "chillstep", en: "Chillstep", es: "Chillstep" },
+        { id: "future-bass", en: "Future Bass", es: "Future Bass" },
+        { id: "trap-latino", en: "Trap Latino", es: "Trap Latino" },
+        { id: "corrido", en: "Corrido", es: "Corrido" },
+        { id: "ranchera", en: "Ranchera", es: "Ranchera" },
+        { id: "trova", en: "Trova", es: "Trova" },
+        { id: "son-cubano", en: "Son Cubano", es: "Son Cubano" },
+        { id: "mambo", en: "Mambo", es: "Mambo" },
+        { id: "guaguanco", en: "Guaguancó", es: "Guaguancó" },
+        { id: "alternative", en: "Alternative", es: "Alternativo" },
+        { id: "alternative-rock", en: "Alternative Rock", es: "Rock Alternativo" },
+        { id: "alternative-pop", en: "Alternative Pop", es: "Pop Alternativo" },
+        { id: "indie-rock", en: "Indie Rock", es: "Rock Indie" },
+        { id: "indie-pop", en: "Indie Pop", es: "Pop Indie" },
+        { id: "synth-pop", en: "Synth Pop", es: "Synth Pop" },
+        { id: "dream-pop", en: "Dream Pop", es: "Dream Pop" },
+        { id: "lo-fi-hip-hop", en: "Lo-Fi Hip Hop", es: "Lo-Fi Hip Hop" },
+        { id: "vaporwave-vibe", en: "Vaporwave", es: "Vaporwave" },
+        { id: "chillwave", en: "Chillwave", es: "Chillwave" },
+        { id: "bedroom-pop", en: "Bedroom Pop", es: "Bedroom Pop" },
+        { id: "art-pop", en: "Art Pop", es: "Art Pop" },
+        { id: "glitch-hop", en: "Glitch Hop", es: "Glitch Hop" },
+        { id: "wonky", en: "Wonky", es: "Wonky" },
+        { id: "experimental", en: "Experimental", es: "Experimental" },
+        { id: "avant-garde", en: "Avant-Garde", es: "Vanguardia" },
+        { id: "noise", en: "Noise", es: "Ruido" },
+        { id: "drone", en: "Drone", es: "Zumbido" },
+        { id: "skate-punk", en: "Skate Punk", es: "Skate Punk" },
+        { id: "pop-punk", en: "Pop Punk", es: "Pop Punk" },
+        { id: "emocore", en: "Emocore", es: "Emocore" },
+        { id: "post-hardcore", en: "Post-Hardcore", es: "Post-Hardcore" },
+        { id: "metalcore", en: "Metalcore", es: "Metalcore" },
+        { id: "deathcore", en: "Deathcore", es: "Deathcore" },
+        { id: "mathcore", en: "Mathcore", es: "Mathcore" },
+        { id: "grindcore", en: "Grindcore", es: "Grindcore" },
+        { id: "crust-punk", en: "Crust Punk", es: "Crust Punk" },
+        { id: "anarcho-punk", en: "Anarcho-Punk", es: "Anarco-Punk" }
+    ].sort((a, b) => a.es.localeCompare(b.es));
 
     const [genreSearch, setGenreSearch] = useState("");
     const [selectedGenreForDecades, setSelectedGenreForDecades] = useState<string | null>(null);
 
     const filteredGenres = genreSearch
-        ? allGenres.filter(g => g.toLowerCase().includes(genreSearch.toLowerCase()))
+        ? allGenres.filter(g =>
+            g.es.toLowerCase().includes(genreSearch.toLowerCase()) ||
+            g.en.toLowerCase().includes(genreSearch.toLowerCase()) ||
+            g.id.toLowerCase().includes(genreSearch.toLowerCase())
+        )
         : allGenres.slice(0, 20);
 
     const allDecades = ["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"];
@@ -87,24 +212,24 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
         }
     };
 
-    const toggleGenre = (genre: string) => {
+    const toggleGenre = (genreId: string) => {
         const current = preferences?.genres || [];
         let newGenres;
-        if (current.includes(genre)) {
-            newGenres = current.filter((g: string) => g !== genre);
+        if (current.includes(genreId)) {
+            newGenres = current.filter((g: string) => g !== genreId);
             const newCombinations = { ...(preferences?.combinations || {}) };
-            delete newCombinations[genre];
+            delete newCombinations[genreId];
             setPreferences({ ...preferences, genres: newGenres, combinations: newCombinations });
         } else {
-            newGenres = [...current, genre];
+            newGenres = [...current, genreId];
             setPreferences({ ...preferences, genres: newGenres });
-            setSelectedGenreForDecades(genre);
+            setSelectedGenreForDecades(genreId);
         }
     };
 
-    const toggleDecadeForGenre = (genre: string, decade: string) => {
+    const toggleDecadeForGenre = (genreId: string, decade: string) => {
         const combinations = preferences?.combinations || {};
-        const currentDecades = combinations[genre] || [];
+        const currentDecades = combinations[genreId] || [];
         let newDecades;
         if (currentDecades.includes(decade)) {
             newDecades = currentDecades.filter((d: string) => d !== decade);
@@ -115,7 +240,7 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
             ...preferences,
             combinations: {
                 ...combinations,
-                [genre]: newDecades
+                [genreId]: newDecades
             }
         });
     };
@@ -188,12 +313,12 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
 
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Géneros (+100)</label>
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Géneros (Bilingüe)</label>
                         <div className="relative w-48">
                             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">search</span>
                             <input
                                 type="text"
-                                placeholder="Buscar..."
+                                placeholder="Alternativo / Rock / Pop..."
                                 className="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary/50"
                                 value={genreSearch}
                                 onChange={(e) => setGenreSearch(e.target.value)}
@@ -203,22 +328,22 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
 
                     <div className="flex flex-wrap gap-2 max-h-64 overflow-y-auto p-1 custom-scrollbar">
                         {filteredGenres.map(genre => {
-                            const selected = (preferences?.genres || []).includes(genre);
-                            const comboDecades = preferences?.combinations?.[genre] || [];
+                            const selected = (preferences?.genres || []).includes(genre.id);
+                            const comboDecades = preferences?.combinations?.[genre.id] || [];
                             return (
-                                <div key={genre} className="relative group">
+                                <div key={genre.id} className="relative group">
                                     <button
-                                        onClick={() => toggleGenre(genre)}
+                                        onClick={() => toggleGenre(genre.id)}
                                         className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all flex items-center gap-2 ${selected
                                             ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
                                             : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
                                             }`}
                                     >
-                                        {genre}
+                                        {genre.es}
                                         {comboDecades.length > 0 && <span className="bg-white/20 px-1.5 rounded-md text-[9px]">{comboDecades.join(', ')}</span>}
                                         {selected && (
                                             <span
-                                                onClick={(e) => { e.stopPropagation(); setSelectedGenreForDecades(genre); }}
+                                                onClick={(e) => { e.stopPropagation(); setSelectedGenreForDecades(genre.id); }}
                                                 className="material-symbols-outlined text-[14px] hover:text-white/70"
                                             >
                                                 timeline
@@ -226,10 +351,10 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
                                         )}
                                     </button>
 
-                                    {selectedGenreForDecades === genre && (
+                                    {selectedGenreForDecades === genre.id && (
                                         <div className="absolute top-full mt-2 left-0 z-50 bg-[#1a1a24] border border-white/10 p-4 rounded-xl shadow-2xl min-w-[200px]">
                                             <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
-                                                <span className="text-[10px] font-black uppercase text-primary italic">Décadas para {genre}</span>
+                                                <span className="text-[10px] font-black uppercase text-primary italic">Décadas para {genre.es}</span>
                                                 <button onClick={() => setSelectedGenreForDecades(null)}>
                                                     <span className="material-symbols-outlined text-sm">close</span>
                                                 </button>
@@ -240,7 +365,7 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
                                                     return (
                                                         <button
                                                             key={decade}
-                                                            onClick={() => toggleDecadeForGenre(genre, decade)}
+                                                            onClick={() => toggleDecadeForGenre(genre.id, decade)}
                                                             className={`px-2 py-1 rounded-md text-[10px] font-bold border transition-all ${isDecadeSelected
                                                                 ? "bg-blue-500 border-blue-500 text-white"
                                                                 : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
