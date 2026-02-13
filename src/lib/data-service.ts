@@ -202,6 +202,41 @@ export async function getSearchSuggestions(query: string): Promise<{ text: strin
     return suggestions.slice(0, 8); // Limit to 8 suggestions
 }
 
+export async function getFilterStats(genres: string[], decades: string[]): Promise<{ genres: Record<string, number>, decades: Record<string, number> }> {
+    const stats = {
+        genres: {} as Record<string, number>,
+        decades: {} as Record<string, number>
+    };
+
+    // Parallelize genre counts
+    const genrePromises = genres.map(async (genre) => {
+        const { count } = await supabase
+            .from('canciones_con_rating')
+            .select('*', { count: 'exact', head: true })
+            .ilike('genero', `%${genre}%`);
+        return { key: genre, count: count || 0 };
+    });
+
+    // Parallelize decade counts
+    const decadePromises = decades.map(async (decade) => {
+        const { count } = await supabase
+            .from('canciones_con_rating')
+            .select('*', { count: 'exact', head: true })
+            .ilike('decada', `%${decade}%`);
+        return { key: decade, count: count || 0 };
+    });
+
+    const [genreResults, decadeResults] = await Promise.all([
+        Promise.all(genrePromises),
+        Promise.all(decadePromises)
+    ]);
+
+    genreResults.forEach(r => stats.genres[r.key] = r.count);
+    decadeResults.forEach(r => stats.decades[r.key] = r.count);
+
+    return stats;
+}
+
 // ==================== RESEÑAS (Reviews) ====================
 
 export async function getReviewsForSong(songId: string): Promise<Review[]> {

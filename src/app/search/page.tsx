@@ -22,8 +22,23 @@ export default function SearchPage() {
     const [user, setUser] = useState<User | null>(null);
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
     const [selectedDecade, setSelectedDecade] = useState<string | null>(null);
+    const [filterStats, setFilterStats] = useState<{ genres: Record<string, number>, decades: Record<string, number> } | null>(null);
     const [page, setPage] = useState(1);
     const pageSize = 20;
+
+    useEffect(() => {
+        async function fetchStats() {
+            try {
+                const stats = await import("@/lib/data-service").then(mod =>
+                    mod.getFilterStats(GENRES, ["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"])
+                );
+                setFilterStats(stats);
+            } catch (error) {
+                console.error("Error fetching filter stats:", error);
+            }
+        }
+        fetchStats();
+    }, []);
 
     useEffect(() => {
         async function fetchResults() {
@@ -90,34 +105,54 @@ export default function SearchPage() {
                             >
                                 Todos
                             </button>
-                            {GENRES.map(genre => (
-                                <button
-                                    key={genre}
-                                    onClick={() => { setSelectedGenre(genre); setPage(1); }}
-                                    className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedGenre === genre
-                                        ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
-                                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                                        }`}
-                                >
-                                    {genre}
-                                </button>
-                            ))}
+                            {GENRES.map(genre => {
+                                const count = filterStats?.genres[genre] || 0;
+                                const isSelected = selectedGenre === genre;
+                                const isDisabled = !loading && count === 0;
+
+                                return (
+                                    <button
+                                        key={genre}
+                                        onClick={() => { if (!isDisabled) { setSelectedGenre(genre); setPage(1); } }}
+                                        disabled={isDisabled}
+                                        className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all flex items-center gap-1 ${isSelected
+                                            ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
+                                            : isDisabled
+                                                ? "bg-white/5 border-transparent text-gray-600 cursor-not-allowed opacity-50"
+                                                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                            }`}
+                                    >
+                                        {genre}
+                                        {filterStats && <span className="text-[10px] opacity-70">({count})</span>}
+                                    </button>
+                                );
+                            })}
                         </div>
 
                         {/* Decade Filters */}
                         <div className="flex flex-wrap gap-2">
-                            {["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"].map(decade => (
-                                <button
-                                    key={decade}
-                                    onClick={() => { setSelectedDecade(selectedDecade === decade ? null : decade); setPage(1); }}
-                                    className={`px-3 py-1 rounded-md text-[10px] font-bold border transition-all ${selectedDecade === decade
-                                        ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
-                                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                                        }`}
-                                >
-                                    {decade}
-                                </button>
-                            ))}
+                            {["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"].map(decade => {
+                                const count = filterStats?.decades[decade] || 0;
+                                const isSelected = selectedDecade === decade;
+                                const isDisabled = !loading && count === 0;
+
+                                return (
+                                    <button
+                                        key={decade}
+                                        onClick={() => { if (!isDisabled) { setSelectedDecade(isSelected ? null : decade); setPage(1); } }}
+                                        disabled={isDisabled}
+                                        className={`px-3 py-1 rounded-md text-[10px] font-bold border transition-all flex items-center gap-1 ${isSelected
+                                            ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
+                                            : isDisabled
+                                                ? "bg-white/5 border-transparent text-gray-600 cursor-not-allowed opacity-50"
+                                                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                            }`}
+                                    >
+                                        {decade}
+                                        {filterStats && <span className="text-[9px] opacity-70">({count})</span>}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </header>

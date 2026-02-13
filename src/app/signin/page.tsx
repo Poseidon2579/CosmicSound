@@ -171,7 +171,7 @@ export default function LoginPage() {
                                                 type="password"
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                required={view !== 'forgot'}
+                                                required
                                             />
                                             <Lock className="absolute left-5 top-1/2 -translate-y-1/2 size-4 text-white/20" />
                                         </div>
