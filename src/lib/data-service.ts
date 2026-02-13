@@ -252,7 +252,7 @@ export async function getSearchSuggestions(query: string): Promise<{ text: strin
     return suggestions.slice(0, 8); // Limit to 8 suggestions
 }
 
-export async function getFilterStats(selectedGenres: string[], selectedDecades: string[]): Promise<{ genres: Record<string, number>, decades: Record<string, number> }> {
+export async function getFilterStats(): Promise<{ genres: Record<string, number>, decades: Record<string, number> }> {
     const stats = {
         genres: {} as Record<string, number>,
         decades: {} as Record<string, number>
@@ -260,19 +260,16 @@ export async function getFilterStats(selectedGenres: string[], selectedDecades: 
 
     try {
         // Query Genres with Counts
-        // Note: This relies on the foreign key 'song_genres_genre_id_fkey' existing
         const { data: genreData, error: genreError } = await supabase
             .from('genres')
             .select('name, song_genres(count)');
 
         if (genreError) {
             console.error("Error fetching genre stats relationally:", genreError);
-            // Fallback to legacy method if new tables fail (e.g. migration not run)
-            return getFilterStatsLegacy(selectedGenres, selectedDecades);
+            return { genres: {}, decades: {} };
         }
 
         genreData?.forEach((g: any) => {
-            // song_genres comes back as array of objects with count, e.g. [{ count: 10 }]
             const count = g.song_genres?.[0]?.count || 0;
             stats.genres[g.name] = count;
         });
@@ -291,11 +288,8 @@ export async function getFilterStats(selectedGenres: string[], selectedDecades: 
 
     } catch (err) {
         console.error("Unexpected error in getFilterStats:", err);
-        return getFilterStatsLegacy(selectedGenres, selectedDecades);
+        return { genres: {}, decades: {} };
     }
-
-    // Debug logging
-    console.log("Filter Stats (Relational):", JSON.stringify(stats, null, 2));
 
     return stats;
 }

@@ -2,14 +2,12 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { searchSongs } from "@/lib/data-service";
+import { searchSongs, getFilterStats } from "@/lib/data-service";
 import { Song, User } from "@/types";
 import SongCard from "@/components/SongCard";
 import Sidebar from "@/components/Sidebar";
 import { getCurrentUser } from "@/lib/user-service";
 import SmartSearchInput from "@/components/SmartSearchInput";
-
-const GENRES = ["Pop", "Rock", "Reggaeton", "Hip Hop", "Electronic", "Indie", "R&B", "Jazz", "Classical", "Metal", "Lo-Fi", "K-Pop", "Salsa", "Cumbia"];
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
@@ -29,9 +27,7 @@ export default function SearchPage() {
     useEffect(() => {
         async function fetchStats() {
             try {
-                const stats = await import("@/lib/data-service").then(mod =>
-                    mod.getFilterStats(GENRES, ["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"])
-                );
+                const stats = await getFilterStats();
                 setFilterStats(stats);
             } catch (error) {
                 console.error("Error fetching filter stats:", error);
@@ -82,7 +78,6 @@ export default function SearchPage() {
                             <span className="material-symbols-outlined">arrow_back</span>
                         </button>
                         <div className="flex-1">
-                            {/* Smart Search Bar */}
                             <SmartSearchInput initialQuery={query} />
                         </div>
                     </div>
@@ -105,52 +100,50 @@ export default function SearchPage() {
                             >
                                 Todos
                             </button>
-                            {GENRES.map(genre => {
-                                const count = filterStats?.genres[genre] || 0;
-                                const isSelected = selectedGenre === genre;
-                                const isZero = !loading && count === 0;
+                            {filterStats && Object.entries(filterStats.genres)
+                                .sort((a, b) => b[1] - a[1])
+                                .map(([genre, count]) => {
+                                    const isSelected = selectedGenre === genre;
+                                    if (count === 0 && !isSelected) return null;
 
-                                return (
-                                    <button
-                                        key={genre}
-                                        onClick={() => { setSelectedGenre(genre); setPage(1); }}
-                                        className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all flex items-center gap-1 ${isSelected
-                                            ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
-                                            : isZero
-                                                ? "bg-white/5 border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5"
+                                    return (
+                                        <button
+                                            key={genre}
+                                            onClick={() => { setSelectedGenre(isSelected ? null : genre); setPage(1); }}
+                                            className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all flex items-center gap-1 ${isSelected
+                                                ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
                                                 : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                                            }`}
-                                    >
-                                        {genre}
-                                        {filterStats && <span className={`text-[10px] ${isZero ? 'opacity-40' : 'opacity-70'}`}>({count})</span>}
-                                    </button>
-                                );
-                            })}
+                                                }`}
+                                        >
+                                            {genre}
+                                            <span className="text-[10px] opacity-70">({count})</span>
+                                        </button>
+                                    );
+                                })}
                         </div>
 
                         {/* Decade Filters */}
                         <div className="flex flex-wrap gap-2">
-                            {["60s", "70s", "80s", "90s", "2000s", "2010s", "2020s"].map(decade => {
-                                const count = filterStats?.decades[decade] || 0;
-                                const isSelected = selectedDecade === decade;
-                                const isZero = !loading && count === 0;
+                            {filterStats && Object.entries(filterStats.decades)
+                                .sort((a, b) => a[0].localeCompare(b[0]))
+                                .map(([decade, count]) => {
+                                    const isSelected = selectedDecade === decade;
+                                    if (count === 0 && !isSelected) return null;
 
-                                return (
-                                    <button
-                                        key={decade}
-                                        onClick={() => { setSelectedDecade(isSelected ? null : decade); setPage(1); }}
-                                        className={`px-3 py-1 rounded-md text-[10px] font-bold border transition-all flex items-center gap-1 ${isSelected
-                                            ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
-                                            : isZero
-                                                ? "bg-white/5 border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5"
+                                    return (
+                                        <button
+                                            key={decade}
+                                            onClick={() => { setSelectedDecade(isSelected ? null : decade); setPage(1); }}
+                                            className={`px-3 py-1 rounded-md text-[10px] font-bold border transition-all flex items-center gap-1 ${isSelected
+                                                ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
                                                 : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                                            }`}
-                                    >
-                                        {decade}
-                                        {filterStats && <span className={`text-[9px] ${isZero ? 'opacity-40' : 'opacity-70'}`}>({count})</span>}
-                                    </button>
-                                );
-                            })}
+                                                }`}
+                                        >
+                                            {decade}
+                                            <span className="text-[9px] opacity-70">({count})</span>
+                                        </button>
+                                    );
+                                })}
                         </div>
                     </div>
                 </header>
@@ -169,7 +162,6 @@ export default function SearchPage() {
                             ))}
                         </div>
 
-                        {/* Pagination */}
                         {totalPages > 1 && (
                             <div className="flex justify-center items-center gap-2 py-10 border-t border-white/5">
                                 <button
@@ -192,8 +184,7 @@ export default function SearchPage() {
                                             <button
                                                 key={pageNum}
                                                 onClick={() => setPage(pageNum)}
-                                                className={`size-10 rounded-lg flex items-center justify-center font-bold transition-all ${page === pageNum ? 'bg-primary text-white shadow-lg' : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                                                    }`}
+                                                className={`size-10 rounded-lg flex items-center justify-center font-bold transition-all ${page === pageNum ? 'bg-primary text-white shadow-lg' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                                             >
                                                 {pageNum}
                                             </button>
