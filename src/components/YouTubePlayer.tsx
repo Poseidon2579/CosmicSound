@@ -16,7 +16,7 @@ declare global {
     }
 }
 
-export default function YouTubePlayer({ youtubeId, nextSongId }: YouTubePlayerProps) {
+export default function YouTubePlayer({ youtubeId, nextSongId, onEnd }: YouTubePlayerProps) {
     const playerRef = useRef<any>(null);
     const router = useRouter();
     const iframeId = `yt-player-${youtubeId}`;
@@ -40,16 +40,19 @@ export default function YouTubePlayer({ youtubeId, nextSongId }: YouTubePlayerPr
         const onPlayerStateChange = (event: any) => {
             // YT.PlayerState.ENDED is 0
             if (event.data === 0) {
+                console.log("Song finished, triggering next...");
                 if (onEnd) {
                     onEnd();
                 } else if (nextSongId) {
-                    console.log("Song ended, moving to next:", nextSongId);
                     router.push(`/track/${nextSongId}`);
+                    // Optional: force reload if nextjs cache is too aggressive
+                    // window.location.href = `/track/${nextSongId}`;
                 }
             }
         };
 
         const initPlayer = () => {
+            if (!window.YT || !window.YT.Player) return;
             playerRef.current = new window.YT.Player(iframeId, {
                 events: {
                     onReady: onPlayerReady,
@@ -77,7 +80,7 @@ export default function YouTubePlayer({ youtubeId, nextSongId }: YouTubePlayerPr
                 id={iframeId}
                 width="100%"
                 height="100%"
-                src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
+                src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&autoplay=1&mute=1&rel=0&modestbranding=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

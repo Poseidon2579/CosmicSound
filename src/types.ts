@@ -23,6 +23,8 @@ export interface Song {
     views: number;
     likes: number;
     genre: string;
+    rating?: number;
+    reviewCount?: number;
 }
 
 export interface Review {

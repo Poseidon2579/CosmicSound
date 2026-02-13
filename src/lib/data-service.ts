@@ -5,7 +5,7 @@ import { Song, Review, Like } from '@/types';
 
 export async function getAllSongs(): Promise<Song[]> {
     const { data, error } = await supabase
-        .from('canciones')
+        .from('canciones_con_rating')
         .select('*')
         .order('vistas', { ascending: false })
         .limit(100); // Limit default fetch
@@ -60,17 +60,21 @@ export async function getTopSongs(limit: number = 10): Promise<Song[]> {
     return uniqueSongs.slice(0, limit);
 }
 
-export async function searchSongs(query: string, page: number = 1, limit: number = 20): Promise<{ songs: Song[], total: number }> {
+export async function searchSongs(query: string, page: number = 1, limit: number = 20, genre?: string): Promise<{ songs: Song[], total: number }> {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
     let searchBuilder = supabase
-        .from('canciones')
+        .from('canciones_con_rating')
         .select('*', { count: 'exact' });
 
     if (query) {
         // Simple search across artist and title
         searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
+    }
+
+    if (genre) {
+        searchBuilder = searchBuilder.eq('genero', genre);
     }
 
     const { data, error, count } = await searchBuilder
@@ -183,7 +187,7 @@ export async function getLikedSongs(userId: string): Promise<Song[]> {
     const songIds = favData.map(f => f.cancion_id);
 
     const { data: songsData, error: songsError } = await supabase
-        .from('canciones')
+        .from('canciones_con_rating')
         .select('*')
         .in('id', songIds);
 
@@ -245,6 +249,8 @@ function mapCancionToSong(row: any): Song {
         views: row.vistas || 0,
         likes: row.me_gusta || 0,
         genre: row.genero || 'Musical',
+        rating: row.avg_rating || 0,
+        reviewCount: row.review_count || 0
     };
 }
 

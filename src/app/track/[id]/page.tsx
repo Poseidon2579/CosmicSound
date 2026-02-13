@@ -36,7 +36,7 @@ export default async function TrackPage({ params, searchParams }: { params: { id
 
                     {/* Reproductor de Video */}
                     <section className="w-full">
-                        <YouTubePlayer youtubeId={song.youtubeId} nextSongId={nextSong.id} />
+                        <YouTubePlayer youtubeId={song.youtubeId} nextSongId={nextSong.id} onEnd={undefined} />
                     </section>
 
                     {/* Información y Rating */}
@@ -90,23 +90,26 @@ export default async function TrackPage({ params, searchParams }: { params: { id
                         </div>
 
                         {/* Rating de la Comunidad */}
-                        <div className="lg:col-span-5 bg-slate-50 dark:bg-surface-dark/50 rounded-2xl p-6 md:p-8 border border-gray-200 dark:border-border-dark">
-                            <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Calificación</h3>
-                                <button className="text-sm font-medium text-primary hover:underline">Escribir reseña</button>
+                        <div className="lg:col-span-5 bg-slate-50 dark:bg-surface-dark/50 rounded-2xl p-6 md:p-8 border border-gray-200 dark:border-border-dark flex flex-col items-center justify-center text-center">
+                            <div className="flex flex-col items-center gap-2 mb-4">
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Resonancia Estelar</h3>
+                                <p className="text-xs text-gray-400">Calificación de la comunidad</p>
                             </div>
-                            <div className="flex items-end gap-4 mb-8">
-                                <span className="text-6xl font-black text-slate-900 dark:text-white leading-none tracking-tight">
-                                    {reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) : "0.0"}
+                            <div className="flex flex-col items-center gap-4">
+                                <span className="text-7xl font-black text-white leading-none tracking-tighter text-glow">
+                                    {song.rating ? song.rating.toFixed(1) : "0.0"}
                                 </span>
-                                <div className="flex flex-col gap-1 pb-1">
-                                    <div className="flex text-yellow-400 gap-0.5">
-                                        {[1, 2, 3, 4, 5].map(i => <span key={i} className="material-symbols-outlined text-[20px]">star</span>)}
+                                <div className="flex flex-col items-center gap-1">
+                                    <div className="flex text-yellow-400 gap-1 mb-2 scale-150">
+                                        {[1, 2, 3, 4, 5].map(i => (
+                                            <span key={i} className={`material-symbols-outlined text-[20px] ${i <= Math.round(song.rating || 0) ? 'fill-1' : 'opacity-20'}`}>
+                                                star
+                                            </span>
+                                        ))}
                                     </div>
-                                    <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{reviews.length} reseñas</span>
+                                    <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Basado en {song.reviewCount || 0} señales</span>
                                 </div>
                             </div>
-                            <RatingBars reviews={reviews} />
                         </div>
                     </section>
 

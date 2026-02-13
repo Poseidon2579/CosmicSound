@@ -1,7 +1,7 @@
 
 export default function HomeSkeleton() {
     return (
-        <div className="bg-background-dark min-h-screen p-8 flex flex-col gap-10 animate-pulse">
+        <div className="min-h-screen p-8 flex flex-col gap-10 animate-pulse bg-transparent">
             {/* Hero Skeleton */}
             <div className="w-full h-96 bg-white/5 rounded-3xl" />
 

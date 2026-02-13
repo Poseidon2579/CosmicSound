@@ -22,8 +22,8 @@ export default async function ProfilePage() {
 
     // Calculate stats
     const totalReviews = reviews.length;
-    // Simple logic to find favorite genre
-    const favGenre = "Alternative";
+    // Simple logic to find favorite genre from preferences
+    const favGenre = user.preferences?.genres?.length ? user.preferences.genres[0] : "Explorador";
     const joinedYear = new Date(user.joined).getFullYear();
 
     return (

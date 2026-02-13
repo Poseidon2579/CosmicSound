@@ -108,7 +108,7 @@ export default function Home() {
           {/* AI Recommended Section */}
           <MusicCarousel
             title="Recomendado para ti"
-            subtitle="RKLES AI"
+            subtitle="KALA AI MUSIC"
             icon={<span className="material-symbols-outlined text-blue-400">psychology</span>}
           >
             {recommended.map((song) => (
