@@ -70,7 +70,7 @@ export default function CosmicBackground() {
             const sun: Planet = {
                 name: "Sun",
                 color: "#FDB813",
-                size: 250,
+                size: 160, // Smaller sun visually due to distance
                 distance: 0,
                 speed: 0,
                 angle: 0,
@@ -81,9 +81,9 @@ export default function CosmicBackground() {
             const earth: Planet = {
                 name: "Earth",
                 color: "#2E8B57",
-                size: 90,
-                distance: 900,
-                speed: 0.0005,
+                size: 70,
+                distance: 3500, // Much further
+                speed: 0.0004,
                 angle: Math.random() * Math.PI * 2,
                 type: 'planet',
                 textureUrl: "/assets/planets/earth.jpg"
@@ -92,9 +92,9 @@ export default function CosmicBackground() {
             const moon: Planet = {
                 name: "Moon",
                 color: "#cfcfcf",
-                size: 25,
-                distance: 140,
-                speed: 0.02,
+                size: 20,
+                distance: 200,
+                speed: 0.015,
                 angle: Math.random() * Math.PI * 2,
                 type: 'moon',
                 parent: earth,
@@ -104,8 +104,8 @@ export default function CosmicBackground() {
             const mars: Planet = {
                 name: "Mars",
                 color: "#E27B58",
-                size: 70,
-                distance: 1400,
+                size: 60,
+                distance: 4800,
                 speed: 0.0003,
                 angle: Math.random() * Math.PI * 2,
                 type: 'planet',
@@ -115,9 +115,9 @@ export default function CosmicBackground() {
             const saturn: Planet = {
                 name: "Saturn",
                 color: "#E3E0C0",
-                size: 160,
-                distance: 2200,
-                speed: 0.0001,
+                size: 130,
+                distance: 6500,
+                speed: 0.0002,
                 angle: Math.random() * Math.PI * 2,
                 type: 'planet',
                 hasRings: true,
@@ -184,11 +184,11 @@ export default function CosmicBackground() {
 
             const cx = width / 2;
             const cy = height / 2;
-            const fov = 800;
+            const fov = 1000; // Increased FOV for depth
             time += 0.02;
 
             // Camera props
-            yaw += 0.00008;
+            yaw += 0.00005;
             pitch = (Math.sin(Date.now() * 0.00004) * 0.04) + (mousePos.current.y * 0.15);
             const cosYaw = Math.cos(yaw);
             const sinYaw = Math.sin(yaw);
@@ -196,17 +196,17 @@ export default function CosmicBackground() {
             const sinPitch = Math.sin(pitch);
 
             // --- SHOOTING STARS ---
-            if (Math.random() < 0.015) {
+            if (Math.random() < 0.02) {
                 const angle = Math.random() * Math.PI * 2;
-                const dist = 3000 + Math.random() * 1000;
+                const dist = 4000 + Math.random() * 2000;
                 const startX = Math.cos(angle) * dist;
-                const startY = (Math.random() - 0.5) * 2000;
+                const startY = (Math.random() - 0.5) * 3000;
                 const startZ = Math.sin(angle) * dist;
 
-                const speed = 40 + Math.random() * 40;
-                const targetX = (Math.random() - 0.5) * 2000;
-                const targetY = (Math.random() - 0.5) * 2000;
-                const targetZ = (Math.random() - 0.5) * 2000;
+                const speed = 50 + Math.random() * 50;
+                const targetX = (Math.random() - 0.5) * 3000;
+                const targetY = (Math.random() - 0.5) * 3000;
+                const targetZ = (Math.random() - 0.5) * 3000;
 
                 const dx = targetX - startX;
                 const dy = targetY - startY;
@@ -280,9 +280,9 @@ export default function CosmicBackground() {
                 const star = starsRef[i];
                 star.z -= 0.5;
                 if (star.z < 1) {
-                    star.z += 4000;
-                    star.x = (Math.random() - 0.5) * 4000;
-                    star.y = (Math.random() - 0.5) * 4000;
+                    star.z += 6000;
+                    star.x = (Math.random() - 0.5) * 6000;
+                    star.y = (Math.random() - 0.5) * 6000;
                 }
 
                 let x = star.x;
@@ -320,7 +320,14 @@ export default function CosmicBackground() {
                 }
             }
 
-            // --- PLANETS ---
+            // --- PLANETS (Z-Sorted) ---
+            interface RenderObj {
+                z: number;
+                draw: () => void;
+            }
+            const renderList: RenderObj[] = [];
+            const SYSTEM_Z_OFFSET = 6000; // Pushes everything back
+
             planets.current.forEach(planet => {
                 if (planet.type !== 'star') {
                     planet.angle += planet.speed;
@@ -335,11 +342,11 @@ export default function CosmicBackground() {
 
                     px = parentX + Math.cos(planet.angle) * planet.distance;
                     py = 0;
-                    pz = parentZ + Math.sin(planet.angle) * planet.distance + 2000;
+                    pz = parentZ + Math.sin(planet.angle) * planet.distance + SYSTEM_Z_OFFSET;
                 } else {
                     px = Math.cos(planet.angle) * planet.distance;
                     py = 0;
-                    pz = Math.sin(planet.angle) * planet.distance + 2000;
+                    pz = Math.sin(planet.angle) * planet.distance + SYSTEM_Z_OFFSET;
                 }
 
                 let x2 = px * cosYaw - pz * sinYaw;
@@ -355,82 +362,88 @@ export default function CosmicBackground() {
                     const screenY = cy + y2 * scale;
                     const size = planet.size * scale;
 
-                    // Draw Planet
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
-                    ctx.clip(); // Mask to circle
+                    // Add to render list
+                    renderList.push({
+                        z: z3, // Use projected Z distance for sorting
+                        draw: () => {
+                            ctx.save();
 
-                    if (planet.texture) {
-                        ctx.drawImage(planet.texture, screenX - size, screenY - size, size * 2, size * 2);
+                            // Rings (Saturn) - DRAW BEHIND PLANET to solve back-occlusion
+                            // Note: This draws rings behind the planet sphere perfectly.
+                            // Limitation: Front of rings is also behind planet. 
+                            if (planet.hasRings && planet.ringTexture) {
+                                ctx.save();
+                                const ringW = size * 4.5;
+                                const ringH = size * 4.5 * 0.4;
 
-                        // Inner shadow for sphere effect
-                        const gradient = ctx.createRadialGradient(screenX - size * 0.3, screenY - size * 0.3, size * 0.1, screenX, screenY, size);
-                        if (planet.type === 'star') {
-                            gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
-                            gradient.addColorStop(1, 'rgba(255, 200, 50, 0.2)');
-                        } else {
-                            gradient.addColorStop(0, 'rgba(0,0,0,0)');
-                            gradient.addColorStop(0.8, 'rgba(0,0,0,0.3)');
-                            gradient.addColorStop(1, 'rgba(0,0,0,0.8)');
+                                ctx.translate(screenX, screenY);
+                                ctx.rotate(pitch * -0.5); // Tilt
+                                ctx.drawImage(planet.ringTexture, -ringW / 2, -ringH / 2, ringW, ringH);
+                                ctx.restore();
+                            } else if (planet.hasRings) {
+                                ctx.beginPath();
+                                ctx.ellipse(screenX, screenY, size * 2.2, size * 0.6, pitch * -0.5, 0, Math.PI * 2);
+                                ctx.strokeStyle = "rgba(200, 200, 180, 0.4)";
+                                ctx.lineWidth = size * 0.5;
+                                ctx.stroke();
+                            }
+
+                            // Draw Planet Sphere
+                            ctx.beginPath();
+                            ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                            ctx.clip(); // Mask to circle
+
+                            if (planet.texture) {
+                                ctx.drawImage(planet.texture, screenX - size, screenY - size, size * 2, size * 2);
+
+                                const gradient = ctx.createRadialGradient(screenX - size * 0.3, screenY - size * 0.3, size * 0.1, screenX, screenY, size);
+                                if (planet.type === 'star') {
+                                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                                    gradient.addColorStop(1, 'rgba(255, 200, 50, 0.2)');
+                                } else {
+                                    gradient.addColorStop(0, 'rgba(0,0,0,0)');
+                                    gradient.addColorStop(0.8, 'rgba(0,0,0,0.5)'); // Darker shadow
+                                    gradient.addColorStop(1, 'rgba(0,0,0,0.9)');
+                                }
+                                ctx.fillStyle = gradient;
+                                ctx.fill();
+
+                            } else {
+                                ctx.fillStyle = planet.color;
+                                ctx.fill();
+                            }
+                            ctx.restore(); // Remove clip
+
+                            // Sun Glow (Post-render)
+                            if (planet.type === 'star') {
+                                const sunPulse = 1 + 0.05 * Math.sin(time * 0.5);
+                                ctx.shadowBlur = (100 * scale) * sunPulse;
+                                ctx.shadowColor = planet.color;
+
+                                ctx.globalCompositeOperation = 'screen';
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                                ctx.fillStyle = `rgba(253, 184, 19, 0.2)`;
+                                ctx.fill();
+                                ctx.globalCompositeOperation = 'source-over';
+
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, size * 1.5 * sunPulse, 0, Math.PI * 2);
+                                ctx.fillStyle = `rgba(253, 184, 19, 0.1)`;
+                                ctx.fill();
+
+                                ctx.shadowBlur = 0;
+                            }
                         }
-                        ctx.fillStyle = gradient;
-                        ctx.fill();
-
-                    } else {
-                        // Fallback
-                        ctx.fillStyle = planet.color;
-                        ctx.fill();
-                    }
-                    ctx.restore(); // Remove clip
-
-                    // Sun Glow
-                    if (planet.type === 'star') {
-                        const sunPulse = 1 + 0.05 * Math.sin(time * 0.5);
-                        ctx.shadowBlur = (100 * scale) * sunPulse;
-                        ctx.shadowColor = planet.color;
-
-                        // Helper to draw glow without texture interference
-                        ctx.globalCompositeOperation = 'screen';
-                        ctx.beginPath();
-                        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(253, 184, 19, 0.2)`;
-                        ctx.fill();
-                        ctx.globalCompositeOperation = 'source-over';
-
-                        // Corona
-                        ctx.beginPath();
-                        ctx.arc(screenX, screenY, size * 1.5 * sunPulse, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(253, 184, 19, 0.1)`;
-                        ctx.fill();
-
-                        ctx.shadowBlur = 0;
-                    }
-
-                    // Rings (Saturn)
-                    if (planet.hasRings && planet.ringTexture) {
-                        ctx.save();
-                        // 3D transform for ring
-                        // Simple 2D approximation: scale Y based on pitch
-                        const ringW = size * 4.5;
-                        const ringH = size * 4.5 * 0.4; // Tilted aspect
-
-                        ctx.translate(screenX, screenY);
-                        ctx.rotate(pitch * -0.5); // Tilt
-                        ctx.drawImage(planet.ringTexture, -ringW / 2, -ringH / 2, ringW, ringH);
-                        ctx.restore();
-                    } else if (planet.hasRings) {
-                        // Procedural fallback
-                        ctx.beginPath();
-                        ctx.ellipse(screenX, screenY, size * 2.2, size * 0.6, pitch * -0.5, 0, Math.PI * 2);
-                        ctx.strokeStyle = "rgba(200, 200, 180, 0.4)";
-                        ctx.lineWidth = size * 0.5;
-                        ctx.stroke();
-                    }
-
-                    ctx.shadowBlur = 0;
+                    });
                 }
             });
+
+            // Sort by depth (furthest first) to handle occlusion
+            renderList.sort((a, b) => b.z - a.z);
+
+            // Execute draw commands
+            renderList.forEach(item => item.draw());
 
             animationFrameId = requestAnimationFrame(render);
         };
