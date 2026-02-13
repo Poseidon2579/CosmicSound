@@ -32,20 +32,25 @@ export default function Home() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedDecade, setSelectedDecade] = useState<string | null>(null);
 
+  const [filterStats, setFilterStats] = useState<{ genres: Record<string, number>, decades: Record<string, number> } | null>(null);
+
   useEffect(() => {
     async function fetchData() {
-      setLoading(true); // Maybe re-trigger loading on filter change? Let's check.
+      setLoading(true);
       try {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
 
-        // Fetch parallel for performance
-        const [recs, trendingList, topSongs, disc] = await Promise.all([
+        // Fetch stats separately or in parallel
+        const [recs, trendingList, topSongs, disc, stats] = await Promise.all([
           getRecommendedSongs({ ...currentUser?.preferences, genres: selectedGenre ? [selectedGenre] : currentUser?.preferences?.genres, decades: selectedDecade ? [selectedDecade] : currentUser?.preferences?.decades }),
           getTrendingSongs(),
           getTopSongs(10),
-          getRandomSong()
+          getRandomSong(),
+          import("@/lib/data-service").then(mod => mod.getFilterStats())
         ]);
+
+        setFilterStats(stats);
 
         // Batch fetch ratings
         const allFetchedIds = Array.from(new Set([
@@ -79,16 +84,15 @@ export default function Home() {
       }
     }
     fetchData();
-  }, []);
+  }, [selectedGenre, selectedDecade]);
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;
-    // Track search to update vector preferences
     await updatePreferencesFromSearch(query);
     router.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
-  if (loading) return <HomeSkeleton />;
+  if (loading && !filterStats) return <HomeSkeleton />;
 
   return (
     <div className="font-display text-slate-900 dark:text-white min-h-screen flex flex-col pt-10">
@@ -100,33 +104,40 @@ export default function Home() {
           <div className="flex flex-col gap-6 -mt-8">
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mr-2">Géneros:</span>
-              {["Pop", "Rock", "Reggaeton", "Electronic", "Urban", "Indie"].map(genre => (
-                <button
-                  key={genre}
-                  onClick={() => setSelectedGenre(selectedGenre === genre ? null : genre)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedGenre === genre
-                    ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
-                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
-                    }`}
-                >
-                  {genre}
-                </button>
-              ))}
+              {filterStats && Object.entries(filterStats.genres)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8) // Limit to top 8 on home
+                .map(([genre, count]) => (
+                  <button
+                    key={genre}
+                    onClick={() => setSelectedGenre(selectedGenre === genre ? null : genre)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedGenre === genre
+                      ? "bg-primary border-primary text-white shadow-lg shadow-primary/25"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                      }`}
+                  >
+                    {genre}
+                    <span className="text-[10px] opacity-50 ml-1">({count})</span>
+                  </button>
+                ))}
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mr-2">Décadas:</span>
-              {["80s", "90s", "2000s", "2010s", "2020s"].map(decade => (
-                <button
-                  key={decade}
-                  onClick={() => setSelectedDecade(selectedDecade === decade ? null : decade)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedDecade === decade
-                    ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
-                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
-                    }`}
-                >
-                  {decade}
-                </button>
-              ))}
+              {filterStats && Object.entries(filterStats.decades)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([decade, count]) => (
+                  <button
+                    key={decade}
+                    onClick={() => setSelectedDecade(selectedDecade === decade ? null : decade)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedDecade === decade
+                      ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/25"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                      }`}
+                  >
+                    {decade}
+                    <span className="text-[10px] opacity-50 ml-1">({count})</span>
+                  </button>
+                ))}
             </div>
           </div>
 
