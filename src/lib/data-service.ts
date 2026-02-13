@@ -88,10 +88,11 @@ export async function searchSongs(
     page: number = 1,
     limit: number = 20,
     genre?: string,
-    decade?: string
+    decade?: string,
+    album?: string,
+    sortBy: 'relevance' | 'newest' | 'album' = 'relevance'
 ): Promise<{ songs: Song[], total: number }> {
     const from = (page - 1) * limit;
-    const to = from + (limit * 3) - 1;
 
     let filterIds: string[] | null = null;
 
@@ -108,9 +109,6 @@ export async function searchSongs(
                     const ids = sIds.map(o => o.song_id);
                     filterIds = ids;
                 }
-            } else {
-                // Genre not found in new table? Fallback or empty?
-                // Let's assume empty if not found, but keep null to fallback to legacy string logic if migration failed
             }
         } catch (e) {
             console.error("Error resolving genre relation:", e);
@@ -142,162 +140,146 @@ export async function searchSongs(
         .from('canciones_con_rating')
         .select('*', { count: 'exact' });
 
-    // 1. Prioritize Relational Filters (New Table)
+    // Text Search
+    if (query) {
+        searchBuilder = searchBuilder.ilike('busqueda_vector', `%${query}%`);
+    }
+
+    // Apply Filter IDs (Intersection of Genre & Decade)
     if (filterIds !== null) {
         if (filterIds.length === 0) {
             // If we have no IDs for the filter, it's a hard empty result
             return { songs: [], total: 0 };
         }
         searchBuilder = searchBuilder.in('id', filterIds);
-    } else {
-        // Legacy fallback if relations didn't resolve ANY IDs (shouldn't happen with valid filters)
-        if (genre && genre !== 'Todos') {
-            searchBuilder = searchBuilder.ilike('genero', `%${genre}%`);
-        }
-        if (decade) {
-            searchBuilder = searchBuilder.ilike('decada', `%${decade}%`);
-        }
-    }
-
-    // 2. Apply Text Query (if exists) as an additional filter
-    if (query) {
-        searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
-    }
-
-    let { data, error, count } = await searchBuilder
-        .order('vistas', { ascending: false })
-        .order('titulo', { ascending: true })
-        .range(from, to);
-
-    // AI FALLBACK: If filtering by genre/decade and no results found
-    if ((!data || data.length === 0) && (genre || decade || query)) {
-        try {
-            console.log("No DB results for filter. Attempting AI Smart Search...");
-            const allSongs = await getAllSongs(100);
-            const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-            const filterContext = `Género: ${genre || 'Cualquiera'}, Década: ${decade || 'Cualquiera'}, Búsqueda: ${query || 'Ninguna'}`;
-            const prompt = `De esta lista de canciones, selecciona las 20 que mejor encajen con: ${filterContext}.
-            Lista: ${JSON.stringify(allSongs.map(s => ({ id: s.id, track: s.track, artist: s.artist, genre: s.genre, decade: s.decade })))}
-            Responde SOLO con el JSON de los IDs: ["id1", "id2", ...]`;
-
-            const result = await model.generateContent(prompt);
-            const text = (await result.response).text();
-            const jsonMatch = text.match(/\[[\s\S]*\]/);
-
-            if (jsonMatch) {
-                const ids = JSON.parse(jsonMatch[0]);
-                data = allSongs.filter(s => ids.includes(s.id));
-                count = data.length;
-            }
-        } catch (aiError) {
-            console.error("AI Fallback search failed:", aiError);
-        }
-    }
-
-    if (error || !data) {
-        console.error('Error searching songs:', error);
+    } else if ((dbGenre || decade) && !filterIds) {
+        // If filters were requested but no IDs found (e.g. valid genre name but no songs), return empty
         return { songs: [], total: 0 };
     }
 
-    const allSongs = data.map(mapCancionToSong);
+    // Apply Album Filter
+    if (album) {
+        searchBuilder = searchBuilder.eq('album', album);
+    }
 
-    // Deduplication logic
-    const uniqueMap = new Map();
-    const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Sorting
+    if (sortBy === 'newest') {
+        searchBuilder = searchBuilder.order('fecha_lanzamiento', { ascending: false });
+    } else if (sortBy === 'album') {
+        searchBuilder = searchBuilder.order('album', { ascending: true });
+    } else {
 
-    allSongs.forEach(song => {
-        const ytKey = song.youtubeId;
-        const contentKey = `${normalize(song.track)}-${normalize(song.artist)}`;
+        // 2. Apply Text Query (if exists) as an additional filter
+        if (query) {
+            searchBuilder = searchBuilder.or(`artista.ilike.%${query}%,titulo.ilike.%${query}%`);
+        }
 
-        if (uniqueMap.has(ytKey)) return;
-        if (uniqueMap.has(contentKey)) return;
+        let { data, error, count } = await searchBuilder
+            .order('vistas', { ascending: false })
+            .order('titulo', { ascending: true })
+            .range(from, to);
 
-        uniqueMap.set(ytKey, song);
-        uniqueMap.set(contentKey, song);
-    });
+        // AI FALLBACK: If filtering by genre/decade and no results found
+        if ((!data || data.length === 0) && (genre || decade || query)) {
+            try {
+                console.log("No DB results for filter. Attempting AI Smart Search...");
+                const allSongs = await getAllSongs(100);
+                const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const uniqueSongs = Array.from(new Set(uniqueMap.values()));
+                const filterContext = `Género: ${genre || 'Cualquiera'}, Década: ${decade || 'Cualquiera'}, Búsqueda: ${query || 'Ninguna'}`;
+                const prompt = `De esta lista de canciones, selecciona las 20 que mejor encajen con: ${filterContext}.
+            Lista: ${JSON.stringify(allSongs.map(s => ({ id: s.id, track: s.track, artist: s.artist, genre: s.genre, decade: s.decade })))}
+            Responde SOLO con el JSON de los IDs: ["id1", "id2", ...]`;
 
-    return {
-        songs: uniqueSongs.slice(0, limit),
-        total: count || 0
-    };
-}
+                const result = await model.generateContent(prompt);
+                const text = (await result.response).text();
+                const jsonMatch = text.match(/\[[\s\S]*\]/);
 
-export async function getSearchSuggestions(query: string): Promise<{ text: string, type: 'song' | 'artist', id?: string }[]> {
-    if (!query || query.length < 3) return [];
-
-    const { data, error } = await supabase
-        .from('canciones_con_rating')
-        .select('titulo, artista, id, youtube_id')
-        .or(`titulo.ilike.%${query}%,artista.ilike.%${query}%`)
-        .limit(10);
-
-    if (error || !data) return [];
-
-    const suggestions: { text: string, type: 'song' | 'artist', id?: string }[] = [];
-    const seen = new Set();
-
-    data.forEach(item => {
-        // Add Artist suggestion if new
-        if (!seen.has(`artist:${item.artista}`)) {
-            if (item.artista.toLowerCase().includes(query.toLowerCase())) {
-                suggestions.push({ text: item.artista, type: 'artist' });
-                seen.add(`artist:${item.artista}`);
+                if (jsonMatch) {
+                    const ids = JSON.parse(jsonMatch[0]);
+                    data = allSongs.filter(s => ids.includes(s.id));
+                    count = data.length;
+                }
+            } catch (aiError) {
+                console.error("AI Fallback search failed:", aiError);
             }
         }
 
-        // Add Song suggestion
-        if (item.titulo.toLowerCase().includes(query.toLowerCase())) {
-            suggestions.push({ text: `${item.titulo} - ${item.artista}`, type: 'song', id: item.id });
-        }
-    });
-
-    return suggestions.slice(0, 8); // Limit to 8 suggestions
-}
-
-export async function getFilterStats(): Promise<{ genres: Record<string, number>, decades: Record<string, number> }> {
-    const stats = {
-        genres: {} as Record<string, number>,
-        decades: {} as Record<string, number>
-    };
-
-    try {
-        // Query Genres with Counts
-        const { data: genreData, error: genreError } = await supabase
-            .from('genres')
-            .select('name, song_genres(count)');
-
-        if (genreError) {
-            console.error("Error fetching genre stats relationally:", genreError);
-            return { genres: {}, decades: {} };
+        if (error || !data) {
+            console.error('Error searching songs:', error);
+            return { songs: [], total: 0 };
         }
 
-        genreData?.forEach((g: any) => {
-            const count = g.song_genres?.[0]?.count || 0;
-            stats.genres[g.name] = count;
+        const allSongs = data.map(mapCancionToSong);
+
+        // Deduplication logic
+        const uniqueMap = new Map();
+        const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        allSongs.forEach(song => {
+            const ytKey = song.youtubeId;
+            const contentKey = `${normalize(song.track)}-${normalize(song.artist)}`;
+
+            if (uniqueMap.has(ytKey)) return;
+            if (uniqueMap.has(contentKey)) return;
+
+            uniqueMap.set(ytKey, song);
+            uniqueMap.set(contentKey, song);
         });
 
-        // Query Decades with Counts
-        const { data: decadeData, error: decadeError } = await supabase
-            .from('decades')
-            .select('name, song_decades(count)');
+        const uniqueSongs = Array.from(new Set(uniqueMap.values()));
 
-        if (!decadeError && decadeData) {
-            decadeData.forEach((d: any) => {
-                const count = d.song_decades?.[0]?.count || 0;
-                stats.decades[d.name] = count;
-            });
-        }
-
-    } catch (err) {
-        console.error("Unexpected error in getFilterStats:", err);
-        return { genres: {}, decades: {} };
+        return {
+            songs: uniqueSongs.slice(0, limit),
+            total: count || 0
+        };
     }
 
-    return stats;
+    export async function getSearchSuggestions(query: string): Promise<{ text: string, type: 'song' | 'artist', id?: string }[]> {
+        if (!query || query.length < 3) return [];
+
+        const { data, error } = await supabase
+            .from('canciones_con_rating')
+            .select('titulo, artista, id, youtube_id')
+            .or(`titulo.ilike.%${query}%,artista.ilike.%${query}%`)
+            .limit(10);
+
+        if (error || !data) return [];
+
+        const suggestions: { text: string, type: 'song' | 'artist', id?: string }[] = [];
+        const seen = new Set();
+
+        data.forEach(item => {
+            // Add Artist suggestion if new
+            if (!seen.has(`artist:${item.artista}`)) {
+                if (item.artista.toLowerCase().includes(query.toLowerCase())) {
+                    suggestions.push({ text: item.artista, type: 'artist' });
+                    seen.add(`artist:${item.artista}`);
+                }
+            }
+
+            // Add Song suggestion
+            if (item.titulo.toLowerCase().includes(query.toLowerCase())) {
+                suggestions.push({ text: `${item.titulo} - ${item.artista}`, type: 'song', id: item.id });
+            }
+        });
+
+        return suggestions.slice(0, 8); // Limit to 8 suggestions
+    }
+
+    decadeData.forEach((d: any) => {
+        const count = d.song_decades?.[0]?.count || 0;
+        stats.decades[d.name] = count;
+    });
+}
+
+    } catch (err) {
+    console.error("Unexpected error in getFilterStats:", err);
+    return { genres: {}, decades: {} };
+}
+
+return stats;
 }
 
 // Keep legacy logic as fallback until migration is 100% confirmed

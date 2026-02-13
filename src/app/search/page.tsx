@@ -22,7 +22,9 @@ export default function SearchPage() {
     const [user, setUser] = useState<User | null>(null);
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
     const [selectedDecade, setSelectedDecade] = useState<string | null>(null);
-    const [filterStats, setFilterStats] = useState<{ genres: Record<string, number>, decades: Record<string, number> } | null>(null);
+    const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState<'relevance' | 'newest' | 'album'>('relevance');
+    const [filterStats, setFilterStats] = useState<{ genres: Record<string, number>, decades: Record<string, number>, albums: Record<string, number> } | null>(null);
     const [page, setPage] = useState(1);
     const pageSize = 20;
 
@@ -50,7 +52,9 @@ export default function SearchPage() {
                     page,
                     pageSize,
                     selectedGenre || undefined,
-                    selectedDecade || undefined
+                    selectedDecade || undefined,
+                    selectedAlbum || undefined,
+                    sortBy
                 );
                 setSongs(searchResults);
                 setTotal(totalResults);
@@ -62,7 +66,7 @@ export default function SearchPage() {
         }
 
         fetchResults();
-    }, [query, selectedGenre, selectedDecade, page]);
+    }, [query, selectedGenre, selectedDecade, selectedAlbum, sortBy, page]);
 
     const totalPages = Math.ceil(total / pageSize);
 
@@ -88,6 +92,34 @@ export default function SearchPage() {
                         <p className="text-gray-400 text-sm">
                             {loading ? "Buscando..." : query ? `Encontramos ${total} resultados para "${query}"` : `Explorando ${total} señales sonoras`}
                         </p>
+                    </div>
+
+
+                    {/* Sort Options */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setSortBy('relevance')}
+                                className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${sortBy === 'relevance' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                Relevancia
+                            </button>
+                            <button
+                                onClick={() => setSortBy('newest')}
+                                className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${sortBy === 'newest' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                Recientes
+                            </button>
+                            <button
+                                onClick={() => setSortBy('album')}
+                                className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${sortBy === 'album' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                Álbum
+                            </button>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                            Ordenado por: <span className="text-white capitalize">{sortBy === 'relevance' ? 'Relevancia' : sortBy === 'newest' ? 'Fecha' : 'Álbum'}</span>
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-4">
@@ -145,6 +177,34 @@ export default function SearchPage() {
                                 );
                             })}
                     </div>
+
+                    {/* Album Filters (Horizontal Scroll) */}
+                    {filterStats && Object.keys(filterStats.albums).length > 0 && (
+                        <div className="space-y-2">
+                            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Álbumes</p>
+                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                {Object.entries(filterStats.albums)
+                                    .sort((a, b) => b[1] - a[1]) // Most popular albums first
+                                    .slice(0, 15) // Show top 15 albums only to keep UI clean
+                                    .map(([album, count]) => {
+                                        const isSelected = selectedAlbum === album;
+                                        return (
+                                            <button
+                                                key={album}
+                                                onClick={() => { setSelectedAlbum(isSelected ? null : album); setPage(1); }}
+                                                className={`whitespace-nowrap px-3 py-1 rounded-md text-[10px] font-bold border transition-all flex items-center gap-1 ${isSelected
+                                                    ? "bg-purple-500 border-purple-500 text-white shadow-lg shadow-purple-500/25"
+                                                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                                    }`}
+                                            >
+                                                {album}
+                                                <span className="text-[9px] opacity-70">({count})</span>
+                                            </button>
+                                        );
+                                    })}
+                            </div>
+                        </div>
+                    )}
                 </div >
             </header >
 
