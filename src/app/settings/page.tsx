@@ -9,11 +9,11 @@ export default async function SettingsPage() {
     if (!user) return null;
 
     return (
-        <div className="flex min-h-screen bg-background-dark text-white">
+        <div className="flex min-h-screen bg-transparent text-white">
             <Sidebar user={user} />
 
-            <main className="flex-1 flex flex-col overflow-hidden">
-                <div className="max-w-4xl mx-auto px-8 py-12 md:px-16 lg:px-24 w-full">
+            <main className="flex-1 flex flex-col overflow-hidden relative">
+                <div className="max-w-4xl mx-auto px-8 py-12 md:px-16 lg:px-24 w-full relative z-10">
                     {/* Header */}
                     <div className="flex items-end justify-between mb-12">
                         <div>
