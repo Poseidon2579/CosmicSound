@@ -12,21 +12,7 @@ interface Star {
     pulseOffset: number; // For twinkling
 }
 
-interface Planet {
-    name: string;
-    color: string;
-    size: number;
-    distance: number; // Distance from sun
-    speed: number;   // Orbit speed
-    angle: number;   // Current orbit angle
-    type: 'star' | 'planet' | 'moon';
-    parent?: Planet; // For moons
-    textureUrl?: string;
-    texture?: HTMLImageElement;
-    ringTextureUrl?: string;
-    ringTexture?: HTMLImageElement;
-    hasRings?: boolean;
-}
+
 
 interface ShootingStar {
     x: number;
@@ -41,11 +27,10 @@ interface ShootingStar {
 
 export default function CosmicBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const shootingStars = useRef<ShootingStar[]>([]);
     const mousePos = useRef({ x: 0, y: 0 });
     const stars = useRef<Star[]>([]);
-    const planets = useRef<Planet[]>([]);
-    const shootingStars = useRef<ShootingStar[]>([]);
-    const imagesLoaded = useRef(false);
+
 
     // Initialize celestial bodies
     useEffect(() => {
@@ -65,85 +50,7 @@ export default function CosmicBackground() {
             }
         }
 
-        // Create Solar System
-        if (planets.current.length === 0) {
-            const sun: Planet = {
-                name: "Sun",
-                color: "#FDB813",
-                size: 160, // Smaller sun visually due to distance
-                distance: 0,
-                speed: 0,
-                angle: 0,
-                type: 'star',
-                textureUrl: "/assets/planets/sun.jpg"
-            };
 
-            const earth: Planet = {
-                name: "Earth",
-                color: "#2E8B57",
-                size: 70,
-                distance: 3500, // Much further
-                speed: 0.0004,
-                angle: Math.random() * Math.PI * 2,
-                type: 'planet',
-                textureUrl: "/assets/planets/earth.jpg"
-            };
-
-            const moon: Planet = {
-                name: "Moon",
-                color: "#cfcfcf",
-                size: 20,
-                distance: 200,
-                speed: 0.015,
-                angle: Math.random() * Math.PI * 2,
-                type: 'moon',
-                parent: earth,
-                textureUrl: "/assets/planets/moon.jpg"
-            };
-
-            const mars: Planet = {
-                name: "Mars",
-                color: "#E27B58",
-                size: 60,
-                distance: 4800,
-                speed: 0.0003,
-                angle: Math.random() * Math.PI * 2,
-                type: 'planet',
-                textureUrl: "/assets/planets/mars.jpg"
-            };
-
-            const saturn: Planet = {
-                name: "Saturn",
-                color: "#E3E0C0",
-                size: 130,
-                distance: 6500,
-                speed: 0.0002,
-                angle: Math.random() * Math.PI * 2,
-                type: 'planet',
-                hasRings: true,
-                textureUrl: "/assets/planets/saturn.jpg",
-                ringTextureUrl: "/assets/planets/saturn_ring.png"
-            };
-
-            planets.current = [sun, earth, moon, mars, saturn];
-        }
-
-        // Load Images
-        if (!imagesLoaded.current) {
-            planets.current.forEach(p => {
-                if (p.textureUrl) {
-                    const img = new Image();
-                    img.src = p.textureUrl;
-                    img.onload = () => { p.texture = img; };
-                }
-                if (p.ringTextureUrl) {
-                    const img = new Image();
-                    img.src = p.ringTextureUrl;
-                    img.onload = () => { p.ringTexture = img; };
-                }
-            });
-            imagesLoaded.current = true;
-        }
 
     }, []);
 
@@ -320,130 +227,8 @@ export default function CosmicBackground() {
                 }
             }
 
-            // --- PLANETS (Z-Sorted) ---
-            interface RenderObj {
-                z: number;
-                draw: () => void;
-            }
-            const renderList: RenderObj[] = [];
-            const SYSTEM_Z_OFFSET = 6000; // Pushes everything back
-
-            planets.current.forEach(planet => {
-                if (planet.type !== 'star') {
-                    planet.angle += planet.speed;
-                }
-
-                let px, py, pz;
-                if (planet.type === 'moon' && planet.parent) {
-                    const pDist = planet.parent.distance;
-                    const pAngle = planet.parent.angle;
-                    const parentX = Math.cos(pAngle) * pDist;
-                    const parentZ = Math.sin(pAngle) * pDist;
-
-                    px = parentX + Math.cos(planet.angle) * planet.distance;
-                    py = 0;
-                    pz = parentZ + Math.sin(planet.angle) * planet.distance + SYSTEM_Z_OFFSET;
-                } else {
-                    px = Math.cos(planet.angle) * planet.distance;
-                    py = 0;
-                    pz = Math.sin(planet.angle) * planet.distance + SYSTEM_Z_OFFSET;
-                }
-
-                let x2 = px * cosYaw - pz * sinYaw;
-                let z2 = pz * cosYaw + px * sinYaw;
-
-                let y = py;
-                let y2 = y * cosPitch - z2 * sinPitch;
-                let z3 = z2 * cosPitch + y * sinPitch;
-
-                if (z3 > 0) {
-                    const scale = fov / z3;
-                    const screenX = cx + x2 * scale;
-                    const screenY = cy + y2 * scale;
-                    const size = planet.size * scale;
-
-                    // Add to render list
-                    renderList.push({
-                        z: z3, // Use projected Z distance for sorting
-                        draw: () => {
-                            ctx.save();
-
-                            // Rings (Saturn) - DRAW BEHIND PLANET to solve back-occlusion
-                            // Note: This draws rings behind the planet sphere perfectly.
-                            // Limitation: Front of rings is also behind planet. 
-                            if (planet.hasRings && planet.ringTexture) {
-                                ctx.save();
-                                const ringW = size * 4.5;
-                                const ringH = size * 4.5 * 0.4;
-
-                                ctx.translate(screenX, screenY);
-                                ctx.rotate(pitch * -0.5); // Tilt
-                                ctx.drawImage(planet.ringTexture, -ringW / 2, -ringH / 2, ringW, ringH);
-                                ctx.restore();
-                            } else if (planet.hasRings) {
-                                ctx.beginPath();
-                                ctx.ellipse(screenX, screenY, size * 2.2, size * 0.6, pitch * -0.5, 0, Math.PI * 2);
-                                ctx.strokeStyle = "rgba(200, 200, 180, 0.4)";
-                                ctx.lineWidth = size * 0.5;
-                                ctx.stroke();
-                            }
-
-                            // Draw Planet Sphere
-                            ctx.beginPath();
-                            ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
-                            ctx.clip(); // Mask to circle
-
-                            if (planet.texture) {
-                                ctx.drawImage(planet.texture, screenX - size, screenY - size, size * 2, size * 2);
-
-                                const gradient = ctx.createRadialGradient(screenX - size * 0.3, screenY - size * 0.3, size * 0.1, screenX, screenY, size);
-                                if (planet.type === 'star') {
-                                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
-                                    gradient.addColorStop(1, 'rgba(255, 200, 50, 0.2)');
-                                } else {
-                                    gradient.addColorStop(0, 'rgba(0,0,0,0)');
-                                    gradient.addColorStop(0.8, 'rgba(0,0,0,0.5)'); // Darker shadow
-                                    gradient.addColorStop(1, 'rgba(0,0,0,0.9)');
-                                }
-                                ctx.fillStyle = gradient;
-                                ctx.fill();
-
-                            } else {
-                                ctx.fillStyle = planet.color;
-                                ctx.fill();
-                            }
-                            ctx.restore(); // Remove clip
-
-                            // Sun Glow (Post-render)
-                            if (planet.type === 'star') {
-                                const sunPulse = 1 + 0.05 * Math.sin(time * 0.5);
-                                ctx.shadowBlur = (100 * scale) * sunPulse;
-                                ctx.shadowColor = planet.color;
-
-                                ctx.globalCompositeOperation = 'screen';
-                                ctx.beginPath();
-                                ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
-                                ctx.fillStyle = `rgba(253, 184, 19, 0.2)`;
-                                ctx.fill();
-                                ctx.globalCompositeOperation = 'source-over';
-
-                                ctx.beginPath();
-                                ctx.arc(screenX, screenY, size * 1.5 * sunPulse, 0, Math.PI * 2);
-                                ctx.fillStyle = `rgba(253, 184, 19, 0.1)`;
-                                ctx.fill();
-
-                                ctx.shadowBlur = 0;
-                            }
-                        }
-                    });
-                }
-            });
-
-            // Sort by depth (furthest first) to handle occlusion
-            renderList.sort((a, b) => b.z - a.z);
-
-            // Execute draw commands
-            renderList.forEach(item => item.draw());
+            // --- PLANETS & SUN REMOVED FOR PERFORMANCE ---
+            // User requested to keep only stars and shooting stars to improve mobile performance.
 
             animationFrameId = requestAnimationFrame(render);
         };
@@ -456,6 +241,8 @@ export default function CosmicBackground() {
             cancelAnimationFrame(animationFrameId);
         };
     }, []);
+
+
 
     return (
         <canvas
